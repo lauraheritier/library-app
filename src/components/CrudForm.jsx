@@ -52,7 +52,7 @@ const CrudForm = ({ dataType, action, mainTitle }) => {
                         <label>Editorial</label>
                         <ValueList dataType="publishers" isAuthor={false} />
                     </div>
-                    <div >
+                    <div>
                         <label>Categoría</label>
                         <ValueList dataType="categories" isAuthor={false} />
                     </div>
