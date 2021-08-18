@@ -1,0 +1,140 @@
+{
+  "employees": [
+    {
+      "id": 1,
+      "first_name": "John",
+      "last_name": "Doe",
+      "telephone": "03518062904",
+      "email": "johndoe@abc.com",
+      "dni": "32040404",
+      "address": "Obispo Trejo 1134"
+    },
+    {
+      "id": 2,
+      "first_name": "María",
+      "last_name": "Doe",
+      "telephone": "03518062904",
+      "email": "johndoe@abc.com",
+      "dni": "32040404",
+      "address": "Obispo Trejo 1134"
+    },
+    {
+      "id": 3,
+      "first_name": "Julio",
+      "last_name": "Doe",
+      "telephone": "03518062904",
+      "email": "johndoe@abc.com",
+      "dni": "32040404",
+      "address": "Obispo Trejo 1134"
+    },
+    {
+      "id": 4,
+      "first_name": "Eliana",
+      "last_name": "Doe",
+      "telephone": "03518062904",
+      "email": "johndoe@abc.com",
+      "dni": "32040404",
+      "address": "Obispo Trejo 1134"
+    }
+  ],
+  "members": [
+    {
+      "id": 4,
+      "first_name": "Eugenia",
+      "last_name": "Doe",
+      "telephone": "03518062904",
+      "email": "johndoe@abc.com",
+      "dni": "32040404",
+      "address": "Obispo Trejo 1134",
+      "membership_id": "001"
+    },
+    {
+      "id": 2,
+      "first_name": "Roberto",
+      "last_name": "Doe",
+      "telephone": "03518062904",
+      "email": "johndoe@abc.com",
+      "dni": "32040404",
+      "address": "Obispo Trejo 1134",
+      "membership_id": "002"
+    },
+    {
+      "id": 3,
+      "first_name": "Gustavo",
+      "last_name": "Doe",
+      "telephone": "03518062904",
+      "email": "johndoe@abc.com",
+      "dni": "32040404",
+      "address": "Obispo Trejo 1134",
+      "membership_id": "003"
+    },
+    {
+      "id": 4,
+      "first_name": "Violeta",
+      "last_name": "Doe",
+      "telephone": "03518062904",
+      "email": "johndoe@abc.com",
+      "dni": "32040404",
+      "address": "Obispo Trejo 1134",
+      "membership_id": "004"
+    }
+  ],
+  "authors": [
+    {
+      "id": 1,
+      "first_name": "Gabriel",
+      "last_name": "García Márquez"
+    },
+    {
+      "id": 2,
+      "first_name": "Jorge Luis",
+      "last_name": "Borges"
+    },
+    {
+      "id": 3,
+      "first_name": "Federico",
+      "last_name": "García Lorca"
+    },
+    {
+      "id": 4,
+      "first_name": "Charles",
+      "last_name": "Dickens"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "description": "Historia argentina"
+    },
+    {
+      "id": 2,
+      "description": "Novela histórica"
+    },
+    {
+      "id": 3,
+      "description": "No ficción"
+    },
+    {
+      "id": 4,
+      "description": "Ciencia ficción"
+    }
+  ],
+  "publishers": [
+    {
+      "id": 1,
+      "description": "Alienta Editorial"
+    },
+    {
+      "id": 2,
+      "description": "Austral"
+    },
+    {
+      "id": 3,
+      "description": "Booket"
+    },
+    {
+      "id": 4,
+      "description": "Click Ediciones"
+    }
+  ]
+}
