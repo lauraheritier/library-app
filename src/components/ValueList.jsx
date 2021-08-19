@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
+import Form from 'react-bootstrap/Form';
 
 const ValueList = ({ dataType, isAuthor }) => {
     const [data, setData] = useState([]);
-    let content;    
+    let content;
 
     const getData = () => {
         fetch(`http://localhost:3000/${dataType}`, {
@@ -21,29 +22,23 @@ const ValueList = ({ dataType, isAuthor }) => {
             });
     }
     useEffect(() => {
-        getData([]);
-    })
+        getData();
+    }, [])
 
     content = (
-            <select>
-                {
-                    data.map((dataType, index) => {
-                        return <option key={index} value={index}>{dataType.first_name} {dataType.last_name}</option>
-                    })
-                }
-            </select>
-        )
-        if (!isAuthor) {
-        content = (
-            <select>
-                {
-                    data.map((dataType, index) => {
-                     return <option key={index} value={index}>{dataType.description}</option>
-                    })
-                }
-            </select>
-        )
-    }
+        <Form.Control as="select" aria-label={dataType}>
+            {
+                data.map((item, index) => {
+                    if (isAuthor) {
+                        return <option key={index} value={index}>{item.first_name} {item.last_name}</option>
+                    } else {
+                        return  <option key={index} value={index}>{item.description}</option>
+                    }
+                })
+            }
+        </Form.Control>
+    )
+
     return content;
 }
 export default ValueList;
