@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import Form from 'react-bootstrap/Form';
 
 const ValueList = ({ dataType, isAuthor }) => {
-    const [data, setData] = useState([]);
     let content;
+    const [data, setData] = useState([]);    
 
     const getData = () => {
         fetch(`http://localhost:3000/${dataType}`, {
