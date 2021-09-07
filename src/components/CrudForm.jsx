@@ -4,16 +4,16 @@ import Form from 'react-bootstrap/Form';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import { Row, Col, Button } from 'react-bootstrap';
 
-const CrudForm = ({ actionType, item, itemType, action, mainTitle }) => {
+const CrudForm = ({ item, itemType, isCreate }) => {
     /**itemTypes:
      * 1: Books
      * 2: Members
      * 3: Employees
      */
     /**
-     * actions:
-     * true: edit
-     * false: create
+     * isCreate:
+     * true: create
+     * false: edit
      */
     const [dat, setDat] = useState({
         first_name: '',
@@ -41,7 +41,6 @@ const CrudForm = ({ actionType, item, itemType, action, mainTitle }) => {
     if (itemType === 1) {
             content = (
                 <>
-                    <h2>{mainTitle}</h2>
                     <Form onSubmit={handleSubmit}>
                         <Row className="g-2">
                             <Col md>
@@ -115,7 +114,6 @@ const CrudForm = ({ actionType, item, itemType, action, mainTitle }) => {
         } else {
             content = (
                 <>
-                    <h2>{mainTitle}</h2>
                     <Form onSubmit={handleSubmit}>
                         <Row className="g-2">
                             <Col md>
@@ -124,7 +122,7 @@ const CrudForm = ({ actionType, item, itemType, action, mainTitle }) => {
                                         controlId="floatingName"
                                         label="Nombre"
                                         className="mb-3">
-                                        <Form.Control name="first_name" type="text" placeholder="Ingresá el nombre" defaultValue={!action ? item.first_name : ''} onChange={handleInputChange} />
+                                        <Form.Control name="first_name" type="text" placeholder="Ingresá el nombre" defaultValue={!isCreate ? item.first_name : ''} onChange={handleInputChange} />
                                     </FloatingLabel>
                                 </Form.Group>
                             </Col>
@@ -134,7 +132,7 @@ const CrudForm = ({ actionType, item, itemType, action, mainTitle }) => {
                                         controlId="floatingSurname"
                                         label="Apellido"
                                         className="mb-3">
-                                        <Form.Control name="last_name" type="text" placeholder="Ingresá el apellido" defaultValue={!action ? item.last_name : ''} onChange={handleInputChange} />
+                                        <Form.Control name="last_name" type="text" placeholder="Ingresá el apellido" defaultValue={!isCreate ? item.last_name : ''} onChange={handleInputChange} />
                                     </FloatingLabel>
                                 </Form.Group>
                             </Col>
@@ -146,7 +144,7 @@ const CrudForm = ({ actionType, item, itemType, action, mainTitle }) => {
                                         controlId="floatingPhone"
                                         label="Teléfono"
                                         className="mb-3">
-                                        <Form.Control name="telephone" type="number" placeholder="Ingresá el teléfono" defaultValue={!action ? item.telephone : ''} onChange={handleInputChange} />
+                                        <Form.Control name="telephone" type="number" placeholder="Ingresá el teléfono" defaultValue={!isCreate ? item.telephone : ''} onChange={handleInputChange} />
                                     </FloatingLabel>
                                 </Form.Group>
                             </Col>
@@ -156,7 +154,7 @@ const CrudForm = ({ actionType, item, itemType, action, mainTitle }) => {
                                         controlId="floatingMail"
                                         label="E-mail"
                                         className="mb-3">
-                                        <Form.Control name="email" type="email" placeholder="Ingresá el e-mail" defaultValue={!action ? item.email : ''} onChange={handleInputChange} />
+                                        <Form.Control name="email" type="email" placeholder="Ingresá el e-mail" defaultValue={!isCreate ? item.email : ''} onChange={handleInputChange} />
                                     </FloatingLabel>
                                 </Form.Group>
                             </Col>
@@ -168,7 +166,7 @@ const CrudForm = ({ actionType, item, itemType, action, mainTitle }) => {
                                         controlId="floatingID"
                                         label="DNI"
                                         className="mb-3">
-                                        <Form.Control name="dni" type="number" placeholder="Ingresá el DNI" defaultValue={!action ? item.dni : ''} onChange={handleInputChange} />
+                                        <Form.Control name="dni" type="number" placeholder="Ingresá el DNI" defaultValue={!isCreate ? item.dni : ''} onChange={handleInputChange} />
                                     </FloatingLabel>
                                 </Form.Group>
                             </Col>
@@ -178,7 +176,7 @@ const CrudForm = ({ actionType, item, itemType, action, mainTitle }) => {
                                         controlId="floatingAddress"
                                         label="Dirección"
                                         className="mb-3">
-                                        <Form.Control name="address" type="text" placeholder="Ingresá la dirección" defaultValue={!action ? item.address : ''} onChange={handleInputChange} />
+                                        <Form.Control name="address" type="text" placeholder="Ingresá la dirección" defaultValue={!isCreate ? item.address : ''} onChange={handleInputChange} />
                                     </FloatingLabel>
                                 </Form.Group>
                             </Col>
@@ -192,7 +190,7 @@ const CrudForm = ({ actionType, item, itemType, action, mainTitle }) => {
                                                 controlId="floatingMembership"
                                                 label="Nro. de socio"
                                                 className="mb-3">
-                                                <Form.Control name="member_id" type="number" placeholder="Ingresá el número de socio" defaultValue={!action ? item.membership_id : ''} onChange={handleInputChange} />
+                                                <Form.Control name="member_id" type="number" placeholder="Ingresá el número de socio" defaultValue={!isCreate ? item.membership_id : ''} onChange={handleInputChange} />
                                             </FloatingLabel>
                                         </Form.Group>
                                         :

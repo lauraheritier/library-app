@@ -14,11 +14,37 @@ const MainContainer = () => {
      * true: edit
      * false: create
      */
+    /**
+     * action types:
+     * 1: view
+     * 2: edit
+     * 3: create
+     * 4: back
+     */
     let content;
     const [objectType, setObjectType] = useState(0);
     const [mainTitle, setMainTitle] = useState("Biblioteca");
     const [data, setData] = useState([]);
     const [dataType, setDataType] = useState("members");
+    const [keyWithFocus, setkeyWithFocus] = useState(0);
+    const [actionType, setActionType] = useState(0);
+
+    function handleObjectType(action, obj, title) {
+        console.log("valor a cambiar: ", action);
+        setObjectType(obj);
+        setkeyWithFocus(obj);
+        setMainTitle(title);
+        setActionType(action);
+        
+        console.log("valor cambiado: ", obj);
+
+    }
+    function handleActionType(action) {
+        console.log("una acción ", action);
+        setActionType(action);
+        if (action != 1)
+            return true;
+    }
 
     const getData = () => {
         fetch(`http://localhost:3000/${dataType}`, {
@@ -42,16 +68,18 @@ const MainContainer = () => {
 
     const handleSelect = (e) => {
         switch (e) {
-            case "1": setObjectType(1); setMainTitle("Libros"); setDataType("publishers");
-                console.log("caso 1-el object tipe: ", objectType, " el main title ", mainTitle);
+            case "0": setMainTitle("Biblioteca"); setkeyWithFocus(0); setObjectType(0); setActionType(0);
                 break;
-            case "2": setObjectType(2); setMainTitle("Socios"); setDataType("members"); getData();
-                console.log("caso 2-el object tipe: ", objectType, " el main title ", mainTitle);
+            case "1": setObjectType(1); setMainTitle("Libros"); setDataType("publishers"); setkeyWithFocus(1); setActionType(1);
+                console.log("caso 1-el object tipe: ", objectType, " el actionType ", actionType);
                 break;
-            case "3": setObjectType(3); setMainTitle("Empleados"); setDataType("employees"); getData();
-                console.log("el object tipe: ", objectType, " el main title ", mainTitle);
+            case "2": setObjectType(2); setMainTitle("Socios"); setDataType("members"); getData(); setkeyWithFocus(2); setActionType(1);
+                console.log("caso 2-el object tipe: ", objectType, " el actionType ", actionType);
                 break;
-            case "4": setObjectType(4); setMainTitle("Préstamos"); setDataType("employees"); getData();
+            case "3": setObjectType(3); setMainTitle("Empleados"); setDataType("employees"); getData(); setkeyWithFocus(3); setActionType(1);
+                console.log("caso 3-el object tipe: ", objectType, " el actionType ", actionType);
+                break;
+            case "4": setObjectType(4); setMainTitle("Préstamos"); setDataType("employees"); getData(); setkeyWithFocus(4); setActionType(1);
                 break;
             default:
                 console.log("pasaaaaaaa");
@@ -63,7 +91,12 @@ const MainContainer = () => {
         <>
             <Container>
                 <h1>{mainTitle}</h1>
-                <Nav variant="pills" activeKey="1" onSelect={handleSelect}>
+                <Nav variant="pills" activeKey={keyWithFocus} onSelect={handleSelect}>
+                    <Nav.Item>
+                        <Nav.Link eventKey="0">
+                            Inicio
+                        </Nav.Link>
+                    </Nav.Item>
                     <Nav.Item>
                         <Nav.Link eventKey="1">
                             Libros
@@ -86,8 +119,8 @@ const MainContainer = () => {
                     </Nav.Item>
                 </Nav>
             </Container>
-            {(objectType !== 0 ? <TableOverview item={data} actionType={1} objectType={objectType} mainTitle={mainTitle} />
-                : '')
+            {((objectType !== 0 || actionType == 1) ? <TableOverview item={data} actionType={actionType} objectType={objectType} mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+                : <p>¡Bienvenidos!</p>)
             }
 
         </>

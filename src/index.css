@@ -11,3 +11,30 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.text-right {
+  text-align: right;
+}
+.text-left {
+  text-align: left;
+}
+
+.container .btn-info {
+  color: #ffffff;
+}
+table, form {
+  margin-top: 16px;
+}
+.nav-pills {
+  margin: 40px 0;
+}
+
+.btn-success {
+  margin-right: 4px;
+}
+.App > .container {
+  margin-top: 16px;
+}
+form button {
+  width: 50%;
+  margin-bottom: 32px;
+}

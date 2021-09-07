@@ -3,16 +3,16 @@ import { Table, Button } from 'react-bootstrap';
 import MainContainer from "../containers/MainContainer";
 import CrudForm from './CrudForm';
 
-const TableOverview = ({ item, objectType, mainTitle }) => {
+const TableOverview = ({ item, objectType, handleObjectType, handleActionType, actionType }) => {
     /**objectTypes:
      * 1: Books
      * 2: Members
      * 3: Employees
      */
     /**
-     * actions:
-     * true: edit
-     * false: create
+     * isCreate:
+     * true: create
+     * false: edit
      */
     /**
      * action types:
@@ -21,128 +21,141 @@ const TableOverview = ({ item, objectType, mainTitle }) => {
      * 3: create
      * 4: back
      */
-    /**
-     * form titles:
-     * "Socio"
-     * "Empleado"
-     * "Libro"
-     */
     let content;
 
-    const [action, setAction] = useState(false);
-    const [actionType, setActionType] = useState(1);
-    const [formTitle, setFormTitle] = useState("");
+    const [isCreate, setIsCreate] = useState(false);
+    const [action, setAction] = useState(1);
     const [index, setIndex] = useState(0);
     function handleCreate(e) {
-        setAction(true);
-        setActionType(3);
+        setIsCreate(true);
+        setAction(3);
+        handleActionType(action);
         if (objectType == 1) {
-            setFormTitle("Nuevo libro")
+            handleObjectType(objectType, objectType, 'Nuevo libro');
         } else if (objectType == 2) {
-            setFormTitle("Nuevo socio");
+            handleObjectType(objectType, objectType, 'Nuevo socio');
         } else {
-            setFormTitle("Nuevo empleado");
+            handleObjectType(objectType, objectType, 'Nuevo empleado');
         }
-
     }
     function handleEdit(e) {
-        setAction(false);
-        setActionType(2);
-        setIndex(e.target.id);
+        setIsCreate(false);
+        setAction(2);
+        handleActionType(2);
+         setIndex(e.target.id);
         console.log("el target id ", e.target.id);
         if (objectType == 1) {
-            setFormTitle("Editar libro")
+            handleObjectType(objectType, objectType, 'Editar libro');
         } else if (objectType == 2) {
-            setFormTitle("Editar socio");
+            handleObjectType(objectType, objectType, 'Editar socio');
         } else {
-            setFormTitle("Editar empleado");
+            handleObjectType(objectType, objectType, 'Editar empleado');
         }
     }
     function handleDelete(e) {
-        setAction(false);
+        setIsCreate(false);
         console.log("Delete?");
     }
-    if (actionType == 1) {
-            if (objectType === 1) {
-                content = (
-                    <>
-                        <Button variant="info" onClick={handleCreate}>Nuevo </Button>
-                        <h2>{mainTitle}</h2>
-                        <Table striped bordered hover>
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Título</th>
-                                    <th>ISBN</th>
-                                    <th>Autor</th>
-                                    <th>Categoría</th>
-                                    <th>Editorial</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr >
-                                    <td>1</td>
-                                    <td>Cien años de soledad</td>
-                                    <td>123456789</td>
-                                    <td>Gabriel García Márquez</td>
-                                    <td><Button variant="success" onClick={handleEdit}>Editar</Button>
-                                        <Button variant="danger" onClick={handleDelete}>Eliminar</Button></td>
-                                </tr>
-
-                            </tbody>
-                        </Table>
-                    </>
-                );
-            } else {
-                content = (
-                    <>
-                        <Button variant="info" onClick={handleCreate}>Nuevo </Button>
-                        <h2>{mainTitle}</h2>
-                        <Table striped bordered hover>
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Apellido</th>
-                                    <th>E-mail</th>
-                                    <th>Teléfono</th>
-                                    <th>Dirección</th>
-                                    <th>DNI</th>
-                                    {objectType == 2 ? <th>No. de socio</th> : null}
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    item.map((dat, index) => {
-
-                                        return (<tr key={dat.dni + index}>
-                                            <td>{dat.first_name}</td>
-                                            <td>{dat.last_name}</td>
-                                            <td>{dat.telephone}</td>
-                                            <td>{dat.email}</td>
-                                            <td>{dat.address}</td>
-                                            <td>{dat.dni}</td>
-                                            {objectType == 2 ? <td>{dat.membership_id}</td> : null}
-                                            <td><Button id={index} variant="success" onClick={handleEdit}>Editar</Button>
-                                                <Button id={dat.dni} variant="danger" onClick={handleDelete}>Eliminar</Button></td>
-
-                                        </tr>)
-                                    }
-
-
-                                    )
-                                }
-                            </tbody>
-                        </Table>
-                    </>
-                );
-            }
-        } else {
-            content =
-                <CrudForm data={item} item={item[index]} itemType={objectType} action={action} mainTitle={formTitle} actionType={actionType} />
+    function goBack(action, object) {
+        setAction(action);
+        if(object == 1) {
+            handleObjectType(action, object, 'Libros');
         }
-    
+        if(object == 2) {
+            handleObjectType(action, object, 'Socios');
+        }
+        if(object == 3) {
+            handleObjectType(action, object, 'Empleados');
+        }
+    }
+
+    if (actionType == 1) {
+        if (objectType === 1) {
+            content = (
+                <>
+                    <div className="text-right">
+                        <Button variant="info" onClick={handleCreate}>Nuevo </Button>
+                    </div>
+                    <Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Título</th>
+                                <th>ISBN</th>
+                                <th>Autor</th>
+                                <th>Categoría</th>
+                                <th>Editorial</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr key="librito" >
+                                <td>1</td>
+                                <td>Cien años de soledad</td>
+                                <td>123456789</td>
+                                <td>Gabriel García Márquez</td>
+                                <td>Novela</td>
+                                <td>Colombia</td>
+                                <td><Button variant="success" onClick={handleEdit}>Editar</Button>
+                                    <Button variant="danger" onClick={handleDelete}>Eliminar</Button></td>
+                            </tr>
+
+                        </tbody>
+                    </Table>
+                </>
+            );
+        } else {
+            content = (
+                <>
+                    <div className="text-right">
+                        <Button variant="info" onClick={handleCreate}>Nuevo </Button>
+                    </div>
+                    <Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>E-mail</th>
+                                <th>Teléfono</th>
+                                <th>Dirección</th>
+                                <th>DNI</th>
+                                {objectType == 2 ? <th>No. de socio</th> : null}
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                item.map((dat, index) => {
+
+                                    return (<tr key={index}>
+                                        <td>{dat.first_name}</td>
+                                        <td>{dat.last_name}</td>
+                                        <td>{dat.telephone}</td>
+                                        <td>{dat.email}</td>
+                                        <td>{dat.address}</td>
+                                        <td>{dat.dni}</td>
+                                        {objectType == 2 ? <td>{dat.membership_id}</td> : null}
+                                        <td><Button id={index} variant="success" onClick={handleEdit}>Editar</Button>
+                                            <Button id={dat.dni} variant="danger" onClick={handleDelete}>Eliminar</Button></td>
+
+                                    </tr>)
+                                })
+                            }
+                        </tbody>
+                    </Table>                                          
+                </>
+            );
+        }
+    } else {
+        content =
+            <>
+                <CrudForm data={item} item={item[index]} itemType={objectType} isCreate={isCreate} actionType={action} />
+                <div className="text-left">
+                    <a href="#" onClick={() => { goBack(1, objectType) }}>Volver</a>
+                    </div>   
+            </>
+    }
+
 
 
 
