@@ -129,7 +129,7 @@ exports.deleteAll = (req, res) => {
       });
   };
 
-// Find all published Books
+// Find all available Books
 exports.findAllAvailable = (req, res) => {
     Book.find({ available: true })
       .then(data => {
