@@ -4,17 +4,11 @@ import TableOverview from "../components/TableOverview";
 
 
 const MainContainer = () => {
-    /**itemTypes:
-     * 1: Books
-     * 2: Members
-     * 3: Employees
-     */
-    /**
-     * actions:
-     * true: edit
-     * false: create
-     */
-    /**
+    /**dataTypes:
+     * Books
+     * Members
+     * Employees
+     * 
      * action types:
      * 1: view
      * 2: edit

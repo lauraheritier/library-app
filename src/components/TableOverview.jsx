@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button } from 'react-bootstrap';
-import MainContainer from "../containers/MainContainer";
 import CrudForm from './CrudForm';
 
 const TableOverview = ({ item, objectType, handleObjectType, handleActionType, actionType }) => {
