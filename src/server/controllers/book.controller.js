@@ -1,5 +1,8 @@
 const db = require("../models");
 const Book = db.books;
+const author = db.authors;
+const publisher = db.publishers;
+const category = db.categories;
 
 // Create and Save a new Book
 exports.create = (req, res) => {
@@ -11,10 +14,11 @@ exports.create = (req, res) => {
   // Create a Book
   const book = new Book({
     title: req.body.title,
-    author: req.body.author,
-    category: req.body.category,
-    publisher: req.body.publisher,
-    available: req.body.available ? req.body.available : false    
+    author: req.body.author ? req.body.author : 'desconocido',
+    category: req.body.category ? req.body.category : 'desconocida',
+    publisher: req.body.publisher ? req.body.publisher : 'desconocido',
+    available: req.body.available ? req.body.available : true,
+    isbn: req.body.isbn  
   });
 
   // Save Book in the database
