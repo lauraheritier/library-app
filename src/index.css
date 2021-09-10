@@ -38,3 +38,10 @@ form button {
   width: 50%;
   margin-bottom: 32px;
 }
+.text-right a {
+  margin-right: 4px;
+  display: inline-block;
+}
+.text-right button {
+  margin-left: 8px;
+}

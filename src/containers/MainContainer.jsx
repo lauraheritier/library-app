@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Nav } from 'react-bootstrap';
 import TableOverview from "../components/TableOverview";
+import service from '../services/member.service';
 
 
 const MainContainer = () => {
@@ -22,40 +23,36 @@ const MainContainer = () => {
     const [dataType, setDataType] = useState("members");
     const [keyWithFocus, setkeyWithFocus] = useState(0);
     const [actionType, setActionType] = useState(0);
-
     function handleObjectType(action, obj, title) {
         console.log("valor a cambiar: ", action);
         setObjectType(obj);
-        setkeyWithFocus(obj);
+        if(obj == 4 || obj == 5) {
+            setkeyWithFocus(1);
+        } else {
+            setkeyWithFocus(obj);
+        }
         setMainTitle(title);
-        setActionType(action);
+       setActionType(action);
         
-        console.log("valor cambiado: ", obj);
+        console.log("valor cambiado: ", objectType);
 
     }
-    function handleActionType(action) {
-        console.log("una acción ", action);
+    const handleActionType = (action) => {
+        console.log("una acción!!!!!!!!!!!! ", action);
         setActionType(action);
-        if (action != 1)
-            return true;
+        console.log("Acción seteadaaaa", actionType);
     }
-
-    const getData = () => {
-        fetch(`http://localhost:3000/${dataType}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        })
-            .then(function (response) {
-                console.log(response)
-                return response.json();
-            })
-            .then(function (myJson) {
-                console.log(myJson);
-                setData(myJson);
-            });
-    }
+const getData = () => {
+    console.log("el data type antes de ir al service", dataType);
+    service.getAll(dataType)
+    .then(response => {
+        setData(response.data);
+        console.log("los datos: ", response.data);
+    })
+    .catch(e => {
+        console.log("ERROR!!! ", e);
+    });
+};
 
     useEffect(() => {
     }, [])
@@ -64,21 +61,22 @@ const MainContainer = () => {
         switch (e) {
             case "0": setMainTitle("Biblioteca"); setkeyWithFocus(0); setObjectType(0); setActionType(0);
                 break;
-            case "1": setObjectType(1); setMainTitle("Libros"); setDataType("publishers"); setkeyWithFocus(1); setActionType(1);
+            case "1": setObjectType(1); setMainTitle("Libros"); setDataType("books"); setkeyWithFocus(1); setActionType(1); console.log("y ahora pasa x acá");
                 console.log("caso 1-el object tipe: ", objectType, " el actionType ", actionType);
                 break;
-            case "2": setObjectType(2); setMainTitle("Socios"); setDataType("members"); getData(); setkeyWithFocus(2); setActionType(1);
+            case "2": setObjectType(2); setMainTitle("Socios"); setDataType("members"); setkeyWithFocus(2); setActionType(1);
                 console.log("caso 2-el object tipe: ", objectType, " el actionType ", actionType);
                 break;
-            case "3": setObjectType(3); setMainTitle("Empleados"); setDataType("employees"); getData(); setkeyWithFocus(3); setActionType(1);
+            case "3": setObjectType(3); setMainTitle("Empleados"); setDataType("employees"); setkeyWithFocus(3); setActionType(1);
                 console.log("caso 3-el object tipe: ", objectType, " el actionType ", actionType);
                 break;
-            case "4": setObjectType(4); setMainTitle("Préstamos"); setDataType("employees"); getData(); setkeyWithFocus(4); setActionType(1);
+            case "6": setObjectType(6); setMainTitle("Préstamos"); setDataType("employees");setkeyWithFocus(4); setActionType(1);
                 break;
             default:
                 console.log("pasaaaaaaa");
 
         }
+        getData();
     };
 
     content = (

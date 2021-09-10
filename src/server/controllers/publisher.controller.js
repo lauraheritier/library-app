@@ -10,7 +10,8 @@ exports.create = (req, res) => {
   }
   // Create a publisher
   const publisher = new Publisher({
-    description: req.body.description    
+    description: req.body.description,
+    url: req.bod.description    
   });
 
   // Save publisher in the database

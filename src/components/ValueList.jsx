@@ -1,26 +1,22 @@
 import React, { useState, useEffect } from "react";
 import Form from 'react-bootstrap/Form';
+import service from '../services/member.service';
 
-const ValueList = ({ dataType, isAuthor }) => {
+const ValueList = ({ dataType}) => {
     let content;
     const [data, setData] = useState([]);    
 
     const getData = () => {
-        fetch(`http://localhost:3000/${dataType}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
+        console.log("el data type antes de ir al service", dataType);
+        service.getAll(dataType)
+        .then(response => {
+            setData(response.data);
+            console.log("los datos del data type: ", response.data);
         })
-            .then(function (response) {
-                console.log(response)
-                return response.json();
-            })
-            .then(function (myJson) {
-                console.log(myJson);
-                setData(myJson);
-            });
-    }
+        .catch(e => {
+            console.log("ERROR!!! ", e);
+        });
+    };
     useEffect(() => {
         getData();
     }, [])
@@ -29,11 +25,7 @@ const ValueList = ({ dataType, isAuthor }) => {
         <Form.Control as="select" aria-label={dataType}>
             {
                 data.map((item, index) => {
-                    if (isAuthor) {
-                        return <option key={index} value={index}>{item.first_name} {item.last_name}</option>
-                    } else {
-                        return  <option key={index} value={index}>{item.description}</option>
-                    }
+                    return  <option key={index} value={item.id}>{item.description}</option>                    
                 })
             }
         </Form.Control>

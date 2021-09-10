@@ -29,7 +29,7 @@ exports.create = (req, res) => {
 
 // Retrieve all Categories from the database.
 exports.findAll = (req, res) => {
-    const title = req.query.title;
+    const description = req.query.escription;
     var condition = description ? { description: { $regex: new RegExp(description), $options: "i" } } : {};
   
     Category.find(condition)

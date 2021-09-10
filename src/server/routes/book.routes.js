@@ -9,8 +9,8 @@ module.exports = app => {
     // Retrieve all Books
     router.get("/", books.findAll);
   
-    // Retrieve all available books
-    router.get("/available", books.findAllAvailable);
+    // Retrieve all borrowed books
+    router.get("/borrowed", books.findAllborrowed);
   
     // Retrieve a single Book with id
     router.get("/:id", books.findOne);

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Button } from 'react-bootstrap';
 import CrudForm from './CrudForm';
 
+
 const TableOverview = ({ item, objectType, handleObjectType, handleActionType, actionType }) => {
     /**objectTypes:
      * 1: Books
@@ -25,46 +26,68 @@ const TableOverview = ({ item, objectType, handleObjectType, handleActionType, a
     const [isCreate, setIsCreate] = useState(false);
     const [action, setAction] = useState(1);
     const [index, setIndex] = useState(0);
-    function handleCreate(e) {
+    function handleCreate(param) {
         setIsCreate(true);
         setAction(3);
         handleActionType(action);
-        if (objectType == 1) {
-            handleObjectType(objectType, objectType, 'Nuevo libro');
-        } else if (objectType == 2) {
-            handleObjectType(objectType, objectType, 'Nuevo socio');
-        } else {
-            handleObjectType(objectType, objectType, 'Nuevo empleado');
+        console.log("el param ", param);
+        switch (param) {
+            case 1: handleObjectType(1, 1, 'Nuevo libro');
+                break;
+            case 2: handleObjectType(2, 2, 'Nuevo socio');
+                break;
+            case 3: handleObjectType(3, 3, 'Nuevo empleado');
+                break;
+            case 4: handleObjectType(4, 4, 'Nueva categoría');
+                break;
+            case 5: handleObjectType(5, 5, 'Nueva editorial');
+            default: console.log("NADA");
         }
     }
-    function handleEdit(e) {
+    function handleEdit(i) {
         setIsCreate(false);
-        setAction(2);
-        handleActionType(2);
-         setIndex(e.target.id);
-        console.log("el target id ", e.target.id);
-        if (objectType == 1) {
-            handleObjectType(objectType, objectType, 'Editar libro');
-        } else if (objectType == 2) {
-            handleObjectType(objectType, objectType, 'Editar socio');
-        } else {
-            handleObjectType(objectType, objectType, 'Editar empleado');
+        setAction(2);        
+        console.log("¿dónde está el index? ", i.target, " el objectType: ", objectType);
+       setIndex(i);
+        console.log("el id ", i);
+        switch (objectType) {
+            case 1: handleObjectType(1, 1, 'Editar libro');
+                break;
+            case 2: handleObjectType(2, 2, 'Editar socio');
+                break;
+            case 3: handleObjectType(3, 3, 'Editar empleado');
+                break;
+            case 4: handleObjectType(4, 4, 'Editar categoría');
+                break;
+            case 5: handleObjectType(5, 5, 'Editar editorial');
+            default: console.log("NADA");
         }
+        handleActionType(2);
     }
     function handleDelete(e) {
         setIsCreate(false);
         console.log("Delete?");
     }
+    function goTo(param) {
+        if (param == 4) {
+            handleObjectType(action, 4, 'Categorías');
+        } else {
+            handleObjectType(action, 5, 'Editoriales');
+        }
+    }
     function goBack(action, object) {
         setAction(action);
-        if(object == 1) {
+        if (object == 1) {
             handleObjectType(action, object, 'Libros');
         }
-        if(object == 2) {
+        if (object == 2) {
             handleObjectType(action, object, 'Socios');
         }
-        if(object == 3) {
+        if (object == 3) {
             handleObjectType(action, object, 'Empleados');
+        }
+        if (object == 4 || object == 5) {
+            handleObjectType(action, 1, 'Libros');
         }
     }
 
@@ -73,85 +96,231 @@ const TableOverview = ({ item, objectType, handleObjectType, handleActionType, a
             content = (
                 <>
                     <div className="text-right">
-                        <Button variant="info" onClick={handleCreate}>Nuevo </Button>
+                        <a href="#" onClick={() => { goTo(4) }}>Categorías</a>
+                        <a href="#" onClick={() => { goTo(5) }}>Editoriales</a>
+                        <Button variant="info" onClick={() => { handleCreate(1) }}>Nuevo libro</Button>
                     </div>
-                    <Table striped bordered hover>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Título</th>
-                                <th>ISBN</th>
-                                <th>Autor</th>
-                                <th>Categoría</th>
-                                <th>Editorial</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr key="librito" >
-                                <td>1</td>
-                                <td>Cien años de soledad</td>
-                                <td>123456789</td>
-                                <td>Gabriel García Márquez</td>
-                                <td>Novela</td>
-                                <td>Colombia</td>
-                                <td><Button variant="success" onClick={handleEdit}>Editar</Button>
-                                    <Button variant="danger" onClick={handleDelete}>Eliminar</Button></td>
-                            </tr>
+                    {console.log("el item ", item)}
+                    {
 
-                        </tbody>
-                    </Table>
-                </>
+                        item.length !== 0 ?
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Título</th>
+                                        <th>ISBN</th>
+                                        <th>Autor</th>
+                                        <th>Categoría</th>
+                                        <th>Editorial</th>
+                                        <th>Disponible</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        item.map((dat, index) => {
+
+                                            return (<tr key={index}>
+                                                <td>{index}</td>
+                                                <td>{dat.title}</td>
+                                                <td>{dat.isbn}</td>
+                                                <td>{dat.author}</td>
+                                                <td>{dat.category}</td>
+                                                <td>{dat.publisher}</td>
+                                                <td>{dat.borrowed}</td>
+                                                <td><Button id={index} variant="success" onClick={() => { handleEdit(dat.id) }}>Editar</Button>
+                                                    <Button id={dat.dni} variant="danger" onClick={handleDelete}>Eliminar</Button></td>
+
+                                            </tr>)
+                                        })
+                                    }
+
+                                </tbody>
+                            </Table>
+                            : ''
+                    }</>
             );
-        } else {
+        } else if (objectType == 2) {
             content = (
                 <>
                     <div className="text-right">
-                        <Button variant="info" onClick={handleCreate}>Nuevo </Button>
+                        <Button variant="info" onClick={() => { handleCreate(objectType) }}>Nuevo</Button>
                     </div>
-                    <Table striped bordered hover>
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Apellido</th>
-                                <th>E-mail</th>
-                                <th>Teléfono</th>
-                                <th>Dirección</th>
-                                <th>DNI</th>
-                                {objectType == 2 ? <th>No. de socio</th> : null}
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                item.map((dat, index) => {
+                    {console.log("el item ", item)}
+                    {
+                        item.length !== 0 ?
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Apellido</th>
+                                        <th>E-mail</th>
+                                        <th>Teléfono</th>
+                                        <th>Dirección</th>
+                                        <th>DNI</th>
+                                        <th>No. de socio</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        item.map((dat, index) => {
 
-                                    return (<tr key={index}>
-                                        <td>{dat.first_name}</td>
-                                        <td>{dat.last_name}</td>
-                                        <td>{dat.telephone}</td>
-                                        <td>{dat.email}</td>
-                                        <td>{dat.address}</td>
-                                        <td>{dat.dni}</td>
-                                        {objectType == 2 ? <td>{dat.membership_id}</td> : null}
-                                        <td><Button id={index} variant="success" onClick={handleEdit}>Editar</Button>
-                                            <Button id={dat.dni} variant="danger" onClick={handleDelete}>Eliminar</Button></td>
+                                            return (<tr key={index}>
+                                                <td>{dat.first_name}</td>
+                                                <td>{dat.last_name}</td>
+                                                <td>{dat.email}</td>
+                                                <td>{dat.telephone}</td>
+                                                <td>{dat.address}</td>
+                                                <td>{dat.dni}</td>
+                                                <td>{dat.membership_id}</td>
+                                                <td><Button id={index} variant="success" onClick={handleEdit}>Editar</Button>
+                                                    <Button id={dat.dni} variant="danger" onClick={handleDelete}>Eliminar</Button></td>
 
-                                    </tr>)
-                                })
-                            }
-                        </tbody>
-                    </Table>                                          
+                                            </tr>)
+                                        })
+                                    }
+                                </tbody>
+                            </Table>
+                            : ''}
                 </>
             );
-        }
+        } else if (objectType == 3) {
+            content = (
+                <>
+                    <div className="text-right">
+                        <Button variant="info" onClick={() => { handleCreate(objectType) }}>Nuevo</Button>
+                    </div>
+                    {console.log("el item ", item)}
+                    {
+                        item.length !== 0 ?
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Apellido</th>
+                                        <th>E-mail</th>
+                                        <th>Teléfono</th>
+                                        <th>Dirección</th>
+                                        <th>DNI</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        item.map((dat, index) => {
+
+                                            return (<tr key={index}>
+                                                <td>{dat.first_name}</td>
+                                                <td>{dat.last_name}</td>
+                                                <td>{dat.email}</td>
+                                                <td>{dat.telephone}</td>
+                                                <td>{dat.address}</td>
+                                                <td>{dat.dni}</td>
+                                                 <td><Button id={index} variant="success" onClick={handleEdit}>Editar</Button>
+                                                    <Button id={dat.dni} variant="danger" onClick={handleDelete}>Eliminar</Button></td>
+
+                                            </tr>)
+                                        })
+                                    }
+                                </tbody>
+                            </Table>
+                            : ''}
+                </>
+            );
+        } else if (objectType == 4) {
+            content = (
+                <>
+                    <div className="text-right">
+                        <Button variant="info" onClick={() => { handleCreate(objectType) }}>Nuevo</Button>
+                    </div>
+                    {console.log("el item ", item)}
+                    {
+                        item.length !== 0 ?
+                        <>
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Descripción</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        item.map((dat, index) => {
+
+                                            return (<tr key={index}>
+                                                <td>{index}</td>
+                                                <td>{dat.description}</td>
+                                                <td><Button id={index} variant="success" onClick={handleEdit}>Editar</Button>
+                                                    <Button id={dat.dni} variant="danger" onClick={handleDelete}>Eliminar</Button></td>
+
+                                            </tr>)
+                                        })
+                                    }
+                                </tbody>
+                            </Table>
+                            <div className="text-left">
+                            <a href="#" onClick={() => { goBack(1, 1) }}>Volver</a>
+                        </div>
+                        </>
+                            : ''
+                    }
+                    
+                </>)
+        } else if (objectType == 5) {
+            content = (
+                <>
+                    <div className="text-right">
+                        <Button variant="info" onClick={() => { handleCreate(objectType) }}>Nuevo</Button>
+                    </div>
+                    {console.log("el item ", item)}
+                    {
+                        item.length !== 0 ?
+                        <>
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>Sitio web</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            item.map((dat, index) => {
+
+                                return (<tr key={index}>
+                                    <td>{index}</td>
+                                    <td>{dat.description}</td>
+                                    <td>{dat.url}</td>
+                                    <td><Button id={index} variant="success" onClick={handleEdit}>Editar</Button>
+                                        <Button id={dat.dni} variant="danger" onClick={handleDelete}>Eliminar</Button></td>
+
+                                </tr>)
+                            })
+                        }
+                    </tbody>
+                </Table>
+                <div className="text-left">
+                <a href="#" onClick={() => { goBack(1, 1) }}>Volver</a>
+            </div>
+            </>
+                            : ''
+                    }
+
+                </>)
+        } 
     } else {
         content =
             <>
-                <CrudForm data={item} item={item[index]} itemType={objectType} isCreate={isCreate} actionType={action} />
+                <CrudForm data={item} item={index} itemType={objectType} isCreate={isCreate} actionType={action} />
                 <div className="text-left">
                     <a href="#" onClick={() => { goBack(1, objectType) }}>Volver</a>
-                    </div>   
+                </div>
             </>
     }
 

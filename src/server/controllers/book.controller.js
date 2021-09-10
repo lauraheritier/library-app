@@ -17,7 +17,7 @@ exports.create = (req, res) => {
     author: req.body.author ? req.body.author : 'desconocido',
     category: req.body.category ? req.body.category : 'desconocida',
     publisher: req.body.publisher ? req.body.publisher : 'desconocido',
-    available: req.body.available ? req.body.available : true,
+    borrowed: req.body.borrowed ? req.body.borrowed : false,
     isbn: req.body.isbn  
   });
 
@@ -133,9 +133,9 @@ exports.deleteAll = (req, res) => {
       });
   };
 
-// Find all available Books
-exports.findAllAvailable = (req, res) => {
-    Book.find({ available: true })
+// Find all borrowed Books
+exports.findAllborrowed = (req, res) => {
+    Book.find({ borrowed: true })
       .then(data => {
         res.send(data);
       })
