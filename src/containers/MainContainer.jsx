@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Container, Nav } from 'react-bootstrap';
-import TableOverview from "../components/TableOverview";
-import service from '../services/member.service';
-
+import BooksTable from "../components/books/BooksTable";
+import CategoriesTable from "../components/categories/CategoriesTable";
+import PublishersTable from "../components/publishers/PublishersTable";
+import MembersTable from "../components/members/MembersTable";
+import EmployeesTable from "../components/employees/EmployeesTable";
+import BooksToMembersTable from "../components/booksToMembers/BooksToMembersTable";
 
 const MainContainer = () => {
     /**dataTypes:
-     * Books
-     * Members
-     * Employees
+     * 1: Books
+     * 2: Members
+     * 3: Employees
+     * 4: Categories
+     * 5: Publishers
      * 
      * action types:
      * 1: view
@@ -17,42 +22,35 @@ const MainContainer = () => {
      * 4: back
      */
     let content;
+    let body;
     const [objectType, setObjectType] = useState(0);
     const [mainTitle, setMainTitle] = useState("Biblioteca");
-    const [data, setData] = useState([]);
-    const [dataType, setDataType] = useState("members");
+    const [dataType, setDataType] = useState("books");
     const [keyWithFocus, setkeyWithFocus] = useState(0);
     const [actionType, setActionType] = useState(0);
-    function handleObjectType(action, obj, title) {
+    function handleObjectType(action, obj, title, apiName) {
+        setActionType(action);
         console.log("valor a cambiar: ", action);
+        setDataType(apiName);
+        console.log("el data type ", dataType);
         setObjectType(obj);
-        if(obj == 4 || obj == 5) {
+        console.log("el action type", actionType);
+        if (obj == 4 || obj == 5) {
             setkeyWithFocus(1);
         } else {
             setkeyWithFocus(obj);
         }
         setMainTitle(title);
-       setActionType(action);
-        
-        console.log("valor cambiado: ", objectType);
+
+
+        console.log("valor cambiado: ", objectType, " y el data type: ", dataType, " y el action type ", action);
 
     }
-    const handleActionType = (action) => {
+    function handleActionType(action) {
         console.log("una acción!!!!!!!!!!!! ", action);
         setActionType(action);
         console.log("Acción seteadaaaa", actionType);
     }
-const getData = () => {
-    console.log("el data type antes de ir al service", dataType);
-    service.getAll(dataType)
-    .then(response => {
-        setData(response.data);
-        console.log("los datos: ", response.data);
-    })
-    .catch(e => {
-        console.log("ERROR!!! ", e);
-    });
-};
 
     useEffect(() => {
     }, [])
@@ -70,14 +68,57 @@ const getData = () => {
             case "3": setObjectType(3); setMainTitle("Empleados"); setDataType("employees"); setkeyWithFocus(3); setActionType(1);
                 console.log("caso 3-el object tipe: ", objectType, " el actionType ", actionType);
                 break;
-            case "6": setObjectType(6); setMainTitle("Préstamos"); setDataType("employees");setkeyWithFocus(4); setActionType(1);
+            case "4": setObjectType(6); setMainTitle("Préstamos"); setDataType("booksToMembers"); setkeyWithFocus(4); setActionType(1);
                 break;
             default:
                 console.log("pasaaaaaaa");
+                break;
 
         }
-        getData();
     };
+
+    if (objectType == 0 || actionType == 0) {
+        body = (
+            <p>¡Bienvenidos!</p>
+        )
+    }
+    if (objectType === 1) {
+        body = (
+            <BooksTable item={'books'} actionType={actionType} objectType={objectType}
+                mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+        )
+    }
+    if (objectType === 2) {
+        body = (
+            <MembersTable item={'categories'} actionType={actionType} objectType={objectType}
+                mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+        )
+    }
+    if (objectType === 3) {
+        body = (
+            <EmployeesTable item={'categories'} actionType={actionType} objectType={objectType}
+                mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+        )
+    }
+    if (objectType === 4) {
+        body = (
+            <CategoriesTable item={'categories'} actionType={actionType} objectType={objectType}
+                mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+        )
+    }
+    if (objectType === 5) {
+        body = (
+            <PublishersTable item={'publishers'} actionType={actionType} objectType={objectType}
+                mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+        )
+    }
+    if (objectType === 6) {
+        body = (
+            <BooksToMembersTable item={'booksToMembers'} actionType={actionType} objectType={objectType}
+                mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+        )
+    }
+
 
     content = (
         <>
@@ -111,8 +152,12 @@ const getData = () => {
                     </Nav.Item>
                 </Nav>
             </Container>
-            {((objectType !== 0 || actionType == 1) ? <TableOverview item={data} actionType={actionType} objectType={objectType} mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
-                : <p>¡Bienvenidos!</p>)
+
+
+
+
+            {
+                body
             }
 
         </>

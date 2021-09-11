@@ -10,7 +10,7 @@ module.exports = mongoose => {
       category: {type: Schema.Types.ObjectId, ref: './category.model'},
       publisher: {type: Schema.Types.ObjectId, ref: './publisher.model'},
       borrowed: Boolean,
-      isbn: Number
+      isbn: { type: Number, index: true }
     }
   );
 

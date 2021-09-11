@@ -30,7 +30,7 @@ const findByLastName = (dataType, last_name) => {
   return http.get(`/${dataType}?last_name=${last_name}`);
 };
 
-export default {
+const exportedObject = {
   getAll,
   get,
   create,
@@ -38,4 +38,7 @@ export default {
   remove,
   removeAll,
   findByLastName
-};
+}
+
+
+export default exportedObject;

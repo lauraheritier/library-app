@@ -45,3 +45,14 @@ form button {
 .text-right button {
   margin-left: 8px;
 }
+.borrowed-check {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.prestamo-link {
+  margin-top: 8px;
+  text-align: right;
+  display: inline-block;
+  width: 100%;
+}

@@ -4,10 +4,12 @@ const Member = db.members;
 // Create and Save a new member
 exports.create = (req, res) => {
    // Validate request
-   if (!req.body.membership_id) {
+   if (!req.body.email) {
     res.status(400).send({ message: "Content can not be empty!" });
     return;
   }
+
+  
   // Create a member
   const member = new Member({
     first_name: req.body.first_name,
@@ -16,7 +18,7 @@ exports.create = (req, res) => {
     email: req.body.email,
     dni: req.body.dni,
     address: req.body.address,
-    membership_id: req.body.membership_id   
+    membership_id: req.body.membership_id
   });
 
   // Save member in the database
