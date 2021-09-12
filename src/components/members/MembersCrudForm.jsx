@@ -48,9 +48,7 @@ const MembersCrudForm = ({ item, itemType, isCreate }) => {
             console.log("is create?", isCreate);
             service.update("members", item, props);
         } else {
-          //  console.log("new id: ", newId, " create id: ", createId)
-            console.log("pasa x acá con su nuevo id ", dat.membership_id);
-            service.create("members", props);
+          service.create("members", props);
         }
 
     }
@@ -63,15 +61,7 @@ const MembersCrudForm = ({ item, itemType, isCreate }) => {
     const handleSubmit = (event) => {
         event.preventDefault()
         console.log('enviando datos...' + dat);
-   if(isCreate) {
-       let result = dat.dni;
-    setDat({
-        ...dat,
-        membership_id: 'S-'+ result
-    });
-   }
-        
-        sendData(dat);
+   sendData(dat);
     }
     let content;
     content = (

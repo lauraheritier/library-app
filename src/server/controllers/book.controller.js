@@ -44,10 +44,10 @@ exports.findAll = (req, res) => {
 
   Book
     .find(condition)
-   .populate("category", 'description', Category)
-   .populate("publisher", 'description', Publisher)
+    .populate("category", 'description', Category)
+    .populate("publisher", 'description', Publisher)
     .then(data => {
-   res.send(data);
+      res.send(data);
     })
     .catch(err => {
       res.status(500).send({
@@ -62,11 +62,13 @@ exports.findOne = (req, res) => {
   const id = req.params.id;
 
   Book.findById(id)
- .then(data => {
+    .populate("category", 'description', Category)
+    .populate("publisher", 'description', Publisher)
+    .then(data => {
       if (!data)
         res.status(404).send({ message: "Not found book with id " + id });
       else res.send(data);
-      
+
     })
     .catch(err => {
       res

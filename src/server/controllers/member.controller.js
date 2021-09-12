@@ -18,7 +18,7 @@ exports.create = (req, res) => {
     email: req.body.email,
     dni: req.body.dni,
     address: req.body.address,
-    membership_id: req.body.membership_id
+    membership_id: "S-"+req.body.dni
   });
 
   // Save member in the database

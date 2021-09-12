@@ -26,8 +26,8 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
         author: '',
         isbn: ''
     });
-    const[publishers, setPublishers] = useState([]);
-    const[categories, setCategories] = useState([]);
+    const [publishers, setPublishers] = useState([]);
+    const [categories, setCategories] = useState([]);
     function getDataById(item) {
         console.log("el data type antes de ir al service", itemType);
         service.get('books', item)
@@ -41,24 +41,24 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
 
     function getPublishers() {
         service.getAll('publishers')
-        .then(response => {
-            setPublishers(response.data);
-            
-        })
-        .catch(e => {
-            console.log("ERROR!!! ", e);
-        });
+            .then(response => {
+                setPublishers(response.data);
+
+            })
+            .catch(e => {
+                console.log("ERROR!!! ", e);
+            });
         console.log("los publishers", publishers);
     }
     function getCategories() {
         service.getAll('categories')
-        .then(response => {
-            setCategories(response.data);
-           
-        })
-        .catch(e => {
-            console.log("ERROR!!! ", e);
-        });
+            .then(response => {
+                setCategories(response.data);
+
+            })
+            .catch(e => {
+                console.log("ERROR!!! ", e);
+            });
         console.log("las cats", categories);
     }
 
@@ -87,17 +87,40 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
         console.log("es is create o NO? ", isCreate);
         if (!isCreate) {
             getDataById(item);
-        } 
-            getPublishers();
-            getCategories();
-        
-    }, [])
+        }
+        getPublishers();
+        getCategories();
+
+    }, [])    
 
     function goTo(param) {
         handleObjectType(1, 6, 'Préstamos', 'booksToMembers');
     }
+    let cats;
+    let pubs;
+    let selectedCat;
+    let selectedCatId;
+    let selectedPub;
+    let selectedPubId;
+    if (!isCreate) {
+        cats = [dat.category];
+        pubs = [dat.publisher];
+        cats.map((cat, index) => {
+            return selectedCat = cat.description;
+        });
+        cats.map((cat, index) => {
+            return selectedCatId = cat.id;
+        });
+        pubs.map((pub, index) => {
+            return selectedPub = pub.description;
+        });
+        pubs.map((pub, index) => {
+            return selectedPubId = pub.id;
+        });
+    }
     content = (
         <>
+
             <Form onSubmit={handleSubmit}>
                 <Row className="g-2">
                     <Col md>
@@ -128,39 +151,63 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                 controlId="floatingPublishers"
                                 label="Editorial"
                                 className="mb-3">
-                                <Form.Select aria-label='publishers' name="publisher" required
-                                defaultValue={!isCreate ? dat.publisher : 'Seleccionar editorial'} onChange={handleInputChange}>
-                                       {isCreate ? <>
-                                      <option>Seleccioná una editorial</option>
-                                      </>  : '' }                                   
-                                    {
-                                         publishers.map((pub, index) => {
-                                            return <option key={index} 
-                                            value={pub.id}>{pub.description}</option>
-                                        })
-                                    }
-                                </Form.Select>
+                                {isCreate ?
+                                    <Form.Select aria-label='publishers' name="publisher" required
+                                        onChange={handleInputChange}>
+                                        <option>Seleccioná una editorial</option>
+                                        {
+                                            publishers.map((pub, index) => {
+                                                return <option key={index}
+                                                    value={pub.id}>{pub.description}</option>
+                                            })
+                                        }
+                                    </Form.Select>
+                                    :
+                                    <Form.Select aria-label='publishers' name="publisher" required
+                                        defaultValue={selectedPubId} onChange={handleInputChange}>
+                                        <option value={selectedPubId}>{selectedPub}</option>
+                                        {
+                                            publishers.map((pub, index) => {
+                                                return <option key={index}
+                                                    value={pub.id}>{pub.description}</option>
+                                            })
+                                        }
+                                    </Form.Select>
+                                }
                             </FloatingLabel>
                         </Form.Group>
                     </Col>
                     <Col md>
                         <Form.Group className="mb-3" controlId="formBasicCategories">
-                        <FloatingLabel
+                            <FloatingLabel
                                 controlId="floatingCategories"
                                 label="Categoría"
                                 className="mb-3">
-                                <Form.Select aria-label='categories' name="category" required
-                                defaultValue={!isCreate ? dat.category : ''} onChange={handleInputChange} >
-                                    {isCreate ? <>
-                                      <option>Seleccioná una categoría</option>
-                                      </>  : '' }
-                                    {
-                                        categories.map((cat, index) => {
-                                            return <option key={index} 
-                                            value={cat.id}>{cat.description}</option>
-                                        })
-                                    }
-                                </Form.Select>
+                                {isCreate ?
+                                    <Form.Select aria-label='categories' name="category" required
+                                        onChange={handleInputChange} >
+                                        <option>Seleccioná una categoría</option>
+
+                                        {
+                                            categories.map((cat, index) => {
+                                                return <option key={index}
+                                                    value={cat.id}>{cat.description}</option>
+                                            })
+                                        }
+                                    </Form.Select>
+                                    :
+
+                                    <Form.Select aria-label='categories' name="category" required
+                                        defaultValue={selectedCatId} onChange={handleInputChange} >
+                                        <option value={selectedCatId}>{selectedCat}</option>
+                                        {
+                                            categories.map((cat, index) => {
+                                                return <option key={index}
+                                                    value={cat.id}>{cat.description}</option>
+                                            })
+                                        }
+                                    </Form.Select>
+                                }
                             </FloatingLabel>
                         </Form.Group>
                     </Col>

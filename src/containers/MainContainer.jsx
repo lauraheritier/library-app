@@ -28,7 +28,7 @@ const MainContainer = () => {
     const [dataType, setDataType] = useState("books");
     const [keyWithFocus, setkeyWithFocus] = useState(0);
     const [actionType, setActionType] = useState(0);
-    function handleObjectType(action, obj, title, apiName) {
+    async function handleObjectType(action, obj, title, apiName) {
         setActionType(action);
         console.log("valor a cambiar: ", action);
         setDataType(apiName);

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Table, Button } from 'react-bootstrap';
+import React, { useState, useEffect, useCallback } from "react";
+import { Table, Button, Modal } from 'react-bootstrap';
 import service from '../../services/webService';
 import BooksCrudForm from './BooksCrudForm';
 
@@ -24,9 +24,14 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
      */
     let content;
     const [isCreate, setIsCreate] = useState(false);
-    const [action, setAction] = useState(1);
+    const [action, setAction] = useState(isCreate ? 3 : 1);
     const [index, setIndex] = useState(0);
     const [data, setData] = useState([]);
+    const handleClose = () => setShow(false);
+    const [show, setShow] = useState(false);
+    const [remove, setRemove] = useState('');
+    const [objectToRemove, setObjectToRemove] = useState([]);
+
     const getData = (item) => {
         console.log("el data type antes de ir al service", item);
         service.getAll(item)
@@ -41,15 +46,15 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
 
     useEffect(() => {
         getData(item);
+
     }, [])
 
     function handleCreate(param) {
         setIsCreate(true);
         setAction(3);
-        handleActionType(action);
-        console.log("el param ", param);
-        handleObjectType(action, 1, 'Nuevo libro', 'books');
-
+        // handleActionType(action);
+        console.log("pasando los parámetros al handleObjectType desde el handleCreate", action);
+        handleObjectType(3, 1, 'Nuevo libro', 'books');
     }
     function handleEdit(i) {
         setIsCreate(false);
@@ -57,24 +62,36 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
         console.log("¿dónde está el index? ", i.target, " el objectType: ", objectType);
         setIndex(i);
         console.log("el id ", i);
-        handleObjectType(action, 1, 'Editar libro', 'books');
-        handleActionType(2);
+        handleObjectType(2, 1, 'Editar libro', 'books');
+    }
+    function handleShow(param) {
+        setShow(true);
+        console.log("el id a borrar", param);
+        setObjectToRemove(param);
+
     }
     function handleDelete(e) {
         setIsCreate(false);
-        console.log("Delete?");
+        setRemove(true);
+        console.log("Delete?", remove, " el id", objectToRemove);
+        service.remove('books', objectToRemove);
+        setShow(false);
     }
     function goTo(param) {
         if (param == 4) {
-            handleObjectType(action, 4, 'Categorías', 'categories');
+            handleObjectType(1, 4, 'Categorías', 'categories');
         } else {
-            handleObjectType(action, 5, 'Editoriales', 'publishers');
+            handleObjectType(1, 5, 'Editoriales', 'publishers');
         }
     }
     function goBack(action, object) {
         setAction(action);
         handleObjectType(action, object, 'Libros', 'books');
+        refreshView();
     }
+    const refreshView = useCallback(() => {
+        getData();
+    }, []);
 
     if (actionType == 1) {
         content = (
@@ -88,43 +105,59 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
                 {
 
                     data.length !== 0 ?
-                        <Table striped bordered hover>
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Título</th>
-                                    <th>ISBN</th>
-                                    <th>Autor</th>
-                                    <th>Categoría</th>
-                                    <th>Editorial</th>
-                                    <th>Disponible</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    data.map((dat, index) => {
-                                        let book_id = dat.id.slice(0, 6);
-                                        let disponible = (!dat.borrowed ? 'Sí' : 'No');
-                                        let cats = [dat.category];
-                                        let pubs = [dat.publisher];
-                                        return (<tr key={dat.id}>
-                                            <td>{book_id}</td>
-                                            <td>{dat.title}</td>
-                                            <td>{dat.isbn}</td>
-                                            <td>{dat.author}</td>
-                                            {cats.map(cat => <td>{cat.description}</td>)}
-                                            {pubs.map(pub => <td>{pub.description}</td>)}
-                                            <td>{disponible}</td>
-                                            <td><Button id={index} variant="success" onClick={() => { handleEdit(dat.id) }}>Editar</Button>
-                                                <Button id={dat.dni} variant="danger" onClick={handleDelete}>Eliminar</Button></td>
+                        <>
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Título</th>
+                                        <th>ISBN</th>
+                                        <th>Autor</th>
+                                        <th>Categoría</th>
+                                        <th>Editorial</th>
+                                        <th>Disponible</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        data.map((dat, index) => {
+                                            let book_id = dat.id.slice(0, 6);
+                                            let disponible = (!dat.borrowed ? 'Sí' : 'No');
+                                            let cats = [dat.category];
+                                            let pubs = [dat.publisher];
+                                            return (<tr key={dat.id}>
+                                                <td key={book_id}>{book_id}</td>
+                                                <td key={dat.title}>{dat.title}</td>
+                                                <td key={dat.isbn}>{dat.isbn}</td>
+                                                <td key={dat.author + dat.title}>{dat.author}</td>
+                                                {cats.map(cat => <td key={cat.id + book_id}>{cat.description}</td>)}
+                                                {pubs.map(pub => <td key={pub.id + book_id}>{pub.description}</td>)}
+                                                <td key={dat.title + disponible}>{disponible}</td>
+                                                <td><Button id={index} variant="success" onClick={() => { handleEdit(dat.id) }}>Editar</Button>
+                                                    <Button id={dat.dni} variant="danger" onClick={() => { handleShow(dat.id) }}>Eliminar</Button></td>
 
-                                        </tr>)
-                                    })
-                                }
+                                            </tr>)
+                                        })
+                                    }
 
-                            </tbody>
-                        </Table>
+                                </tbody>
+                            </Table>
+                            <Modal show={show} onHide={handleClose} onExited={refreshView}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Eliminar libro</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>¿Realmente desea eliminar el libro?</Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={handleClose}>
+                                        No
+                                    </Button>
+                                    <Button variant="primary" onClick={handleDelete}>
+                                        Sí
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
+                        </>
                         : ''
                 }</>
         );

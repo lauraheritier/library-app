@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Button, Col, Row } from 'react-bootstrap';
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import React, { useState, useEffect, useForm } from "react";
 import Form from 'react-bootstrap/Form';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import { Row, Col, Button } from 'react-bootstrap';
 import service from '../../services/webService';
 
 const EmployeesCrudForm = ({ item, itemType, isCreate }) => {
@@ -16,7 +16,8 @@ const EmployeesCrudForm = ({ item, itemType, isCreate }) => {
      * true: create
      * false: edit
      */
-    //const[checked, setChecked]=useState(false);
+  //  let createId;
+  //  const [newId, setNewId] = useState(createId);
     const [dat, setDat] = useState({
         first_name: '',
         last_name: '',
@@ -25,8 +26,7 @@ const EmployeesCrudForm = ({ item, itemType, isCreate }) => {
         dni: '',
         address: ''
     });
-
-    function getDataById(item) {
+    function getDataById() {
         console.log("el data type antes de ir al service", itemType);
         service.get('employees', item)
             .then(response => {
@@ -39,38 +39,28 @@ const EmployeesCrudForm = ({ item, itemType, isCreate }) => {
     }
     useEffect(() => {
         if (!isCreate) {
-            getDataById(item);
+            getDataById();
         }
     }, [])
     function sendData(props) {
         if (!isCreate) {
             console.log("is create?", isCreate);
-            service.update('employees', item, props);
+            service.update("members", item, props);
         } else {
-            console.log("pasa x acá con sus props ", props);
-            service.create('employees', props);
+          service.create("members", props);
         }
 
     }
     const handleInputChange = (event) => {
-        // console.log(event.target.name)
-        // console.log(event.target.value)
-        // setChecked(event.target.checked);
-        //  console.log("está checked???", checked);
-        // setDat({
-        //     borrowed: checked
-        // });
         setDat({
             ...dat,
             [event.target.name]: event.target.value
         })
-
-
     }
     const handleSubmit = (event) => {
         event.preventDefault()
         console.log('enviando datos...' + dat);
-        sendData(dat);
+   sendData(dat);
     }
     let content;
     content = (
@@ -83,7 +73,7 @@ const EmployeesCrudForm = ({ item, itemType, isCreate }) => {
                                 controlId="floatingName"
                                 label="Nombre"
                                 className="mb-3">
-                                <Form.Control name="first_name" type="text" placeholder="Ingresá el nombre" defaultValue={!isCreate ? item.first_name : ''} onChange={handleInputChange} />
+                                <Form.Control name="first_name" type="text" placeholder="Ingresá el nombre" defaultValue={!isCreate ? dat.first_name : ''} onChange={handleInputChange} />
                             </FloatingLabel>
                         </Form.Group>
                     </Col>
@@ -93,7 +83,7 @@ const EmployeesCrudForm = ({ item, itemType, isCreate }) => {
                                 controlId="floatingSurname"
                                 label="Apellido"
                                 className="mb-3">
-                                <Form.Control name="last_name" type="text" placeholder="Ingresá el apellido" defaultValue={!isCreate ? item.last_name : ''} onChange={handleInputChange} />
+                                <Form.Control name="last_name" type="text" placeholder="Ingresá el apellido" defaultValue={!isCreate ? dat.last_name : ''} onChange={handleInputChange} />
                             </FloatingLabel>
                         </Form.Group>
                     </Col>
@@ -105,7 +95,7 @@ const EmployeesCrudForm = ({ item, itemType, isCreate }) => {
                                 controlId="floatingPhone"
                                 label="Teléfono"
                                 className="mb-3">
-                                <Form.Control name="telephone" type="number" placeholder="Ingresá el teléfono" defaultValue={!isCreate ? item.telephone : ''} onChange={handleInputChange} />
+                                <Form.Control name="telephone" type="number" placeholder="Ingresá el teléfono" defaultValue={!isCreate ? dat.telephone : ''} onChange={handleInputChange} />
                             </FloatingLabel>
                         </Form.Group>
                     </Col>
@@ -115,7 +105,7 @@ const EmployeesCrudForm = ({ item, itemType, isCreate }) => {
                                 controlId="floatingMail"
                                 label="E-mail"
                                 className="mb-3">
-                                <Form.Control name="email" type="email" placeholder="Ingresá el e-mail" defaultValue={!isCreate ? item.email : ''} onChange={handleInputChange} />
+                                <Form.Control name="email" type="email" placeholder="Ingresá el e-mail" defaultValue={!isCreate ? dat.email : ''} onChange={handleInputChange} />
                             </FloatingLabel>
                         </Form.Group>
                     </Col>
@@ -127,7 +117,7 @@ const EmployeesCrudForm = ({ item, itemType, isCreate }) => {
                                 controlId="floatingID"
                                 label="DNI"
                                 className="mb-3">
-                                <Form.Control name="dni" type="number" placeholder="Ingresá el DNI" defaultValue={!isCreate ? item.dni : ''} onChange={handleInputChange} />
+                                <Form.Control name="dni" type="number" placeholder="Ingresá el DNI" defaultValue={!isCreate ? dat.dni : ''} onChange={handleInputChange} />
                             </FloatingLabel>
                         </Form.Group>
                     </Col>
@@ -137,7 +127,7 @@ const EmployeesCrudForm = ({ item, itemType, isCreate }) => {
                                 controlId="floatingAddress"
                                 label="Dirección"
                                 className="mb-3">
-                                <Form.Control name="address" type="text" placeholder="Ingresá la dirección" defaultValue={!isCreate ? item.address : ''} onChange={handleInputChange} />
+                                <Form.Control name="address" type="text" placeholder="Ingresá la dirección" defaultValue={!isCreate ? dat.address : ''} onChange={handleInputChange} />
                             </FloatingLabel>
                         </Form.Group>
                     </Col>
@@ -148,6 +138,8 @@ const EmployeesCrudForm = ({ item, itemType, isCreate }) => {
             </Form>
         </>
     );
+
+
     return content;
 }
 export default EmployeesCrudForm;

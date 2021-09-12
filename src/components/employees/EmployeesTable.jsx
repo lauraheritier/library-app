@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Table, Button } from 'react-bootstrap';
+import React, { useState, useEffect, useCallback } from "react";
+import { Table, Button, Modal } from 'react-bootstrap';
 import EmployeesCrudForm from './EmployeesCrudForm';
 import service from '../../services/webService';
 
@@ -26,7 +26,12 @@ const EmployeesTable = ({ item, objectType, handleObjectType, handleActionType, 
     const [isCreate, setIsCreate] = useState(false);
     const [action, setAction] = useState(1);
     const [index, setIndex] = useState(0);
-    const[data, setData] = useState([]);
+    const [data, setData] = useState([]);
+    const handleClose = () => setShow(false);
+    const [show, setShow] = useState(false);
+    const [remove, setRemove] = useState('');
+    const [objectToRemove, setObjectToRemove] = useState([]);
+
     const getData = () => {
         service.getAll('employees')
             .then(response => {
@@ -45,7 +50,7 @@ const EmployeesTable = ({ item, objectType, handleObjectType, handleActionType, 
         setIsCreate(true);
         setAction(3);
         handleActionType(action);
-        handleObjectType(action, 3, 'Nuevo empleado', 'employees');
+        handleObjectType(3, 3, 'Nuevo empleado', 'employees');
     }
 
     function handleEdit(i) {
@@ -54,26 +59,40 @@ const EmployeesTable = ({ item, objectType, handleObjectType, handleActionType, 
         console.log("¿dónde está el index? ", i.target, " el objectType: ", objectType);
         setIndex(i);
         console.log("el id ", i);
-        handleObjectType(action, 3, 'Editar empleado', 'employees');
-        handleActionType(2);
+        handleObjectType(2, 3, 'Editar empleado', 'employees');
+    }
+    function handleShow(param) {
+        setShow(true);
+        console.log("el id a borrar", param);
+        setObjectToRemove(param);
+
     }
     function handleDelete(e) {
         setIsCreate(false);
-        console.log("Delete?");
+        setRemove(true);
+        console.log("Delete?", remove, " el id", objectToRemove);
+        service.remove('employees', objectToRemove);
+        setShow(false);
     }
     function goBack(action, object) {
         setAction(action);
         handleObjectType(action, object, 'Libros', 'employees');
+        refreshView();
     }
 
+    const refreshView = useCallback(() => {
+        getData();
+    }, []);
+
     if (actionType == 1) {
-       content = (
-                <>
-                    <div className="text-right">
-                        <Button variant="info" onClick={() => { handleCreate(objectType) }}>Nuevo empleado</Button>
-                    </div>
-                    {
-                        data.length !== 0 ?
+        content = (
+            <>
+                <div className="text-right">
+                    <Button variant="info" onClick={() => { handleCreate(objectType) }}>Nuevo empleado</Button>
+                </div>
+                {
+                    data.length !== 0 ?
+                        <>
                             <Table striped bordered hover>
                                 <thead>
                                     <tr>
@@ -97,18 +116,33 @@ const EmployeesTable = ({ item, objectType, handleObjectType, handleActionType, 
                                                 <td>{dat.telephone}</td>
                                                 <td>{dat.address}</td>
                                                 <td>{dat.dni}</td>
-                                                <td><Button id={index} variant="success" onClick={() => {handleEdit(dat.id)}}>Editar</Button>
-                                                    <Button id={dat.id} variant="danger" onClick={handleDelete}>Eliminar</Button></td>
+                                                <td><Button id={index} variant="success" onClick={() => { handleEdit(dat.id) }}>Editar</Button>
+                                                    <Button id={dat.id} variant="danger" onClick={() => { handleShow(dat.id) }}>Eliminar</Button></td>
 
                                             </tr>)
                                         })
                                     }
                                 </tbody>
                             </Table>
-                            : ''}
-                </>
-            );
-        
+                            <Modal show={show} onHide={handleClose} onExited={refreshView}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Eliminar libro</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>¿Realmente desea eliminar el libro?</Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={handleClose}>
+                                        No
+                                    </Button>
+                                    <Button variant="primary" onClick={handleDelete}>
+                                        Sí
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
+                        </>
+                        : ''}
+            </>
+        );
+
     } else {
         content =
             <>

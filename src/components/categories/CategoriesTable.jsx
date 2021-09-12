@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Table, Button } from 'react-bootstrap';
 import service from '../../services/webService';
 import CategoriesCrudForm from './CategoriesCrudForm';
@@ -47,7 +47,7 @@ const CategoriesTable = ({ item, objectType, handleObjectType, handleActionType,
     function handleCreate(e) {
         setIsCreate(true);
         setAction(3);
-        handleObjectType(action, 4, 'Nueva categoría', 'categories');
+        handleObjectType(3, 4, 'Nueva categoría', 'categories');
 console.log("el is create: ", isCreate, " action ", action);
     }
     function handleEdit(i) {
@@ -55,8 +55,7 @@ console.log("el is create: ", isCreate, " action ", action);
         setAction(2);
         console.log("¿dónde está el index? ", i, " el objectType: ", objectType);
         setIndex(i);
-        handleObjectType(action, 4, 'Editar categoría', 'categories');
-        handleActionType(action);
+        handleObjectType(2, 4, 'Editar categoría', 'categories');
     }
     function handleDelete(e) {
         setIsCreate(false);
@@ -66,7 +65,11 @@ console.log("el is create: ", isCreate, " action ", action);
     function goBack(action, object, apiName) {
         setAction(action);
         handleObjectType(action, object, 'Libros', apiName);
+        refreshView();
     }
+    const refreshView = useCallback(() => {
+        getData();
+    }, []);
 
     if (actionType == 1) {
         content = (

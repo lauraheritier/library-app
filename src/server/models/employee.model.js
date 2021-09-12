@@ -5,7 +5,7 @@ module.exports = mongoose => {
       last_name: { type: String, required: true },
       telephone: Number,
       email: { type: String, required: true },
-      dni: { type: Number, index: true, required: true },
+      dni: { type: Number, unique: true, required: true },
       address: String
     }
   );
