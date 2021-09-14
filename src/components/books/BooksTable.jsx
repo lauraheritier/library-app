@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Table, Button, Modal } from 'react-bootstrap';
+import { Button, Modal, Card, CardGroup } from 'react-bootstrap';
 import service from '../../services/webService';
 import BooksCrudForm from './BooksCrudForm';
 
@@ -32,7 +32,7 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
     const [remove, setRemove] = useState('');
     const [objectToRemove, setObjectToRemove] = useState([]);
 
-    const getData = (item) => {
+    const getData = () => {
         console.log("el data type antes de ir al service", item);
         service.getAll(item)
             .then(response => {
@@ -45,7 +45,7 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
     };
 
     useEffect(() => {
-        getData(item);
+        getData();
 
     }, [])
 
@@ -54,7 +54,7 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
         setAction(3);
         // handleActionType(action);
         console.log("pasando los parámetros al handleObjectType desde el handleCreate", action);
-        handleObjectType(3, 1, 'Nuevo libro', 'books');
+        handleObjectType(3, 1, 'Nuevo recurso', 'books');
     }
     function handleEdit(i) {
         setIsCreate(false);
@@ -62,7 +62,7 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
         console.log("¿dónde está el index? ", i.target, " el objectType: ", objectType);
         setIndex(i);
         console.log("el id ", i);
-        handleObjectType(2, 1, 'Editar libro', 'books');
+        handleObjectType(2, 1, 'Editar recurso', 'books');
     }
     function handleShow(param) {
         setShow(true);
@@ -80,13 +80,15 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
     function goTo(param) {
         if (param == 4) {
             handleObjectType(1, 4, 'Categorías', 'categories');
-        } else {
+        } else if (param === 5) {
             handleObjectType(1, 5, 'Editoriales', 'publishers');
+        } else {
+            handleObjectType(1, 6, 'Soportes', 'supports');
         }
     }
     function goBack(action, object) {
         setAction(action);
-        handleObjectType(action, object, 'Libros', 'books');
+        handleObjectType(action, object, 'Recursos', 'books');
         refreshView();
     }
     const refreshView = useCallback(() => {
@@ -99,60 +101,75 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
                 <div className="text-right">
                     <a href="#" onClick={() => { goTo(4) }}>Categorías</a>
                     <a href="#" onClick={() => { goTo(5) }}>Editoriales</a>
-                    <Button variant="info" onClick={handleCreate}>Nuevo libro</Button>
+                    <a href="#" onClick={() => { goTo(6) }}>Soportes</a>
+                    <Button variant="info" onClick={handleCreate}>Nuevo recurso</Button>
                 </div>
-                {console.log("el item ", item)}
                 {
 
                     data.length !== 0 ?
                         <>
-                            <Table striped bordered hover>
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Título</th>
-                                        <th>ISBN</th>
-                                        <th>Autor</th>
-                                        <th>Categoría</th>
-                                        <th>Editorial</th>
-                                        <th>Disponible</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
-                                        data.map((dat, index) => {
-                                            let book_id = dat.id.slice(0, 6);
-                                            let disponible = (!dat.borrowed ? 'Sí' : 'No');
-                                            let cats = [dat.category];
-                                            let pubs = [dat.publisher];
-                                            return (<tr key={dat.id}>
-                                                <td key={book_id}>{book_id}</td>
-                                                <td key={dat.title}>{dat.title}</td>
-                                                <td key={dat.isbn}>{dat.isbn}</td>
-                                                <td key={dat.author + dat.title}>{dat.author}</td>
-                                                {cats.map(cat => <td key={cat.id + book_id}>{cat.description}</td>)}
-                                                {pubs.map(pub => <td key={pub.id + book_id}>{pub.description}</td>)}
-                                                <td key={dat.title + disponible}>{disponible}</td>
-                                                <td><Button id={index} variant="success" onClick={() => { handleEdit(dat.id) }}>Editar</Button>
-                                                    <Button id={dat.dni} variant="danger" onClick={() => { handleShow(dat.id) }}>Eliminar</Button></td>
+                            <div className="cards-container">
+                                {
+                                    data.map((dat, index) => {
+                                        let book_id = dat.id.slice(0, 6);
+                                        let cats = [dat.category];
+                                        let pubs = [dat.publisher];
+                                        let sups = [dat.support];
+                                        let supportDescription;
+                                        sups.map((sup, index) => {
+                                            return supportDescription = sup.description;
+                                        });
 
-                                            </tr>)
-                                        })
-                                    }
+                                        return (
 
-                                </tbody>
-                            </Table>
-                            <Modal show={show} onHide={handleClose} onExited={refreshView}>
+                                            <Card key={dat.id}>
+                                                <Card.Header as="h5"><span key={dat.id+index}>{book_id} - {dat.title}</span>
+                                                    <span>
+                                                        <Button variant="success" key={dat.id+index+2} onClick={() => { handleEdit(dat.id) }}>Editar</Button>
+                                                        <Button variant="danger" key={dat.id+index+3} onClick={() => { handleShow(dat.id) }}>Eliminar</Button>
+                                                    </span>
+                                                </Card.Header>
+                                                <Card.Body>
+                                                    <div className="card-text">
+                                                    <Card.Title key={dat.id+index+4}>{supportDescription} </Card.Title>
+                                                    {dat.libraryOnly ? <span className="only-library" key={dat.id+index+5}>Solo consulta en biblioteca</span> : ''}
+                                                   </div>
+                                                    <Card.Text>
+                                                        <span className="col-title">Autor:</span> <span className="col-desc" key={dat.id+index+6}>{dat.author}</span>
+                                                    </Card.Text>
+                                                    <Card.Text>
+                                                        {cats.map(cat => <><span className="col-title" >Categoría:</span> <span className="col-desc" key={dat.id+index+7}>{cat.description}</span></>)}
+                                                    </Card.Text>
+                                                    <Card.Text>
+                                                        {pubs.map(pub => <><span className="col-title" >Editorial:</span> <span className="col-desc" key={dat.id+index+8}>{pub.description}</span></>)}
+                                                    </Card.Text>
+                                                    <Card.Text>
+                                                        <span><span className="col-title">Ejemplares totales:</span> <span className="col-desc" key={dat.id+index+9}>{dat.sample}</span></span>
+                                                        <span> <span className="col-title">Ejemplares prestados:</span> <span className="col-desc" key={dat.id+index+10}>{dat.sample}</span></span>
+                                                    </Card.Text>
+
+                                                    
+                                                    {supportDescription === 'Libro' ?
+                                                        <Card.Text>
+                                                            <span className="col-title">ISBN:</span><span className="col-desc" key={dat.id + book_id+index+11}>{dat.isbn}</span>
+                                                        </Card.Text>
+                                                        : ''}
+
+                                                </Card.Body>
+                                            </Card>)
+                                    })
+                                }
+                            </div>
+                            <Modal key={index+13} show={show} onHide={handleClose} onExited={refreshView}>
                                 <Modal.Header closeButton>
                                     <Modal.Title>Eliminar libro</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>¿Realmente desea eliminar el libro?</Modal.Body>
                                 <Modal.Footer>
-                                    <Button variant="secondary" onClick={handleClose}>
+                                    <Button variant="secondary" onClick={handleClose} key={index+14}>
                                         No
                                     </Button>
-                                    <Button variant="primary" onClick={handleDelete}>
+                                    <Button variant="primary" onClick={handleDelete} key={index+15}>
                                         Sí
                                     </Button>
                                 </Modal.Footer>

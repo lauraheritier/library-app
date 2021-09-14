@@ -22,12 +22,15 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
         title: '',
         category: '',
         publisher: '',
-        borrowed: (isCreate ? false : ''),
         author: '',
-        isbn: ''
+        isbn: '',
+        libraryOnly: false,
+        support: '',
+        sample: 0
     });
     const [publishers, setPublishers] = useState([]);
     const [categories, setCategories] = useState([]);
+    const[supports, setSupports] = useState([]);
     function getDataById(item) {
         console.log("el data type antes de ir al service", itemType);
         service.get('books', item)
@@ -49,6 +52,17 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                 console.log("ERROR!!! ", e);
             });
         console.log("los publishers", publishers);
+    }
+    function getSupports() {
+        service.getAll('supports')
+            .then(response => {
+                setSupports(response.data);
+
+            })
+            .catch(e => {
+                console.log("ERROR!!! ", e);
+            });
+        console.log("los soportes", supports);
     }
     function getCategories() {
         service.getAll('categories')
@@ -90,21 +104,24 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
         }
         getPublishers();
         getCategories();
+        getSupports();
 
     }, [])    
 
-    function goTo(param) {
-        handleObjectType(1, 6, 'Préstamos', 'booksToMembers');
-    }
+    
     let cats;
     let pubs;
+    let sups;
     let selectedCat;
     let selectedCatId;
     let selectedPub;
     let selectedPubId;
+    let selectedSup;
+    let selectedSupId;
     if (!isCreate) {
         cats = [dat.category];
         pubs = [dat.publisher];
+        sups = [dat.support];
         cats.map((cat, index) => {
             return selectedCat = cat.description;
         });
@@ -116,6 +133,12 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
         });
         pubs.map((pub, index) => {
             return selectedPubId = pub.id;
+        });
+        sups.map((sup, index) => {
+            return selectedSup = sup.description;
+        });
+        sups.map((sup, index) => {
+            return selectedSupId = sup.id;
         });
     }
     content = (
@@ -140,6 +163,18 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                 label="ISBN"
                                 className="mb-3">
                                 <Form.Control type="text" name="isbn" placeholder="Ingresá el ISBN" defaultValue={!isCreate ? dat.isbn : ''} onChange={handleInputChange} />
+                            </FloatingLabel>
+                        </Form.Group>
+                    </Col>
+                </Row>
+                <Row className="g-12">
+                    <Col md>
+                        <Form.Group className="mb-3" controlId="formBasicSample">
+                            <FloatingLabel
+                                controlId="floatingSample"
+                                label="Ejemplares totales"
+                                className="mb-3">
+                                <Form.Control type="number" name="sample" placeholder="Ingresá la cantidad de ejemplares totales" defaultValue={!isCreate ? dat.sample : ''} onChange={handleInputChange} />
                             </FloatingLabel>
                         </Form.Group>
                     </Col>
@@ -212,6 +247,39 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                         </Form.Group>
                     </Col>
                     <Col md>
+                        <Form.Group className="mb-3" controlId="formBasicSupports">
+                            <FloatingLabel
+                                controlId="floatingSupports"
+                                label="Soporte"
+                                className="mb-3">
+                                {isCreate ?
+                                    <Form.Select aria-label='supports' name="support" required
+                                        onChange={handleInputChange} >
+                                        <option>Seleccioná un soporte</option>
+                                        {
+                                            supports.map((sup, index) => {
+                                                return <option key={index}
+                                                    value={sup.id}>{sup.description}</option>
+                                            })
+                                        }
+                                    </Form.Select>
+                                    :
+
+                                    <Form.Select aria-label='supports' name="support" required
+                                        defaultValue={selectedSupId} onChange={handleInputChange} >
+                                        <option value={selectedSupId}>{selectedSup}</option>
+                                        {
+                                            supports.map((sup, index) => {
+                                                return <option key={index}
+                                                    value={sup.id}>{sup.description}</option>
+                                            })
+                                        }
+                                    </Form.Select>
+                                }
+                            </FloatingLabel>
+                        </Form.Group>
+                    </Col>
+                    <Col md>
                         <Form.Group className="mb-3" controlId="formBasicAuthors">
                             <FloatingLabel
                                 controlId="floatingAuthors"
@@ -222,19 +290,16 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                         </Form.Group>
                     </Col>
                 </Row>
-                {!isCreate && dat.borrowed === true ?
-                    <Row className="g-1">
+                <Row className="g-1">
                         <Col md></Col>
                         <Col md></Col>
                         <Col md className="borrowed-check">
-                            <Form.Group className="mb-3" controlId="formBasicState">
-                                <Form.Check label="Prestado" name="borrowed" type="checkbox"
-                                    checked={dat.borrowed} disabled />
-                                <a href="#" className="prestamo-link" onClick={() => { goTo(dat.id) }}>Ver préstamo</a>
-                            </Form.Group>
+                            <Form.Group className="mb-3" controlId="formBasicLibrarOnly">
+                                <Form.Check label="Solo consulta en biblioteca" name="libraryOnly" type="checkbox" checked={dat.libraryOnly}
+                                    defaultValue={dat.libraryOnly} onChange={(e) => {setDat({...dat, libraryOnly: e.currentTarget.checked})}} />
+                             </Form.Group>
                         </Col>
                     </Row>
-                    : ''}
                 <Button variant="primary" type="submit">
                     Submit
                 </Button>

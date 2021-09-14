@@ -114,7 +114,7 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
                                                 <td>{dat.address}</td>
                                                 <td>{dat.dni}</td>
                                                 <td>{dat.membership_id}</td>
-                                                <td><Button id={index} variant="success" onClick={() => { handleEdit(dat.id) }}>Editar</Button>
+                                                <td className="action-td"><Button id={index} variant="success" onClick={() => { handleEdit(dat.id) }}>Editar</Button>
                                                     <Button id={dat.id} variant="danger" onClick={() => { handleShow(dat.id) }}>Eliminar</Button></td>
 
                                             </tr>

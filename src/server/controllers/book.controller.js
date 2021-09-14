@@ -3,6 +3,7 @@ const Book = db.books;
 const author = db.authors;
 const Publisher = db.publishers;
 const Category = db.categories;
+const Support = db.supports;
 
 // Create and Save a new Book
 exports.create = (req, res) => {
@@ -18,8 +19,10 @@ exports.create = (req, res) => {
     author: req.body.author,
     category: req.body.category,
     publisher: req.body.publisher,
-    borrowed: req.body.borrowed ? req.body.borrowed : false,
-    isbn: req.body.isbn
+    isbn: req.body.isbn,
+    sample: req.body.sample,
+    libraryOnly: req.body.libraryOnly ? req.body.libraryOnly : false,
+    support: req.body.support
   });
 
   // Save Book in the database
@@ -46,6 +49,7 @@ exports.findAll = (req, res) => {
     .find(condition)
     .populate("category", 'description', Category)
     .populate("publisher", 'description', Publisher)
+    .populate("support", "description", Support)
     .then(data => {
       res.send(data);
     })
@@ -64,6 +68,7 @@ exports.findOne = (req, res) => {
   Book.findById(id)
     .populate("category", 'description', Category)
     .populate("publisher", 'description', Publisher)
+    .populate("support", 'description', Support)
     .then(data => {
       if (!data)
         res.status(404).send({ message: "Not found book with id " + id });
@@ -141,9 +146,9 @@ exports.deleteAll = (req, res) => {
     });
 };
 
-// Find all borrowed Books
-exports.findAllborrowed = (req, res) => {
-  Book.find({ borrowed: true })
+// Find all Books that cannot be borrowed
+exports.findAllLibraryOnly = (req, res) => {
+  Book.find({ libraryOnly: true })
     .then(data => {
       res.send(data);
     })

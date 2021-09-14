@@ -1,5 +1,3 @@
-var Publisher = require("./publisher.model");
-var Category = require("./category.model");
 const { Schema } = require("mongoose");
 
 module.exports = mongoose => {
@@ -9,8 +7,10 @@ module.exports = mongoose => {
       author: String,
       category: {type: Schema.Types.ObjectId, ref: './category.model'},
       publisher: {type: Schema.Types.ObjectId, ref: './publisher.model'},
-      borrowed: Boolean,
-      isbn: { type: Number, unique: true }
+      support: {type: Schema.Types.ObjectId, ref: './support.model'},
+      isbn: { type: Number, unique: true },
+      sample: { type: Number, required: true },
+      libraryOnly: Boolean
     }
   );
 

@@ -111,7 +111,7 @@ const PublishersTable = ({ item, objectType, handleObjectType, handleActionType,
                                                 <td>{idx}</td>
                                                 <td>{dat.description}</td>
                                                 <td>{dat.url}</td>
-                                                <td><Button id={index} variant="success" onClick={() => { handleEdit(dat.id) }}>Editar</Button>
+                                                <td className="action-td"><Button id={index} variant="success" onClick={() => { handleEdit(dat.id) }}>Editar</Button>
                                                     <Button id={dat.id} variant="danger" onClick={() => { handleShow(dat.id) }}>Eliminar</Button></td>
 
                                             </tr>)

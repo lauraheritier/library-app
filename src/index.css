@@ -56,3 +56,49 @@ form button {
   display: inline-block;
   width: 100%;
 }
+.card * {
+  text-align: left;
+}
+.card h5 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.cards-container {
+  justify-content: space-between;
+  display: flex;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.card {
+  width: 49%;
+  margin: 8px 0;
+}
+.card-text {
+  display: grid;
+  display:-ms-grid;
+  width: 100%;
+  grid-template-columns: 1fr 1fr;
+  -ms-grid-columns: 1fr 1fr;
+}
+.card-text .col-title {
+  grid-column: 1;
+  grid-row: 1;
+  -ms-grid-column: 1;
+  -ms-grid-row: 1;
+  font-weight: bold;
+}
+.card-text .col-desc {
+  grid-column: 2;
+  grid-row: 1;
+  -ms-grid-column: 2;
+  -ms-grid-row: 1;
+}
+.only-library {
+  text-align: right;
+  color: red;
+  font-size: 12px;
+}
+.action-td {
+  width: 20%;
+}

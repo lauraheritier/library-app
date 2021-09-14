@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Table, Button } from 'react-bootstrap';
 import service from '../../services/webService';
-import CategoriesCrudForm from './CategoriesCrudForm';
+import SupportsCrudForm from './SupportsCrudForm';
 
-const CategoriesTable = ({ item, objectType, handleObjectType, handleActionType, actionType }) => {
+const SupportsTable = ({ item, objectType, handleObjectType, handleActionType, actionType }) => {
     /**objectTypes:
      * 1: Books
      * 2: Members
@@ -47,7 +47,7 @@ const CategoriesTable = ({ item, objectType, handleObjectType, handleActionType,
     function handleCreate(e) {
         setIsCreate(true);
         setAction(3);
-        handleObjectType(3, 4, 'Nueva categoría', 'categories');
+        handleObjectType(3, 6, 'Nuevo soporte', 'supports');
 console.log("el is create: ", isCreate, " action ", action);
     }
     function handleEdit(i) {
@@ -55,7 +55,7 @@ console.log("el is create: ", isCreate, " action ", action);
         setAction(2);
         console.log("¿dónde está el index? ", i, " el objectType: ", objectType);
         setIndex(i);
-        handleObjectType(2, 4, 'Editar categoría', 'categories');
+        handleObjectType(2, 6, 'Editar soporte', 'supports');
     }
     function handleDelete(e) {
         setIsCreate(false);
@@ -64,7 +64,7 @@ console.log("el is create: ", isCreate, " action ", action);
 
     function goBack(action, object, apiName) {
         setAction(action);
-        handleObjectType(action, object, 'Libros', apiName);
+        handleObjectType(action, object, 'Soportes', apiName);
         refreshView();
     }
     const refreshView = useCallback(() => {
@@ -114,9 +114,9 @@ console.log("el is create: ", isCreate, " action ", action);
     } else {
         content =
             <>
-                <CategoriesCrudForm data={data} item={index} itemType={4} isCreate={isCreate} actionType={action} />
+                <SupportsCrudForm data={data} item={index} itemType={6} isCreate={isCreate} actionType={action} />
                 <div className="text-left">
-                    <a href="#" onClick={() => { goBack(1, 4, 'categories') }}>Volver</a>
+                    <a href="#" onClick={() => { goBack(1, 6, 'supports') }}>Volver</a>
                 </div>
             </>
     }
@@ -126,4 +126,4 @@ console.log("el is create: ", isCreate, " action ", action);
 
     return content;
 }
-export default CategoriesTable;
+export default SupportsTable;

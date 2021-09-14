@@ -22,7 +22,6 @@ const BooksToMembersCrudForm = ({ item, itemType, isCreate, handleObjectType }) 
         title: '',
         category: { description: '' },
         publisher: { description: '' },
-        borrowed: '',
         author: '',
         isbn: ''
     });
@@ -137,8 +136,7 @@ const BooksToMembersCrudForm = ({ item, itemType, isCreate, handleObjectType }) 
                                 checked={dat.borrowed} disabled />
                         </Form.Group>
                     </Col>
-                    {(dat.borrowed === true) ? <a href="#" onClick={() => { goTo(dat.id) }}>Ver préstamo</a> : ''}
-                </Row>
+                   </Row>
                 : ''}
                 <Button variant="primary" type="submit">
                     Submit

@@ -116,7 +116,7 @@ const EmployeesTable = ({ item, objectType, handleObjectType, handleActionType, 
                                                 <td>{dat.telephone}</td>
                                                 <td>{dat.address}</td>
                                                 <td>{dat.dni}</td>
-                                                <td><Button id={index} variant="success" onClick={() => { handleEdit(dat.id) }}>Editar</Button>
+                                                <td className="action-td"><Button id={index} variant="success" onClick={() => { handleEdit(dat.id) }}>Editar</Button>
                                                     <Button id={dat.id} variant="danger" onClick={() => { handleShow(dat.id) }}>Eliminar</Button></td>
 
                                             </tr>)

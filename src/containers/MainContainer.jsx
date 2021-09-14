@@ -6,6 +6,7 @@ import PublishersTable from "../components/publishers/PublishersTable";
 import MembersTable from "../components/members/MembersTable";
 import EmployeesTable from "../components/employees/EmployeesTable";
 import BooksToMembersTable from "../components/booksToMembers/BooksToMembersTable";
+import SupportsTable from "../components/supports/SupportsTable";
 
 const MainContainer = () => {
     /**dataTypes:
@@ -14,6 +15,8 @@ const MainContainer = () => {
      * 3: Employees
      * 4: Categories
      * 5: Publishers
+     * 6: Supports
+     * 7: Borrowings
      * 
      * action types:
      * 1: view
@@ -35,7 +38,7 @@ const MainContainer = () => {
         console.log("el data type ", dataType);
         setObjectType(obj);
         console.log("el action type", actionType);
-        if (obj == 4 || obj == 5) {
+        if (obj === 4 || obj === 5 || obj === 6) {
             setkeyWithFocus(1);
         } else {
             setkeyWithFocus(obj);
@@ -59,7 +62,7 @@ const MainContainer = () => {
         switch (e) {
             case "0": setMainTitle("Biblioteca"); setkeyWithFocus(0); setObjectType(0); setActionType(0);
                 break;
-            case "1": setObjectType(1); setMainTitle("Libros"); setDataType("books"); setkeyWithFocus(1); setActionType(1); console.log("y ahora pasa x acá");
+            case "1": setObjectType(1); setMainTitle("Recursos"); setDataType("books"); setkeyWithFocus(1); setActionType(1); console.log("y ahora pasa x acá");
                 console.log("caso 1-el object tipe: ", objectType, " el actionType ", actionType);
                 break;
             case "2": setObjectType(2); setMainTitle("Socios"); setDataType("members"); setkeyWithFocus(2); setActionType(1);
@@ -68,7 +71,7 @@ const MainContainer = () => {
             case "3": setObjectType(3); setMainTitle("Empleados"); setDataType("employees"); setkeyWithFocus(3); setActionType(1);
                 console.log("caso 3-el object tipe: ", objectType, " el actionType ", actionType);
                 break;
-            case "4": setObjectType(6); setMainTitle("Préstamos"); setDataType("booksToMembers"); setkeyWithFocus(4); setActionType(1);
+            case "4": setObjectType(7); setMainTitle("Préstamos"); setDataType("booksToMembers"); setkeyWithFocus(4); setActionType(1);
                 break;
             default:
                 console.log("pasaaaaaaa");
@@ -114,6 +117,13 @@ const MainContainer = () => {
     }
     if (objectType === 6) {
         body = (
+            <SupportsTable item={'supports'} actionType={actionType} objectType={objectType}
+                mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+        )
+    }
+
+    if (objectType === 7) {
+        body = (
             <BooksToMembersTable item={'booksToMembers'} actionType={actionType} objectType={objectType}
                 mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
         )
@@ -132,7 +142,7 @@ const MainContainer = () => {
                     </Nav.Item>
                     <Nav.Item>
                         <Nav.Link eventKey="1">
-                            Libros
+                            Recursos
                         </Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
