@@ -30,6 +30,11 @@ const findByLastName = (dataType, last_name) => {
   return http.get(`/${dataType}?last_name=${last_name}`);
 };
 
+const findByFilter = (dataType, filterName, filterValue) => {
+  console.log("pasó x findByFilter", dataType, filterName, filterValue);
+  return http.get(`/${dataType}?${filterName}=${filterValue}`);
+};
+
 const exportedObject = {
   getAll,
   get,
@@ -37,7 +42,8 @@ const exportedObject = {
   update,
   remove,
   removeAll,
-  findByLastName
+  findByLastName,
+  findByFilter
 }
 
 

@@ -14,6 +14,9 @@ module.exports = app => {
   
     // Retrieve a single Book with id
     router.get("/:id", books.findOne);
+
+    //Retrieve filtered books
+    router.get("/:publisher", books.findByFilter);
   
     // Update a book with id
     router.put("/:id", books.update);

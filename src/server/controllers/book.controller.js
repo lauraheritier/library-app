@@ -42,8 +42,15 @@ exports.create = (req, res) => {
 
 // Retrieve all Books from the database.
 exports.findAll = (req, res) => {
+  const publisher = req.query.publisher;
+  const isbn = req.query.isbn;
   const title = req.query.title;
-  var condition = title ? { title: { $regex: new RegExp(title), $options: "i" } } : {};
+  const category = req.query.category;
+  const support = req.query.support
+  var cond = {$or:[
+    { publisher: publisher}, 
+    {title: title}, {isbn: isbn}]};
+  var condition = publisher ? { publisher: publisher } : {};
 
   Book
     .find(condition)
@@ -159,3 +166,19 @@ exports.findAllLibraryOnly = (req, res) => {
       });
     });
 };
+
+exports.findByFilter = (req, res) => {
+//  const filters = req.params.filterName;
+  const filtersValue = req.params.filterValue;
+  console.log("los filters", filters);
+  Book.find({publisher: filtersValue})
+  .then(data => {
+    res.send(data);
+  })
+  .catch(err => {
+    res.status(500).send({
+      message:
+        err.message || "Some error occurred while retrieving books."
+    });
+  });
+}
