@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Table, Button, Modal } from 'react-bootstrap';
 import service from '../../services/webService';
-import BooksCrudForm from './BooksToMembersCrudForm';
+import BooksToMembersCrudForm from './BooksToMembersCrudForm';
 
 
 const BooksToMembersTable = ({ item, objectType, handleObjectType, handleActionType, actionType }) => {
@@ -27,12 +27,10 @@ const BooksToMembersTable = ({ item, objectType, handleObjectType, handleActionT
     const [action, setAction] = useState(1);
     const [index, setIndex] = useState(0);
     const [data, setData] = useState([]);
-    const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    //const handleShow = (id) => setShow(true);
+    const[returnBook, setReturnBook] = useState(false);
     const getData = (item) => {
         console.log("el data type antes de ir al service", item);
-        service.getAll(item)
+        service.getAll('booksToMembers')
             .then(response => {
                 setData(response.data);
                 console.log("los datos: ", response.data);
@@ -43,43 +41,29 @@ const BooksToMembersTable = ({ item, objectType, handleObjectType, handleActionT
     };
 
     useEffect(() => {
-        getData(item);
+        getData();
     }, [])
-    function handleShow(param) {
-        setShow(true);
-        console.log("el id a borrar", param);
-        handleDelete(param);
+    function handleReturn(param) {
+        setIsCreate(false);
+        setReturnBook(true);
     }
     function handleCreate(param) {
         setIsCreate(true);
         setAction(3);
-        handleActionType(action);
-        console.log("el param ", param);
-        handleObjectType(3, 1, 'Nuevo libro', 'books');
+        handleObjectType(3, 7, 'Nuevo préstamo', 'booksToMembers');
 
     }
-    function handleEdit(i) {
+    function handleRenewal(i) {
         setIsCreate(false);
         setAction(2);
         console.log("¿dónde está el index? ", i.target, " el objectType: ", objectType);
         setIndex(i);
         console.log("el id ", i);
-        handleObjectType(2, 1, 'Editar libro', 'books');
-    }
-    function handleDelete(e) {
-        setIsCreate(false);
-        console.log("Delete?", e);
-    }
-    function goTo(param) {
-        if (param == 4) {
-            handleObjectType(action, 4, 'Categorías', 'categories');
-        } else {
-            handleObjectType(action, 5, 'Editoriales', 'publishers');
-        }
+        handleObjectType(2, 7, 'Editar préstamo', 'booksToMembers');
     }
     function goBack(action, object) {
         setAction(action);
-        handleObjectType(action, object, 'Libros', 'books');
+        handleObjectType(action, object, 'Préstamos', 'booksToMembers');
         refreshView();
     }
     const refreshView = useCallback(() => {
@@ -89,9 +73,7 @@ const BooksToMembersTable = ({ item, objectType, handleObjectType, handleActionT
         content = (
             <>
                 <div className="text-right">
-                    <a href="#" onClick={() => { goTo(4) }}>Categorías</a>
-                    <a href="#" onClick={() => { goTo(5) }}>Editoriales</a>
-                    <Button variant="info" onClick={handleCreate}>Nuevo libro</Button>
+                   <Button variant="info" onClick={handleCreate}>Nuevo préstamo</Button>
                 </div>
                 {
                     data.length !== 0 ?
@@ -100,51 +82,32 @@ const BooksToMembersTable = ({ item, objectType, handleObjectType, handleActionT
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Título</th>
-                                        <th>ISBN</th>
-                                        <th>Autor</th>
-                                        <th>Categoría</th>
-                                        <th>Editorial</th>
-                                        <th>Disponible</th>
+                                        <th>Libro</th>
+                                        <th>Socio</th>
+                                        <th>Desde</th>
+                                        <th>Hasta</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {
                                         data.map((dat, index) => {
-                                            let book_id = dat.id.slice(0, 6);
-                                            let disponible = (!dat.borrowed ? 'Sí' : 'No');
-                                            return (<tr key={dat.id}>
-                                                <td>{book_id}</td>
-                                                <td>{dat.title}</td>
-                                                <td>{dat.isbn}</td>
-                                                <td>{dat.author}</td>
-                                                <td>{dat.category.description}</td>
-                                                <td>{dat.publisher.description}</td>
-                                                <td>{disponible}</td>
-                                                <td><Button id={index} variant="success" onClick={() => { handleEdit(dat.id) }}>Editar</Button>
-                                                    <Button id={dat.dni} variant="danger" onClick={() => { handleShow(dat.id) }}>Eliminar</Button></td>
+                                            let books = [dat.book];
+                                            let members = [dat.member];
+                                           return (<tr key={dat.id}>
+                                                <td>{index}</td>
+                                                {books.map(book =><td>{book.title}</td>)}
+                                                {members.map(member =><td>{member.first_name} {member.last_name}</td>)}
+                                                <td>{dat.fromDate}</td>
+                                                <td>{dat.toDate}</td>
+                                                <td><Button id={index} variant="success" onClick={() => { handleRenewal(dat.id) }}>Renovar</Button>
+                                                    <Button id={dat.dni} variant="danger" onClick={() => { handleReturn(dat.id) }}>Devolver</Button></td>
 
                                             </tr>)
                                         })
                                     }
-
                                 </tbody>
-                            </Table>
-                            <Modal show={show} onHide={handleClose}>
-                                <Modal.Header closeButton>
-                                    <Modal.Title>Modal heading</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
-                                <Modal.Footer>
-                                    <Button variant="secondary" onClick={handleClose}>
-                                        No
-                                    </Button>
-                                    <Button variant="primary" onClick={handleDelete}>
-                                        YES
-                                    </Button>
-                                </Modal.Footer>
-                            </Modal>
+                            </Table>                            
                         </>
                         : ''
                 }</>
@@ -152,7 +115,8 @@ const BooksToMembersTable = ({ item, objectType, handleObjectType, handleActionT
     } else {
         content =
             <>
-                <BooksCrudForm data={data} item={index} itemType={objectType} isCreate={isCreate} actionType={action} handleObjectType={handleObjectType} />
+                <BooksToMembersCrudForm data={data} item={index} returnBook={returnBook}
+                itemType={objectType} isCreate={isCreate} actionType={action} handleObjectType={handleObjectType} />
                 <div className="text-left">
                     <a href="#" onClick={() => { goBack(1, objectType) }}>Volver</a>
                 </div>

@@ -22,7 +22,10 @@ const remove = (dataType, id) => {
   return http.delete(`/${dataType}/${id}`);
 };
 
-const removeAll = (dataType) => {
+const getLibraryOnly = (dataType) => {
+  return http.get(`/${dataType}/libraryOnly`);
+}
+  const removeAll = (dataType) => {
   return http.delete(`/${dataType}`);
 };
 
@@ -43,7 +46,8 @@ const exportedObject = {
   remove,
   removeAll,
   findByLastName,
-  findByFilter
+  findByFilter,
+  getLibraryOnly
 }
 
 

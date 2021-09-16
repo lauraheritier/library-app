@@ -10,7 +10,8 @@ module.exports = mongoose => {
       support: {type: Schema.Types.ObjectId, ref: './support.model'},
       isbn: { type: Number, unique: true },
       sample: { type: Number, required: true },
-      libraryOnly: Boolean
+      libraryOnly: Boolean,
+      availableSamples: {type: Number}
     }
   );
 

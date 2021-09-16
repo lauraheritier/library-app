@@ -40,6 +40,8 @@ const MainContainer = () => {
         console.log("el action type", actionType);
         if (obj === 4 || obj === 5 || obj === 6) {
             setkeyWithFocus(1);
+        } else if(obj === 7) {
+            setkeyWithFocus(4);
         } else {
             setkeyWithFocus(obj);
         }

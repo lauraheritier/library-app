@@ -4,6 +4,8 @@ const author = db.authors;
 const Publisher = db.publishers;
 const Category = db.categories;
 const Support = db.supports;
+const BooksToMembers = db.booksToMembers;
+const Member= db.members;
 
 // Create and Save a new Book
 exports.create = (req, res) => {
@@ -14,21 +16,18 @@ exports.create = (req, res) => {
   }
 
   // Create a Book
-  const book = new Book({
-    title: req.body.title,
-    author: req.body.author,
-    category: req.body.category,
-    publisher: req.body.publisher,
-    isbn: req.body.isbn,
-    sample: req.body.sample,
-    availableSamples: req.body.availableSamples ? req.body.availableSamples : req.body.sample,
-    libraryOnly: req.body.libraryOnly ? req.body.libraryOnly : false,
-    support: req.body.support
+  const booksToMembers = new BooksToMembers({
+    member: req.body.member,
+    book: req.body.book,
+    fromDate: req.body.fromDate,
+    toDate: req.body.toDate,
+    availableSamples: req.body.availableSamples,
+    cancelled: req.body.cancelled ? req.body.cancelled : false
   });
 
   // Save Book in the database
-  book
-    .save(book)
+  booksToMembers
+    .save(booksToMembers)
     .then(data => {
       res.send(data);
     })
@@ -37,20 +36,18 @@ exports.create = (req, res) => {
         message:
           err.message || "Some error occurred while creating the book."
       });
-      console.log("el book ", book);
+      console.log("el book ", booksToMembers);
     });
 };
 
 // Retrieve all Books from the database.
 exports.findAll = (req, res) => {
-  const availableBook = req.query.libraryOnly
-  var condition = availableBook ? { availableBook: false } : {};
+   //var condition = member ? { member: member } : {};
 
-  Book
-    .find(condition)
-    .populate("category", 'description', Category)
-    .populate("publisher", 'description', Publisher)
-    .populate("support", "description", Support)
+  BooksToMembers
+    .find()
+    .populate("member", 'first_name', 'last_name', Member)
+    .populate("book", 'title', Book)
     .then(data => {
       res.send(data);
     })
@@ -66,10 +63,9 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Book.findById(id)
-    .populate("category", 'description', Category)
-    .populate("publisher", 'description', Publisher)
-    .populate("support", 'description', Support)
+  BooksToMembers.findById(id)
+  .populate("member", 'first_name', 'last_name', member)
+  .populate("book", 'title', Book)
     .then(data => {
       if (!data)
         res.status(404).send({ message: "Not found book with id " + id });
@@ -93,7 +89,7 @@ exports.update = (req, res) => {
 
   const id = req.params.id;
 
-  Book.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+  BooksToMembers.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
     .then(data => {
       if (!data) {
         res.status(404).send({
@@ -112,7 +108,7 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Book.findByIdAndRemove(id)
+  BooksToMembers.findByIdAndRemove(id)
     .then(data => {
       if (!data) {
         res.status(404).send({
@@ -133,7 +129,7 @@ exports.delete = (req, res) => {
 
 // Delete all Books from the database.
 exports.deleteAll = (req, res) => {
-  Book.deleteMany({})
+  BooksToMembers.deleteMany({})
     .then(data => {
       res.send({
         message: `${data.deletedCount} Books were deleted successfully!`
@@ -149,7 +145,7 @@ exports.deleteAll = (req, res) => {
 
 // Find all Books that cannot be borrowed
 exports.findAllLibraryOnly = (req, res) => {
-  Book.find({ libraryOnly: false })
+  BooksToMembers.find({ cancelled: true })
     .then(data => {
       res.send(data);
     })
@@ -165,7 +161,7 @@ exports.findByFilter = (req, res) => {
 //  const filters = req.params.filterName;
   const filtersValue = req.params.filterValue;
   console.log("los filters", filters);
-  Book.find({publisher: filtersValue})
+  BooksToMembers.find({book: filtersValue})
   .then(data => {
     res.send(data);
   })

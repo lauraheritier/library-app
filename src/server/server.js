@@ -41,6 +41,7 @@ require("./routes/employee.routes")(app);
 require("./routes/member.routes")(app);
 require("./routes/publisher.routes")(app);
 require("./routes/support.routes")(app);
+require("./routes/booksToMembers.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

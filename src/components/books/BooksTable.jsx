@@ -34,12 +34,9 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
     const [unfilteredData, setUnfilteredData] = useState([]);
     const [submitIsDisabled, setSubmitIsDisabled] = useState(true);
     const [filterObject, setFilterObject] = useState({
-        publisher: '',
         title: '',
         isbn: '',
-        author: '',
-        support: '',
-        category: ''
+        author: ''
     })
 
     const getData = () => {
@@ -106,31 +103,25 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
         setSubmitIsDisabled(false);
     }
     function handleSubmit(e) {
-        let result;
         e.preventDefault();
+        let result;        
         result = data.
             filter(function (dat) {
-                return dat.title == filterObject.title ||
-                dat.author == filterObject.author ||
-                dat.category == filterObject.category ||
-                dat.publisher == filterObject.publisher ||
-                dat.isbn == filterObject.isbn ||
-                dat.support == filterObject.support
+                return ((dat.title).toLowerCase()).includes(filterObject.title.toLowerCase()) &&
+                    (dat.author.toLowerCase()).includes(filterObject.author.toLowerCase()) &&
+                    ((dat.isbn + '').toLowerCase()).includes(filterObject.isbn.toLowerCase())
             });
         if (filterObject.title != '' ||
-            filterObject.author != '' ||
-            filterObject.category != '' ||
-            filterObject.publisher != '' ||
-            filterObject.isbn != '' ||
-            filterObject.support != '') {
+            filterObject.author != '' ||            
+            filterObject.isbn != '' ) {
             setData(result);
-        } else {
-            setSubmitIsDisabled(true);
         }
+        setSubmitIsDisabled(true);
     }
 
     function clearFilters(e) {
         setData(unfilteredData);
+        setSubmitIsDisabled(true);
     }
 
     const refreshView = useCallback(() => {
@@ -160,15 +151,6 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
                                     </Col>
                                     <Col md>
                                         <Form.Control size="sm" type="text" name="author" placeholder="Autor" defaultValue={filterObject.author} onChange={filterOnChange} />
-                                    </Col>
-                                    <Col md>
-                                        <Form.Control size="sm" type="text" name="publisher" placeholder="Editorial" defaultValue={filterObject.publisher} onChange={filterOnChange} />
-                                    </Col>
-                                    <Col md>
-                                        <Form.Control size="sm" type="text" name="category" placeholder="Categoría" defaultValue={filterObject.category} onChange={filterOnChange} />
-                                    </Col>
-                                    <Col md>
-                                        <Form.Control size="sm" type="text" name="support" placeholder="Soporte" defaultValue={filterObject.support} onChange={filterOnChange} />
                                     </Col>
                                     <Col md>
                                         <Button variant="primary" disabled={submitIsDisabled} type="submit">Filtrar</Button>
@@ -214,7 +196,7 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
                                                 </Card.Text>
                                                 <Card.Text>
                                                     <span><span className="col-title">Ejemplares totales:</span> <span className="col-desc" key={dat.id + index + 9}>{dat.sample}</span></span>
-                                                    <span> <span className="col-title">Ejemplares prestados:</span> <span className="col-desc" key={dat.id + index + 10}>{dat.sample}</span></span>
+                                                    <span> <span className="col-title">Ejemplares prestados:</span> <span className="col-desc" key={dat.id + index + 10}>{dat.availableSamples}</span></span>
                                                 </Card.Text>
 
 

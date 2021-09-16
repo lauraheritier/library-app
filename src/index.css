@@ -103,8 +103,6 @@ form button {
   width: 20%;
 }
 .filters-container {
-  display: flex;
-  justify-content: space-between;
   flex-wrap: wrap;
   margin: 16px 0;
   padding-top: 16px;
@@ -121,4 +119,8 @@ form button {
 }
 .filters-container form {
   margin: 0;
+}
+.filters-container form .btn {
+  margin-left: 4px;
+  max-width: 48%;
 }
