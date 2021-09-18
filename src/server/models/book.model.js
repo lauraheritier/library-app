@@ -11,7 +11,8 @@ module.exports = mongoose => {
       isbn: { type: Number, unique: true },
       sample: { type: Number, required: true },
       libraryOnly: Boolean,
-      availableSamples: {type: Number}
+      availableSamples: {type: Number},
+      isActive: Boolean
     }
   );
 

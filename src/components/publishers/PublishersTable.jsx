@@ -71,8 +71,9 @@ const PublishersTable = ({ item, objectType, handleObjectType, handleActionType,
         setIsCreate(false);
         setRemove(true);
         console.log("Delete?", remove, " el id", objectToRemove);
-        service.remove('publishers', objectToRemove);
+        service.updateIsActive('publishers', objectToRemove);
         setShow(false);
+        refreshView();
     }
 
     function goBack(action, object, apiName) {

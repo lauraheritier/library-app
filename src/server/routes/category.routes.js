@@ -14,6 +14,8 @@ module.exports = app => {
   
     // Update a category with id
     router.put("/:id", categories.update);
+
+    router.put("/:id/:isActive", categories.updateIsActive);
   
     // Delete a category with id
     router.delete("/:id", categories.delete);

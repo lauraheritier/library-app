@@ -1,53 +1,50 @@
 const db = require("../models");
 const Book = db.books;
-const author = db.authors;
-const Publisher = db.publishers;
-const Category = db.categories;
-const Support = db.supports;
-const BooksToMembers = db.booksToMembers;
+const Borrowing = db.borrowings;
 const Member= db.members;
 
 // Create and Save a new Book
 exports.create = (req, res) => {
   // Validate request
-  if (!req.body.title) {
+  if (!req.body.book) {
     res.status(400).send({ message: "Content can not be empty!" });
     return;
   }
 
   // Create a Book
-  const booksToMembers = new BooksToMembers({
+  const borrowing = new Borrowing({
     member: req.body.member,
     book: req.body.book,
     fromDate: req.body.fromDate,
     toDate: req.body.toDate,
-    availableSamples: req.body.availableSamples,
-    cancelled: req.body.cancelled ? req.body.cancelled : false
+    cancelled: req.body.cancelled
   });
 
+
   // Save Book in the database
-  booksToMembers
-    .save(booksToMembers)
+  borrowing
+    .save(borrowing)
     .then(data => {
       res.send(data);
+      console.log("préstamo guardadoooooo");
     })
     .catch(err => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while creating the book."
       });
-      console.log("el book ", booksToMembers);
+      console.log("el book ", borrowing);
     });
 };
 
 // Retrieve all Books from the database.
 exports.findAll = (req, res) => {
-   //var condition = member ? { member: member } : {};
+  var condition = {cancelled: false};
 
-  BooksToMembers
-    .find()
-    .populate("member", 'first_name', 'last_name', Member)
-    .populate("book", 'title', Book)
+  Borrowing
+    .find(condition)
+    .populate("member", "first_name last_name membership_id", Member)
+    .populate("book", "title", Book)
     .then(data => {
       res.send(data);
     })
@@ -58,15 +55,25 @@ exports.findAll = (req, res) => {
       });
     });
 };
+exports.giveBack = (req, res) => {
+  const id = req.params.id;
+  console.log("pasó x el if correcto de give back");
+    Borrowing.findById(id, function (err, docs) {
+      docs.cancelled = true;
+      docs.save();
+      console.log("el préstamo está cancelado? ", docs.cancelled);
+    });
+}
 
 // Find a single Book with an id
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  BooksToMembers.findById(id)
-  .populate("member", 'first_name', 'last_name', member)
+  Borrowing.findById(id)
+  .populate("member", 'first_name last_name membership_id', Member)
   .populate("book", 'title', Book)
     .then(data => {
+      console.log("la dataa del borrowing", data);
       if (!data)
         res.status(404).send({ message: "Not found book with id " + id });
       else res.send(data);
@@ -89,7 +96,7 @@ exports.update = (req, res) => {
 
   const id = req.params.id;
 
-  BooksToMembers.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+  Borrowing.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
     .then(data => {
       if (!data) {
         res.status(404).send({
@@ -108,7 +115,7 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  BooksToMembers.findByIdAndRemove(id)
+  Borrowing.findByIdAndRemove(id)
     .then(data => {
       if (!data) {
         res.status(404).send({
@@ -129,7 +136,7 @@ exports.delete = (req, res) => {
 
 // Delete all Books from the database.
 exports.deleteAll = (req, res) => {
-  BooksToMembers.deleteMany({})
+  Borrowing.deleteMany({})
     .then(data => {
       res.send({
         message: `${data.deletedCount} Books were deleted successfully!`
@@ -145,7 +152,7 @@ exports.deleteAll = (req, res) => {
 
 // Find all Books that cannot be borrowed
 exports.findAllLibraryOnly = (req, res) => {
-  BooksToMembers.find({ cancelled: true })
+  Borrowing.find({ cancelled: true })
     .then(data => {
       res.send(data);
     })

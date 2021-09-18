@@ -41,7 +41,7 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
 
     const getData = () => {
         console.log("el data type antes de ir al service", item);
-        service.getAll(item)
+        service.getAll('books')
             .then(response => {
                 setData(response.data);
                 setUnfilteredData(response.data);
@@ -79,8 +79,9 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
         setIsCreate(false);
         setRemove(true);
         console.log("Delete?", remove, " el id", objectToRemove);
-        service.remove('books', objectToRemove);
+        service.updateAvailableResources('books', objectToRemove, false, false);
         setShow(false);
+        refreshView();
     }
     function goTo(param) {
         if (param == 4) {
@@ -196,7 +197,7 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
                                                 </Card.Text>
                                                 <Card.Text>
                                                     <span><span className="col-title">Ejemplares totales:</span> <span className="col-desc" key={dat.id + index + 9}>{dat.sample}</span></span>
-                                                    <span> <span className="col-title">Ejemplares prestados:</span> <span className="col-desc" key={dat.id + index + 10}>{dat.availableSamples}</span></span>
+                                                    <span> <span className="col-title">Ejemplares disponibles:</span> <span className="col-desc" key={dat.id + index + 10}>{dat.availableSamples}</span></span>
                                                 </Card.Text>
 
 

@@ -69,8 +69,9 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
         setIsCreate(false);
         setRemove(true);
         console.log("Delete?", remove, " el id", objectToRemove);
-        service.remove('members', objectToRemove);
+        service.updateIsActive('members', objectToRemove);
         setShow(false);
+        refreshView();
     }
     function goBack(action, object) {
         setAction(action);

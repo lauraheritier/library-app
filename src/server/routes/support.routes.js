@@ -14,6 +14,8 @@ module.exports = app => {
   
     // Update a support with id
     router.put("/:id", supports.update);
+
+    router.put("/:id/:isActive", supports.updateIsActive);
   
     // Delete a support with id
     router.delete("/:id", supports.delete);

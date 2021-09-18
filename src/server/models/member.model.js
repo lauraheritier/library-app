@@ -1,3 +1,4 @@
+
 module.exports = mongoose => {
   var schema = mongoose.Schema(
     {
@@ -7,7 +8,8 @@ module.exports = mongoose => {
       email: { type: String, required: true },
       dni: { type: Number, unique: true, required: true },
       address: String,
-      membership_id: { type: String, unique: true}
+      membership_id: { type: String, unique: true },
+      isActive: Boolean
     }
   );
 

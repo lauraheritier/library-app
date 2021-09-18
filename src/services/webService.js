@@ -9,6 +9,7 @@ const get = (dataType, id) => {
   return http.get(`/${dataType}/${id}`);
 };
 
+
 const create = (dataType, data) => {
   return http.post(`/${dataType}`, data);
 };
@@ -17,6 +18,20 @@ const update = (dataType, id, data) => {
     console.log("los datos en axios: ", data);
   return http.put(`/${dataType}/${id}`, data);
 };
+
+const giveBack = (dataType, id, cancelled) => {
+  return http.put(`/${dataType}/${id}/${cancelled}`);
+}
+
+const updateIsActive = (dataType, id) => {
+  return http.put(`/${dataType}/${id}/isActive`)
+}
+
+const updateAvailableResources = (dataType, id, data, returnBack) => {
+  console.log("pasó x el updateavailable");
+  return http.put(`/${dataType}/${id}/${data}/${returnBack}`)
+ 
+}
 
 const remove = (dataType, id) => {
   return http.delete(`/${dataType}/${id}`);
@@ -47,7 +62,10 @@ const exportedObject = {
   removeAll,
   findByLastName,
   findByFilter,
-  getLibraryOnly
+  getLibraryOnly,
+  updateAvailableResources,
+  giveBack,
+  updateIsActive
 }
 
 

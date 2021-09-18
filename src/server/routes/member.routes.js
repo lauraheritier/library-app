@@ -14,6 +14,8 @@ module.exports = app => {
   
     // Update a member with id
     router.put("/:id", members.update);
+
+    router.put("/:id/:isActive", members.updateIsActive);
   
     // Delete a member with id
     router.delete("/:id", members.delete);

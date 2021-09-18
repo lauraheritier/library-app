@@ -71,8 +71,9 @@ const EmployeesTable = ({ item, objectType, handleObjectType, handleActionType, 
         setIsCreate(false);
         setRemove(true);
         console.log("Delete?", remove, " el id", objectToRemove);
-        service.remove('employees', objectToRemove);
+        service.updateIsActive('employees', objectToRemove);
         setShow(false);
+        refreshView();
     }
     function goBack(action, object) {
         setAction(action);

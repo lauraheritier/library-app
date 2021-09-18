@@ -18,12 +18,13 @@ module.exports = app => {
     //Retrieve filtered books
     router.get("/:publisher", books.findByFilter);
   
+    
     // Update a book with id
     router.put("/:id", books.update);
+
+    router.put("/:id/:availableResources/:returnBack", books.updateAvailableResources);
   
-    // Delete a book with id
-    router.delete("/:id", books.delete);
-  
+    
     // Delete all books
     router.delete("/", books.deleteAll);
   

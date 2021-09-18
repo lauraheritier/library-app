@@ -6,7 +6,8 @@ module.exports = mongoose => {
       telephone: Number,
       email: { type: String, required: true },
       dni: { type: Number, unique: true, required: true },
-      address: String
+      address: String,
+      isActive: Boolean
     }
   );
 

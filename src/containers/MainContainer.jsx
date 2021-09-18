@@ -5,7 +5,7 @@ import CategoriesTable from "../components/categories/CategoriesTable";
 import PublishersTable from "../components/publishers/PublishersTable";
 import MembersTable from "../components/members/MembersTable";
 import EmployeesTable from "../components/employees/EmployeesTable";
-import BooksToMembersTable from "../components/booksToMembers/BooksToMembersTable";
+import BorrowingsTable from "../components/borrowings/BorrowingsTable";
 import SupportsTable from "../components/supports/SupportsTable";
 
 const MainContainer = () => {
@@ -73,7 +73,7 @@ const MainContainer = () => {
             case "3": setObjectType(3); setMainTitle("Empleados"); setDataType("employees"); setkeyWithFocus(3); setActionType(1);
                 console.log("caso 3-el object tipe: ", objectType, " el actionType ", actionType);
                 break;
-            case "4": setObjectType(7); setMainTitle("Préstamos"); setDataType("booksToMembers"); setkeyWithFocus(4); setActionType(1);
+            case "4": setObjectType(7); setMainTitle("Préstamos"); setDataType("borrowings"); setkeyWithFocus(4); setActionType(1);
                 break;
             default:
                 console.log("pasaaaaaaa");
@@ -126,7 +126,7 @@ const MainContainer = () => {
 
     if (objectType === 7) {
         body = (
-            <BooksToMembersTable item={'booksToMembers'} actionType={actionType} objectType={objectType}
+            <BorrowingsTable item={'borrowings'} actionType={actionType} objectType={objectType}
                 mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
         )
     }

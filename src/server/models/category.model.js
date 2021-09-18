@@ -1,7 +1,8 @@
 module.exports = mongoose => {
   var schema = mongoose.Schema(
     {
-      description: { type: String, unique: true, required: true }
+      description: { type: String, unique: true, required: true },
+      isActive: Boolean
     }
   );
 

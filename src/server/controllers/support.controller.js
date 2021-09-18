@@ -10,7 +10,8 @@ exports.create = (req, res) => {
   }
   // Create a support
   const support = new Support({
-    description: req.body.description    
+    description: req.body.description,
+    isActive: true    
   });
 
   // Save Support in the database
@@ -29,9 +30,8 @@ exports.create = (req, res) => {
 
 // Retrieve all supports from the database.
 exports.findAll = (req, res) => {
-    const description = req.query.escription;
-    var condition = description ? { description: { $regex: new RegExp(description), $options: "i" } } : {};
-  
+    var condition = {isActive: true}
+
     Support.find(condition)
       .then(data => {
         res.send(data);
@@ -60,6 +60,17 @@ exports.findOne = (req, res) => {
           .send({ message: "Error retrieving Support with id=" + id });
       });
   };
+
+  exports.updateIsActive = (req, res) => {
+    var id = req.params.id;
+    //Set status inactive (delete)
+    console.log("pasó x el if correcto");
+    Support.findById(id, function (err, docs) {
+      docs.isActive = false;
+      docs.save();
+    });
+    return;
+  }
 
 // Update a support by the id in the request
 exports.update = (req, res) => {

@@ -23,7 +23,8 @@ exports.create = (req, res) => {
     sample: req.body.sample,
     availableSamples: req.body.availableSamples ? req.body.availableSamples : req.body.sample,
     libraryOnly: req.body.libraryOnly ? req.body.libraryOnly : false,
-    support: req.body.support
+    support: req.body.support,
+    isActive: true
   });
 
   // Save Book in the database
@@ -43,8 +44,7 @@ exports.create = (req, res) => {
 
 // Retrieve all Books from the database.
 exports.findAll = (req, res) => {
-  const availableBook = req.query.libraryOnly
-  var condition = availableBook ? { availableBook: false } : {};
+  var condition = { isActive: true };
 
   Book
     .find(condition)
@@ -83,8 +83,67 @@ exports.findOne = (req, res) => {
     });
 };
 
+
+exports.updateAvailableResources = (req, res) => {
+  console.log("entró al controlador", req.params.availableResources);
+
+  if (!req.body) {
+    return res.status(400).send({
+      message: "Data to update can not be empty!"
+    });
+  }
+  const id = req.params.id;
+  let isActive = req.params.availableResources;
+  //Set status inactive (delete)
+  if (isActive === 'false') {
+    console.log("pasó x el if correcto");
+    Book.findById(id, function (err, docs) {
+      docs.isActive = false;
+      docs.save();
+    });
+    return;
+  }
+  //Update availableSamples
+  if (isActive === 'true') {
+    let currentSamples = 0;
+    let result = 0;
+    let returnBack = req.params.returnBack;
+
+    Book.findById(id, function (err, docs) {
+      if (err || !docs) {
+        console.log("No user found");
+      } else {
+        if (returnBack == 'false') {
+          currentSamples = docs.availableSamples;
+          console.log(" current samples", currentSamples);
+          if (currentSamples <= 0) {
+            console.log("libro no disponible");
+            res.send(false);
+            return;
+          }
+          else {
+            result = currentSamples - 1;
+            docs.availableSamples = result;
+            docs.save();
+            res.send(true);
+          }
+        } else {
+          console.log("devuelve libro");
+          result = currentSamples + 1;
+          docs.availableSamples = result;
+          docs.save();
+          console.log("samples actualizadas", docs.availableSamples);
+        }
+      }
+    });
+  }
+}
+
+
+
 // Update a Book by the id in the request
 exports.update = (req, res) => {
+  console.log("pasó x el update común");
   if (!req.body) {
     return res.status(400).send({
       message: "Data to update can not be empty!"
@@ -111,24 +170,32 @@ exports.update = (req, res) => {
 // Delete a Book with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;
+  const book = Borrowing.findOne({ book: id }, function (err, docs) {
+    if (err || docs) {
+      console.log("el libro " + id + " está prestado", docs);
+      return;
+    } else {
+      Book.findByIdAndRemove(id)
+        .then(data => {
+          if (!data) {
+            res.status(404).send({
+              message: `Cannot delete book with id=${id}. Maybe book was not found!`
+            });
+          } else {
+            res.send({
+              message: "book was deleted successfully!"
+            });
+          }
+        })
+        .catch(err => {
+          res.status(500).send({
+            message: "Could not delete book with id=" + id
+          });
+        });
+    }
+  });
 
-  Book.findByIdAndRemove(id)
-    .then(data => {
-      if (!data) {
-        res.status(404).send({
-          message: `Cannot delete book with id=${id}. Maybe book was not found!`
-        });
-      } else {
-        res.send({
-          message: "book was deleted successfully!"
-        });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Could not delete book with id=" + id
-      });
-    });
+
 };
 
 // Delete all Books from the database.
@@ -149,7 +216,7 @@ exports.deleteAll = (req, res) => {
 
 // Find all Books that cannot be borrowed
 exports.findAllLibraryOnly = (req, res) => {
-  Book.find({ libraryOnly: false })
+  Book.find({ libraryOnly: false, isActive: true })
     .then(data => {
       res.send(data);
     })
@@ -162,17 +229,17 @@ exports.findAllLibraryOnly = (req, res) => {
 };
 
 exports.findByFilter = (req, res) => {
-//  const filters = req.params.filterName;
+  //  const filters = req.params.filterName;
   const filtersValue = req.params.filterValue;
   console.log("los filters", filters);
-  Book.find({publisher: filtersValue})
-  .then(data => {
-    res.send(data);
-  })
-  .catch(err => {
-    res.status(500).send({
-      message:
-        err.message || "Some error occurred while retrieving books."
+  Book.find({ publisher: filtersValue })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving books."
+      });
     });
-  });
 }

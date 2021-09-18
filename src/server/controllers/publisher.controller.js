@@ -11,7 +11,8 @@ exports.create = (req, res) => {
   // Create a publisher
   const publisher = new Publisher({
     description: req.body.description,
-    url: req.body.url    
+    url: req.body.url,
+    isActive: true 
   });
 
   // Save publisher in the database
@@ -30,9 +31,8 @@ exports.create = (req, res) => {
 
 // Retrieve all publisher from the database.
 exports.findAll = (req, res) => {
-    const description = req.query.description;
-    var condition = description ? { description: { $regex: new RegExp(description), $options: "i" } } : {};
-  
+    var condition = {isActive: true};
+
     Publisher.find(condition)
       .then(data => {
         res.send(data);
@@ -61,6 +61,16 @@ exports.findOne = (req, res) => {
           .send({ message: "Error retrieving publisher with id=" + id });
       });
   };
+  exports.updateIsActive = (req, res) => {
+    var id = req.params.id;
+    //Set status inactive (delete)
+    console.log("pasó x el if correcto");
+    Publisher.findById(id, function (err, docs) {
+      docs.isActive = false;
+      docs.save();
+    });
+    return;
+  }
 
 // Update a publisher by the id in the request
 exports.update = (req, res) => {

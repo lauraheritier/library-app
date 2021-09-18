@@ -14,6 +14,8 @@ module.exports = app => {
   
     // Update a publisher with id
     router.put("/:id", publishers.update);
+
+    router.put("/:id/:isActive", publishers.updateIsActive);
   
     // Delete a publisher with id
     router.delete("/:id", publishers.delete);

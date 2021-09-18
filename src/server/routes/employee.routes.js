@@ -14,6 +14,8 @@ module.exports = app => {
   
     // Update an employee with id
     router.put("/:id", employees.update);
+
+    router.put("/:id/:isActive", employees.updateIsActive);
   
     // Delete a employee with id
     router.delete("/:id", employees.delete);

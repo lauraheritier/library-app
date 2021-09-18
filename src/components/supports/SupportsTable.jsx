@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Table, Button } from 'react-bootstrap';
+import { Table, Button, Modal } from 'react-bootstrap';
 import service from '../../services/webService';
 import SupportsCrudForm from './SupportsCrudForm';
 
@@ -27,9 +27,13 @@ const SupportsTable = ({ item, objectType, handleObjectType, handleActionType, a
     const [action, setAction] = useState(1);
     const [index, setIndex] = useState(0);
     const [data, setData] = useState([]);
-    const getData = (item) => {
+    const handleClose = () => setShow(false);
+    const [show, setShow] = useState(false);
+    const [remove, setRemove] = useState('');
+    const [objectToRemove, setObjectToRemove] = useState([]);
+    const getData = () => {
         console.log("el data type antes de ir al service", item, " y el action: ", action);
-        service.getAll(item)
+        service.getAll("supports")
             .then(response => {
                 setData(response.data);
                 console.log("los datos: ", response.data);
@@ -40,9 +44,7 @@ const SupportsTable = ({ item, objectType, handleObjectType, handleActionType, a
     };
 
     useEffect(() => {
-        if (item != null) {
-            getData(item);
-        }
+         getData(item);
     }, [])
     function handleCreate(e) {
         setIsCreate(true);
@@ -57,9 +59,19 @@ console.log("el is create: ", isCreate, " action ", action);
         setIndex(i);
         handleObjectType(2, 6, 'Editar soporte', 'supports');
     }
+    function handleShow(param) {
+        setShow(true);
+        console.log("el id a borrar", param);
+        setObjectToRemove(param);
+
+    }
     function handleDelete(e) {
         setIsCreate(false);
-        console.log("Delete?");
+        setRemove(true);
+        console.log("Delete?", remove, " el id", objectToRemove);
+        service.updateIsActive('supports', objectToRemove);
+        setShow(false);
+        refreshView();
     }
 
     function goBack(action, object, apiName) {
@@ -96,13 +108,29 @@ console.log("el is create: ", isCreate, " action ", action);
                                                 <td>{index}</td>
                                                 <td>{dat.description}</td>
                                                 <td className="action-td"><Button id={index} variant="success" onClick={() => { handleEdit(dat.id) }}>Editar</Button>
-                                                    <Button id={dat.id} variant="danger" onClick={handleDelete}>Eliminar</Button></td>
+                                                    <Button id={dat.id} variant="danger" onClick={() => { handleShow(dat.id) }}>Eliminar</Button></td>
 
                                             </tr>)
                                         })
                                     }
                                 </tbody>
                             </Table>
+                            
+                            <Modal show={show} onHide={handleClose} onExited={refreshView}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Eliminar soporte</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>¿Realmente desea eliminar el soporte?</Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={handleClose}>
+                                        No
+                                    </Button>
+                                    <Button variant="primary" onClick={handleDelete}>
+                                        Sí
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
+                            
                             <div className="text-left">
                                 <a href="#" onClick={() => { goBack(1, 1, 'books') }}>Volver</a>
                             </div>
