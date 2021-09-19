@@ -104,8 +104,8 @@ form button {
 .filters-container {
   flex-wrap: wrap;
   margin: 16px 0;
-  padding-top: 16px;
-  padding-bottom: 16px;
+  padding-top: 8px;
+  padding-bottom: 8px;
   background-color: #efefef;
 }
 .filters-container input:not(.btn) {
@@ -130,4 +130,47 @@ form button {
   padding-top: 8px;
   padding-bottom: 8px;
   margin: 16px 0;
+}
+.flex-filter-container {
+  display: flex;
+  align-items: center;
+}
+.nav-tabs .nav-item * {
+  font-size: 12px;
+  color: #000000;
+}
+.nav-tabs {
+  margin-top: 32px;
+}
+.tab-content {
+  margin-bottom: 32px;
+}
+
+.file-btn-container {
+  display: flex;
+  margin-top: 48px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  background-color: #efefef;
+  padding: 8px;
+  max-width: 400px !important;
+  margin-right: 0 !important;
+}
+.file-btn-container h6 {
+  width: 100%;
+  text-align: left;
+}
+.file-btn-container input {
+  width: 50%;
+  margin-right: 16px;
+  border-right: 0;
+  border-left: 0;
+  border-top: 0;
+  background-color: transparent !important;
+}
+.file-btn-container button {
+  width: 20%;
+  display: flex;
+    align-items: center;
+    justify-content: space-around;
 }

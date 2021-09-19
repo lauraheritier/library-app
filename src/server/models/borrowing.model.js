@@ -12,9 +12,8 @@ module.exports = mongoose => {
       },
       fromDate: Date,
       toDate: Date,
-      cancelled: Boolean, //funciona igual que el isActive
-     
-    }
+      cancelled: Boolean //funciona igual que el isActive
+          }
   );
 
   schema.method("toJSON", function () {

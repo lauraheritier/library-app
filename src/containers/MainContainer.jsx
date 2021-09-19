@@ -7,6 +7,7 @@ import MembersTable from "../components/members/MembersTable";
 import EmployeesTable from "../components/employees/EmployeesTable";
 import BorrowingsTable from "../components/borrowings/BorrowingsTable";
 import SupportsTable from "../components/supports/SupportsTable";
+import ReportsTable from "../components/reports/ReportsTable";
 
 const MainContainer = () => {
     /**dataTypes:
@@ -40,7 +41,7 @@ const MainContainer = () => {
         console.log("el action type", actionType);
         if (obj === 4 || obj === 5 || obj === 6) {
             setkeyWithFocus(1);
-        } else if(obj === 7) {
+        } else if (obj === 7) {
             setkeyWithFocus(4);
         } else {
             setkeyWithFocus(obj);
@@ -74,6 +75,8 @@ const MainContainer = () => {
                 console.log("caso 3-el object tipe: ", objectType, " el actionType ", actionType);
                 break;
             case "4": setObjectType(7); setMainTitle("Préstamos"); setDataType("borrowings"); setkeyWithFocus(4); setActionType(1);
+                break;
+            case "5": setObjectType(8); setMainTitle("Informes"); setDataType("reports"); setkeyWithFocus(5); setActionType(1);
                 break;
             default:
                 console.log("pasaaaaaaa");
@@ -131,6 +134,13 @@ const MainContainer = () => {
         )
     }
 
+    if (objectType === 8) {
+        body = (
+            <ReportsTable item={'borrowings'} actionType={actionType} objectType={objectType}
+                mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+        )
+    }
+
 
     content = (
         <>
@@ -160,6 +170,11 @@ const MainContainer = () => {
                     <Nav.Item>
                         <Nav.Link eventKey="4">
                             Préstamos
+                        </Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link eventKey="5">
+                            Informes
                         </Nav.Link>
                     </Nav.Item>
                 </Nav>

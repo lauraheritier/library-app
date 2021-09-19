@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Table, Button, Modal } from 'react-bootstrap';
+import { Table, Button, Modal, Form, Col, Row } from 'react-bootstrap';
 import service from '../../services/webService';
 import SupportsCrudForm from './SupportsCrudForm';
+import { FaFilter, FaChevronLeft } from 'react-icons/fa';
 
 const SupportsTable = ({ item, objectType, handleObjectType, handleActionType, actionType }) => {
     /**objectTypes:
@@ -31,11 +32,15 @@ const SupportsTable = ({ item, objectType, handleObjectType, handleActionType, a
     const [show, setShow] = useState(false);
     const [remove, setRemove] = useState('');
     const [objectToRemove, setObjectToRemove] = useState([]);
+    const [filteredObject, setFilteredObject] = useState('');
+    const [unfilteredData, setUnfilteredData] = useState([]);
+
     const getData = () => {
         console.log("el data type antes de ir al service", item, " y el action: ", action);
         service.getAll("supports")
             .then(response => {
                 setData(response.data);
+                setUnfilteredData(response.data);
                 console.log("los datos: ", response.data);
             })
             .catch(e => {
@@ -44,13 +49,13 @@ const SupportsTable = ({ item, objectType, handleObjectType, handleActionType, a
     };
 
     useEffect(() => {
-         getData(item);
+        getData(item);
     }, [])
     function handleCreate(e) {
         setIsCreate(true);
         setAction(3);
         handleObjectType(3, 6, 'Nuevo soporte', 'supports');
-console.log("el is create: ", isCreate, " action ", action);
+        console.log("el is create: ", isCreate, " action ", action);
     }
     function handleEdit(i) {
         setIsCreate(false);
@@ -64,6 +69,19 @@ console.log("el is create: ", isCreate, " action ", action);
         console.log("el id a borrar", param);
         setObjectToRemove(param);
 
+    }
+    function filterOnChange(e) {
+        setFilteredObject(e.target.value);
+        console.log("el e target value", e.target.value);
+        let results = data.filter(function (dat) {
+            return ((dat['description']).toLowerCase()).includes(filteredObject.toLowerCase());
+        });
+        console.log("los resultados filtrados", results);
+        if (e.target.value != '') {
+            setData(results);
+        } else {
+            setData(unfilteredData);
+        }
     }
     function handleDelete(e) {
         setIsCreate(false);
@@ -92,6 +110,16 @@ console.log("el is create: ", isCreate, " action ", action);
                 {
                     data.length !== 0 ?
                         <>
+                            <div className="filters-container container-fluid">
+                                <Form key="test">
+                                    <Row className="g-2">
+                                        <Col md className="flex-filter-container">
+                                            <FaFilter />
+                                            <Form.Control size="sm" type="text" name="filter" placeholder="Filtrar por descripción" onChange={filterOnChange} />
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            </div>
                             <Table striped bordered hover>
                                 <thead>
                                     <tr>
@@ -115,7 +143,7 @@ console.log("el is create: ", isCreate, " action ", action);
                                     }
                                 </tbody>
                             </Table>
-                            
+
                             <Modal show={show} onHide={handleClose} onExited={refreshView}>
                                 <Modal.Header closeButton>
                                     <Modal.Title>Eliminar soporte</Modal.Title>
@@ -130,9 +158,9 @@ console.log("el is create: ", isCreate, " action ", action);
                                     </Button>
                                 </Modal.Footer>
                             </Modal>
-                            
+
                             <div className="text-left">
-                                <a href="#" onClick={() => { goBack(1, 1, 'books') }}>Volver</a>
+                                <a href="#" onClick={() => { goBack(1, 1, 'books') }}><FaChevronLeft /> Volver</a>
                             </div>
                         </>
                         : ''
@@ -144,14 +172,10 @@ console.log("el is create: ", isCreate, " action ", action);
             <>
                 <SupportsCrudForm data={data} item={index} itemType={6} isCreate={isCreate} actionType={action} />
                 <div className="text-left">
-                    <a href="#" onClick={() => { goBack(1, 6, 'supports') }}>Volver</a>
+                    <a href="#" onClick={() => { goBack(1, 6, 'supports') }}><FaChevronLeft/> Volver</a>
                 </div>
             </>
     }
-
-
-
-
     return content;
 }
 export default SupportsTable;

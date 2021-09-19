@@ -23,7 +23,6 @@ exports.formatDate = (date, isCreate, displayOnly) => {
             let day = rawDate.getDate() < 10 ? `0${rawDate.getDate()}` : rawDate.getDate();
             formattedToDate = [day, formatMonth, rawDate.getFullYear()].join('/');
             return formattedToDate;
-        }
-        
+        }        
     }
 }

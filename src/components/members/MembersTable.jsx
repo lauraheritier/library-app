@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Table, Button, Modal } from 'react-bootstrap';
+import { Table, Button, Modal, Form, Col, Row } from 'react-bootstrap';
 import MembersCrudForm from './MembersCrudForm';
 import service from '../../services/webService';
+import { FaFilter, FaChevronLeft } from 'react-icons/fa';
 
 const MembersTable = ({ item, objectType, handleObjectType, handleActionType, actionType }) => {
     /**objectTypes:
@@ -30,12 +31,15 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
     const handleClose = () => setShow(false);
     const [show, setShow] = useState(false);
     const [remove, setRemove] = useState('');
+    const [filteredObject, setFilteredObject] = useState('');
     const [objectToRemove, setObjectToRemove] = useState([]);
+    const [unfilteredData, setUnfilteredData] = useState([]);
 
     const getData = () => {
         service.getAll('members')
             .then(response => {
                 setData(response.data);
+                setUnfilteredData(response.data);
                 console.log("los datos: ", response.data);
             })
             .catch(e => {
@@ -51,6 +55,25 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
         setAction(3);
         handleObjectType(3, 2, 'Nuevo socio', 'members');
     }
+    function filterOnChange(e) {
+        setFilteredObject(e.target.value);
+        console.log("el e target value", e.target.value);
+        let results = data.filter(function (dat) {
+            let dniString = dat.dni + '';
+            return ((dat['last_name']).toLowerCase()).includes(filteredObject.toLowerCase()) ||
+                (dat['first_name'].toLowerCase()).includes(filteredObject.toLowerCase()) ||
+                (dniString.toLowerCase()).includes(filteredObject.toLowerCase()) ||
+                (dat['membership_id'].toLowerCase()).includes(filteredObject.toLowerCase()) ||
+                ((dat['email']).toLowerCase()).includes(filteredObject.toLowerCase());
+        });
+        console.log("los resultados filtrados", results);
+        if (e.target.value != '') {
+            setData(results);
+        } else {
+            setData(unfilteredData);
+        }
+    }
+
     function handleEdit(i) {
         setIsCreate(false);
         setAction(2);
@@ -91,9 +114,20 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
                 {
                     data.length !== 0 ?
                         <>
+                            <div className="filters-container container-fluid">
+                                <Form key="test">
+                                    <Row className="g-2">
+                                        <Col md className="flex-filter-container">
+                                            <FaFilter />
+                                            <Form.Control size="sm" type="text" name="filter" placeholder="Filtrar por descripción" onChange={filterOnChange} />
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            </div>
                             <Table striped bordered hover>
                                 <thead>
                                     <tr>
+                                        <th>#</th>
                                         <th>Nombre</th>
                                         <th>Apellido</th>
                                         <th>E-mail</th>
@@ -108,6 +142,7 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
                                     {
                                         data.map((dat, index) => {
                                             return (<><tr key={index}>
+                                                <td>{index +1}</td>
                                                 <td>{dat.first_name}</td>
                                                 <td>{dat.last_name}</td>
                                                 <td>{dat.email}</td>
@@ -149,7 +184,7 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
             <>
                 <MembersCrudForm data={data} item={index} itemType={objectType} isCreate={isCreate} actionType={action} />
                 <div className="text-left">
-                    <a href="#" onClick={() => { goBack(1, objectType) }}>Volver</a>
+                    <a href="#" onClick={() => { goBack(1, objectType) }}><FaChevronLeft/> Volver</a>
                 </div>
             </>
     }

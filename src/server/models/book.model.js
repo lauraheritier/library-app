@@ -12,7 +12,7 @@ module.exports = mongoose => {
       sample: { type: Number, required: true },
       libraryOnly: Boolean,
       availableSamples: {type: Number},
-      isActive: Boolean
+      isActive: Boolean      
     }
   );
 

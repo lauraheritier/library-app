@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Button, Modal, Card, Form, FloatingLabel, Col, Row } from 'react-bootstrap';
+import { Button, Modal, Card, Form, Col, Row } from 'react-bootstrap';
 import service from '../../services/webService';
 import BooksCrudForm from './BooksCrudForm';
+import {
+    FaFilter, FaChevronLeft, FaBook, FaConnectdevelop, FaGlobeAmericas,
+    FaFilm, FaGamepad, FaMusic, FaReadme, FaNewspaper, FaRegCreditCard
+} from 'react-icons/fa';
 
 
 const BooksTable = ({ item, objectType, handleObjectType, handleActionType, actionType }) => {
@@ -32,12 +36,7 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
     const [remove, setRemove] = useState('');
     const [objectToRemove, setObjectToRemove] = useState([]);
     const [unfilteredData, setUnfilteredData] = useState([]);
-    const [submitIsDisabled, setSubmitIsDisabled] = useState(true);
-    const [filterObject, setFilterObject] = useState({
-        title: '',
-        isbn: '',
-        author: ''
-    })
+    const [filterObject, setFilterObject] = useState('');
 
     const getData = () => {
         console.log("el data type antes de ir al service", item);
@@ -73,7 +72,31 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
         setShow(true);
         console.log("el id a borrar", param);
         setObjectToRemove(param);
-
+    }
+    function setIcon(description) {
+        let result;
+        switch (description) {
+            case 'Libro': result = <FaBook />;
+                console.log("pasó x librooo");
+                break;
+            case 'Recuso electrónico': result = <FaConnectdevelop />;
+                break;
+            case 'Material cartográfico': result = <FaGlobeAmericas />;
+                break;
+            case 'Película': result = <FaFilm />
+                break;
+            case 'Juego': result = <FaGamepad />
+                break;
+            case 'Grabación': result = <FaMusic />
+                break;
+            case 'Revista': result = <FaReadme />
+                break;
+            case 'Periódico': result = <FaNewspaper />
+                break;
+            default: result = <FaRegCreditCard />
+                break;
+        }
+        return result;
     }
     function handleDelete(e) {
         setIsCreate(false);
@@ -96,35 +119,41 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
         setAction(action);
         handleObjectType(action, object, 'Recursos', 'books');
     }
+
     function filterOnChange(event) {
-        setFilterObject({
-            ...filterObject,
-            [event.target.name]: event.target.value
+        let results;
+        setFilterObject(event.target.value);
+        results = data.filter(function (f) {
+            let isbnString = f.isbn + '';
+            let samplesString = f.sample + '';
+            let availableSamplesString = f.availableSamples + '';
+            let categories = [f.category];
+            let publishers = [f.publisher];
+            let supports = [f.support];
+            let catDesc;
+            let pubDesc;
+            let supDesc;
+            (categories).map(cat => catDesc = cat.description);
+            (publishers).map(pub => pubDesc = pub.description);
+            (supports).map(sup => supDesc = sup.description);
+
+            return ((f.title).toLowerCase()).includes(filterObject.toLowerCase()) ||
+                (f.author.toLowerCase()).includes(filterObject.toLowerCase()) ||
+                (isbnString.toLowerCase()).includes(filterObject.toLowerCase()) ||
+                (samplesString.toLowerCase()).includes(filterObject.toLowerCase()) ||
+                (availableSamplesString.toLowerCase()).includes(filterObject.toLowerCase()) ||
+                (catDesc.toLowerCase()).includes(filterObject.toLowerCase()) ||
+                (supDesc.toLowerCase()).includes(filterObject.toLowerCase()) ||
+                (pubDesc.toLowerCase()).includes(filterObject.toLowerCase())
+
         });
-        setSubmitIsDisabled(false);
-    }
-    function handleSubmit(e) {
-        e.preventDefault();
-        let result;        
-        result = data.
-            filter(function (dat) {
-                return ((dat.title).toLowerCase()).includes(filterObject.title.toLowerCase()) &&
-                    (dat.author.toLowerCase()).includes(filterObject.author.toLowerCase()) &&
-                    ((dat.isbn + '').toLowerCase()).includes(filterObject.isbn.toLowerCase())
-            });
-        if (filterObject.title != '' ||
-            filterObject.author != '' ||            
-            filterObject.isbn != '' ) {
-            setData(result);
+        console.log("los resultados filtrados", results);
+        if (event.target.value != '') {
+            setData(results);
+        } else {
+            setData(unfilteredData);
         }
-        setSubmitIsDisabled(true);
     }
-
-    function clearFilters(e) {
-        setData(unfilteredData);
-        setSubmitIsDisabled(true);
-    }
-
     const refreshView = useCallback(() => {
         getData();
     }, []);
@@ -141,21 +170,11 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
                 {
                     <>
                         <div className="filters-container container-fluid">
-                            <h6>Filtrar por:</h6>
-                            <Form key="test" onSubmit={handleSubmit}>
+                            <Form key="test">
                                 <Row className="g-2">
-                                    <Col md>
-                                        <Form.Control size="sm" type="text" name="title" placeholder="Título" defaultValue={filterObject.title} onChange={filterOnChange} />
-                                    </Col>
-                                    <Col md>
-                                        <Form.Control size="sm" type="text" name="isbn" placeholder="ISBN" defaultValue={filterObject.isbn} onChange={filterOnChange} />
-                                    </Col>
-                                    <Col md>
-                                        <Form.Control size="sm" type="text" name="author" placeholder="Autor" defaultValue={filterObject.author} onChange={filterOnChange} />
-                                    </Col>
-                                    <Col md>
-                                        <Button variant="primary" disabled={submitIsDisabled} type="submit">Filtrar</Button>
-                                        <Button variant="primary" onClick={clearFilters} type="button">Limpiar filtros</Button>
+                                    <Col md className="flex-filter-container">
+                                        <FaFilter />
+                                        <Form.Control size="sm" type="text" name="filter" placeholder="Filtrar por autor, título, ISBN..." onChange={filterOnChange} />
                                     </Col>
                                 </Row>
                             </Form>
@@ -183,7 +202,7 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
                                             </Card.Header>
                                             <Card.Body>
                                                 <div className="card-text">
-                                                    <Card.Title key={dat.id + index + 4}>{supportDescription} </Card.Title>
+                                                    <Card.Title key={dat.id + index + 4}> {setIcon(supportDescription)} {supportDescription} </Card.Title>
                                                     {dat.libraryOnly ? <span className="only-library" key={dat.id + index + 5}>Solo consulta en biblioteca</span> : ''}
                                                 </div>
                                                 <Card.Text>
@@ -234,7 +253,7 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
             <>
                 <BooksCrudForm data={data} item={index} itemType={objectType} isCreate={isCreate} actionType={action} handleObjectType={handleObjectType} />
                 <div className="text-left">
-                    <a href="#" onClick={() => { goBack(1, objectType) }}>Volver</a>
+                    <a href="#" onClick={() => { goBack(1, objectType) }}><FaChevronLeft /> Volver</a>
                 </div>
             </>
     }

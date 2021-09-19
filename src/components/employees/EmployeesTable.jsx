@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Table, Button, Modal } from 'react-bootstrap';
+import { Table, Button, Modal, Form, Row, Col } from 'react-bootstrap';
 import EmployeesCrudForm from './EmployeesCrudForm';
 import service from '../../services/webService';
+import { FaFilter, FaChevronLeft } from 'react-icons/fa';
 
 const EmployeesTable = ({ item, objectType, handleObjectType, handleActionType, actionType }) => {
     /**objectTypes:
@@ -31,11 +32,14 @@ const EmployeesTable = ({ item, objectType, handleObjectType, handleActionType, 
     const [show, setShow] = useState(false);
     const [remove, setRemove] = useState('');
     const [objectToRemove, setObjectToRemove] = useState([]);
+    const [filteredObject, setFilteredObject] = useState('');
+    const [unfilteredData, setUnfilteredData] = useState([]);
 
     const getData = () => {
         service.getAll('employees')
             .then(response => {
                 setData(response.data);
+                setUnfilteredData(response.data);
                 console.log("los datos: ", response.data);
             })
             .catch(e => {
@@ -67,6 +71,23 @@ const EmployeesTable = ({ item, objectType, handleObjectType, handleActionType, 
         setObjectToRemove(param);
 
     }
+    function filterOnChange(e) {
+        setFilteredObject(e.target.value);
+        console.log("el e target value", e.target.value);
+        let results = data.filter(function (dat) {
+            let dniString = dat.dni + '';
+            return ((dat['last_name']).toLowerCase()).includes(filteredObject.toLowerCase()) ||
+                (dat['first_name'].toLowerCase()).includes(filteredObject.toLowerCase()) ||
+                (dniString.toLowerCase()).includes(filteredObject.toLowerCase()) ||
+                ((dat['email']).toLowerCase()).includes(filteredObject.toLowerCase());
+        });
+        console.log("los resultados filtrados", results);
+        if (e.target.value != '') {
+            setData(results);
+        } else {
+            setData(unfilteredData);
+        }
+    }
     function handleDelete(e) {
         setIsCreate(false);
         setRemove(true);
@@ -94,9 +115,20 @@ const EmployeesTable = ({ item, objectType, handleObjectType, handleActionType, 
                 {
                     data.length !== 0 ?
                         <>
+                            <div className="filters-container container-fluid">
+                                <Form key="test">
+                                    <Row className="g-2">
+                                    <Col md className="flex-filter-container">
+                                        <FaFilter />
+                                            <Form.Control size="sm" type="text" name="filter" placeholder="Filtrar por nombre, apellido, email o dni" onChange={filterOnChange} />
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            </div>
                             <Table striped bordered hover>
                                 <thead>
                                     <tr>
+                                        <th>#</th>
                                         <th>Nombre</th>
                                         <th>Apellido</th>
                                         <th>E-mail</th>
@@ -111,6 +143,7 @@ const EmployeesTable = ({ item, objectType, handleObjectType, handleActionType, 
                                         data.map((dat, index) => {
 
                                             return (<tr key={index}>
+                                                <td>{index +1}</td>
                                                 <td>{dat.first_name}</td>
                                                 <td>{dat.last_name}</td>
                                                 <td>{dat.email}</td>
@@ -149,7 +182,7 @@ const EmployeesTable = ({ item, objectType, handleObjectType, handleActionType, 
             <>
                 <EmployeesCrudForm data={data} item={index} itemType={objectType} isCreate={isCreate} actionType={action} />
                 <div className="text-left">
-                    <a href="#" onClick={() => { goBack(1, objectType) }}>Volver</a>
+                    <a href="#" onClick={() => { goBack(1, objectType) }}><FaChevronLeft/> Volver</a>
                 </div>
             </>
     }
