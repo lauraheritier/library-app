@@ -135,17 +135,10 @@ form button {
   display: flex;
   align-items: center;
 }
-.nav-tabs .nav-item * {
-  font-size: 12px;
-  color: #000000;
+.list-group-container {
+  max-width: 400px;
+  margin: 24px auto;
 }
-.nav-tabs {
-  margin-top: 32px;
-}
-.tab-content {
-  margin-bottom: 32px;
-}
-
 .file-btn-container {
   display: flex;
   margin-top: 48px;

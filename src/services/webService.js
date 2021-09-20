@@ -44,14 +44,11 @@ const getLibraryOnly = (dataType) => {
   return http.delete(`/${dataType}`);
 };
 
-const findByLastName = (dataType, last_name) => {
-  return http.get(`/${dataType}?last_name=${last_name}`);
-};
 
-const findByFilter = (dataType, filterName, filterValue) => {
-  console.log("pasó x findByFilter", dataType, filterName, filterValue);
-  return http.get(`/${dataType}?${filterName}=${filterValue}`);
-};
+const borrowingsPerMember = (dataType, member, group) => {
+  return http.get(`/${dataType}/${member}/${group}`);
+}
+
 
 /**REPORTS */
 
@@ -64,12 +61,11 @@ const exportedObject = {
   update,
   remove,
   removeAll,
-  findByLastName,
-  findByFilter,
   getLibraryOnly,
   updateAvailableResources,
   giveBack,
-  updateIsActive
+  updateIsActive,
+  borrowingsPerMember
 }
 
 
