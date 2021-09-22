@@ -78,7 +78,7 @@ const PublishersTable = ({ item, objectType, handleObjectType, handleActionType,
             return ((dat['description']).toLowerCase()).includes(filteredObject.toLowerCase());
         });
         console.log("los resultados filtrados", results);
-        if (e.target.value != '') {
+        if (e.target.value != '' && results.length !== 0) {
             setData(results);
         } else {
             setData(unfilteredData);

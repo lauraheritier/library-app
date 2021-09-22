@@ -10,7 +10,6 @@ const Publisher = db.publishers;
  * Look up data:
  * 1. Total resources most requested by month
  * 2. Total borrowings per member
- * 3. Total amount of 'libraryOnly' resources
  * 4. Most requested author
  * 5. Resources inventory alphabetically ordered
  * 6. Members inventory alphabetically ordered
@@ -19,7 +18,7 @@ const Publisher = db.publishers;
  */
 
 
-//1. Total resources most requested by month
+//1. Total resources  by month
 
 //2. Total borrowings per member
 exports.borrowingsPerMember = (req, res) => {
@@ -48,8 +47,10 @@ exports.borrowingsPerMember = (req, res) => {
 
 // Retrieve all Books from the database.
 exports.getAllFromReports = (req, res) => {
- Member
+ Borrowing
     .find()
+    .populate("book", 'author title', Book)
+    .populate("member", 'first_name last_name membership_id', Member)
     .then(data => {
       res.send(data);
     })

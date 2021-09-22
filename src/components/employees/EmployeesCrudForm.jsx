@@ -45,9 +45,9 @@ const EmployeesCrudForm = ({ item, itemType, isCreate }) => {
     function sendData(props) {
         if (!isCreate) {
             console.log("is create?", isCreate);
-            service.update("members", item, props);
+            service.update("employees", item, props);
         } else {
-          service.create("members", props);
+          service.create("employees", props);
         }
 
     }

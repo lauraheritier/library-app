@@ -28,11 +28,14 @@ const ReportsTable = ({ item, objectType, handleObjectType, handleActionType, ac
     const [key, setKey] = useState(-1);
     const [perMember, setPerMember] = useState([]);
     const [members, setMembers] = useState([]);
+    const [books, setBooks] = useState([]);
+    const [mostRequestedResource, setMostRequestedResource] = useState([]);
+    const [groupByStat, setGroupByStat] = useState([]);
 
-    const getMembers = () => {
-        service.getAll('members')
+    const getData = () => {
+        service.getAll('reports')
             .then(response => {
-                setMembers(response.data);
+                setData(response.data);
             })
             .catch(e => {
                 console.log("ERROR!!! ", e);
@@ -50,22 +53,44 @@ const ReportsTable = ({ item, objectType, handleObjectType, handleActionType, ac
             });
     };
 
-    const getDocumentsPerMember = () => {
-        service.borrowingsPerMember('reports', true, true)
-            .then(response => {
-                setPerMember(response.data);
-                console.log("los grupos", response.data);
-            })
-            .catch(e => {
-                console.log("ERROR!!! ", e);
-            });
-    }
+
+    //list of borrowings ordered by status
+    const groupByStatus = data.reduce((groups, item) => {
+        const group = (groups[item.cancelled] || []);
+        group.push(item);
+        groups[item.cancelled] = group;
+
+      return groups;
+    }, {});
 
     const getMostRequestedResources = () => {
+        let bookArray = [];
+        data.map((d) => {
+            bookArray.push(d.book)
+        });
+
+        if (bookArray.length == 0) return null;
+        var modeMap = {};
+        var maxEl = bookArray[0],
+            maxCount = 1;
+        for (var i = 0; i < bookArray.length; i++) {
+            var el = bookArray[i]._id;
+            if (modeMap[el] == null) modeMap[el] = 1;
+            else modeMap[el]++;
+            if (modeMap[el] > maxCount) {
+                maxEl = bookArray[i];
+                maxCount = modeMap[el];
+            }
+        }
+        console.log("recurso más solicitado", maxEl);
+        setMostRequestedResource(maxEl);
+        return maxEl;
+
 
     }
 
     useEffect(() => {
+        getData();
         //  getMembers()
         // getLibraryOnly();
         //getDocumentsPerMember();
@@ -74,17 +99,22 @@ const ReportsTable = ({ item, objectType, handleObjectType, handleActionType, ac
     function handleSelect(e) {
         //   console.log("los datos", data);
         setKey(e);
-        switch (key) {
+
+        /*switch (key) {
             case '1': service.getAll('reports');
                 break;
             case '2': getDocumentsPerMember();
                 break;
             case '3': service.getLibraryOnly('reports');
                 break;
+                case '4': getMostRequestedResources();
+                break;
+                case '7': groupByStatus;
+                break;
             default: service.getAll('members');
                 break;
-        }
-         console.log("los member", members);
+        }*/
+      //  console.log("los datos", groupByStatus, "los cancelled", groupByStatus.true.length, "los prestados todavía ", groupByStatus.false.length);
     }
 
     function handleExport(exportToExcel) {
@@ -97,6 +127,45 @@ const ReportsTable = ({ item, objectType, handleObjectType, handleActionType, ac
             XLSX.writeFile(workbook, `${fileName}.xlsx`);
         }
     }
+
+    let body;
+
+    if (key == '1') {
+
+    }
+    if (key == '2') {
+
+    }
+    if (key == '3') {
+
+    }
+    if (key == '4') {
+        getMostRequestedResources();
+        let resourceId = (mostRequestedResource._id).slice(0, 6);
+        body = (
+            <Table id="data-table" striped bordered hover>
+                <thead>
+                    <tr>
+                        <th colSpan='8'> <h5>Recurso más consultado</h5></th>
+                    </tr>
+                    <tr>
+                        <th>#</th>
+                        <th>Título</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr key={mostRequestedResource._id}>
+                        <td>{resourceId}</td>
+                        <td>{mostRequestedResource.title}</td>
+                    </tr>
+                </tbody>
+            </Table>
+        );
+
+
+    }
+
+
 
     content = (
         <>
@@ -114,82 +183,14 @@ const ReportsTable = ({ item, objectType, handleObjectType, handleActionType, ac
                     <ListGroupItem eventKey="4" title='Autor más elegido'>
                         <span>Autor más elegido</span>
                     </ListGroupItem>
-                    <ListGroupItem eventKey="5" title='Inventario de recursos'>
-                        <span>Inventario de recursos</span>
-                    </ListGroupItem>
-                    <ListGroupItem eventKey="6" title='Listado de socios'>
-                        <span>Listado de socios</span>
-                    </ListGroupItem>
-                    <ListGroupItem eventKey="7" title='Listado de empleados'>
-                        <span>Listado de empleados</span>
-                    </ListGroupItem>
-                    <ListGroupItem eventKey="8" title='Préstamos totales'>
-                        <span>Préstamos totales ordenados por estado</span>
-                    </ListGroupItem>
-                </ListGroup>
+                    </ListGroup>
             </div>
             {
                 key !== -1 ?
                     <>
-                        <Table>
-                            <thead>
-                                <tr>
-                                    <th>Socio</th>
-                                    <th>Cantidad de préstamos</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    perMember.map((dat, index) => {
-                                        return (
-                                            <tr>
-                                        <td>{dat._id}</td>
-                                    <td>{dat.count}</td>
-                                    </tr>
-                                        )
 
-                                    })
-                                }
-                            </tbody>
-                        </Table>
-                        <Table id="data-table" striped bordered hover>
-                            <thead>
-                                <tr>
-                                    <th colSpan='8'> <h5>Recursos totales de solo consulta en biblioteca: {data.length}</h5></th>
-                                </tr>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Recurso</th>
-                                    <th>Autor</th>
-                                    <th>ISBN</th>
-                                    <th>Categoría</th>
-                                    <th>Editor</th>
-                                    <th>Soporte</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    data.map((dat, index) => {
-                                        let cats = [dat.category];
-                                        let pubs = [dat.publisher];
-                                        let sups = [dat.support];
-                                        let bookId = dat.id.slice(0, 6);
+                        {body}
 
-                                        return (
-                                            <tr key={index}>
-                                                <td>{bookId}</td>
-                                                <td>{dat.title}</td>
-                                                <td>{dat.author}</td>
-                                                <td>{dat.isbn ? dat.isbn : 'N/A'}</td>
-                                                {cats.map(cat => <td>{cat.description}</td>)}
-                                                {pubs.map(pub => <td>{pub.description}</td>)}
-                                                {sups.map(sup => <td>{sup.description}</td>)}
-                                            </tr>
-                                        )
-                                    })
-                                }
-                            </tbody>
-                        </Table>
                         <div className="file-btn-container container">
                             <h6>Exportar datos</h6>
                             <Form.Control type="text" placeholder="Escriba el nombre del archivo" onChange={(e) => setFileName(e.target.value)} defaultValue={fileName} />

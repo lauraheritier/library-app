@@ -33,6 +33,7 @@ exports.findAll = (req, res) => {
     var condition = {isActive: true}
 
     Support.find(condition)
+    .collation({ locale: 'en', strength: 2 }).sort({ description: 1 })
       .then(data => {
         res.send(data);
       })

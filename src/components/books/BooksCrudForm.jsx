@@ -152,7 +152,7 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                 controlId="floatingTitle"
                                 label="Título"
                                 className="mb-3">
-                                <Form.Control type="text" name="title" placeholder="Ingresá un título" defaultValue={!isCreate ? dat.title : ''} onChange={handleInputChange} />
+                                <Form.Control required type="text" name="title" placeholder="Ingresá un título" defaultValue={!isCreate ? dat.title : ''} onChange={handleInputChange} />
                             </FloatingLabel>
                         </Form.Group>
                     </Col>
@@ -174,7 +174,7 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                 controlId="floatingSample"
                                 label="Ejemplares totales"
                                 className="mb-3">
-                                <Form.Control type="number" name="sample" placeholder="Ingresá la cantidad de ejemplares totales" defaultValue={!isCreate ? dat.sample : ''} onChange={handleInputChange} />
+                                <Form.Control required type="number" name="sample" placeholder="Ingresá la cantidad de ejemplares totales" defaultValue={!isCreate ? dat.sample : ''} onChange={handleInputChange} />
                             </FloatingLabel>
                         </Form.Group>
                     </Col>
@@ -187,7 +187,7 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                 label="Editorial"
                                 className="mb-3">
                                 {isCreate ?
-                                    <Form.Select aria-label='publishers' name="publisher" required
+                                    <Form.Select required aria-label='publishers' name="publisher" required
                                         onChange={handleInputChange}>
                                         <option>Seleccioná una editorial</option>
                                         {
@@ -219,7 +219,7 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                 label="Categoría"
                                 className="mb-3">
                                 {isCreate ?
-                                    <Form.Select aria-label='categories' name="category" required
+                                    <Form.Select required aria-label='categories' name="category" required
                                         onChange={handleInputChange} >
                                         <option>Seleccioná una categoría</option>
 
@@ -253,7 +253,8 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                 label="Soporte"
                                 className="mb-3">
                                 {isCreate ?
-                                    <Form.Select aria-label='supports' name="support" required
+                                <>
+                                    <Form.Select required aria-label='supports' name="support" required
                                         onChange={handleInputChange} >
                                         <option>Seleccioná un soporte</option>
                                         {
@@ -263,6 +264,7 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                             })
                                         }
                                     </Form.Select>
+                                   </>
                                     :
 
                                     <Form.Select aria-label='supports' name="support" required
@@ -285,7 +287,7 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                 controlId="floatingAuthors"
                                 label="Autor"
                                 className="mb-3">
-                                <Form.Control type="text" name="author" defaultValue={!isCreate ? dat.author : ''} onChange={handleInputChange} />
+                                <Form.Control required type="text" name="author" defaultValue={!isCreate ? dat.author : ''} onChange={handleInputChange} />
                             </FloatingLabel>
                         </Form.Group>
                     </Col>

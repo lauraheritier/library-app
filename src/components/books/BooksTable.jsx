@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Button, Modal, Card, Form, Col, Row } from 'react-bootstrap';
+import { Button, Modal, Card, Form, Col, Row, Table } from 'react-bootstrap';
 import service from '../../services/webService';
 import BooksCrudForm from './BooksCrudForm';
 import {
     FaFilter, FaChevronLeft, FaBook, FaConnectdevelop, FaGlobeAmericas,
     FaFilm, FaGamepad, FaMusic, FaReadme, FaNewspaper, FaRegCreditCard
 } from 'react-icons/fa';
+import XLSX from 'xlsx';
 
 
 const BooksTable = ({ item, objectType, handleObjectType, handleActionType, actionType }) => {
@@ -148,15 +149,70 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
 
         });
         console.log("los resultados filtrados", results);
-        if (event.target.value != '') {
+        if (event.target.value != '' && results.length !== 0) {
             setData(results);
         } else {
             setData(unfilteredData);
         }
     }
+    function handleReport(e) {
+         //  const sheet = XLSX.utils.table_to_book(document.getElementById('data-table'), {raw: false});
+            const sheet = XLSX.utils.table_to_sheet(document.getElementById('data-table-table'));
+            console.log("la hoja de cálculo", sheet);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet 1');
+            XLSX.writeFile(workbook, 'inventario.xlsx');
+        
+    }
     const refreshView = useCallback(() => {
         getData();
     }, []);
+
+  
+    let table=(
+        <Table id="data-table-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Título</th>
+                            <th>Autor</th>
+                            <th>Categoría</th>
+                            <th>Editorial</th>
+                            <th>Soporte</th>
+                            <th>ISBN</th>
+                            <th>Solo consulta en biblioteca</th>
+        
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            data.map((d, idx) => {
+                                let bookId = d.id.slice(0,6);
+                                let cats = [d.category];
+                                let sups = [d.support];
+                                let pubs = [d.publisher]
+                                return (
+                                    <tr key={bookId}>
+                                        <td>{bookId}</td>
+                                        <td>{d.title}</td>
+                                        <td>{d.author}</td>
+                                        {cats.map(cat => <td>{cat.description}</td>)}
+                                        {pubs.map(pub => <td>{pub.description}</td>)}
+                                        {sups.map(sup => <td>{sup.description}</td>)}
+                                        <td>{d.isbn ? d.isbn : 'N/A'}</td>
+                                        <td>{d.libraryOnly ? 'Sí' : 'No'}</td>
+                                    </tr>
+                                )
+                            })                    
+                        }
+        
+                    </tbody>
+                </Table>
+            )
+     
+    
+        
+    
 
     if (actionType == 1) {
         content = (
@@ -166,6 +222,7 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
                     <a href="#" onClick={() => { goTo(5) }}>Editoriales</a>
                     <a href="#" onClick={() => { goTo(6) }}>Soportes</a>
                     <Button variant="info" onClick={handleCreate}>Nuevo recurso</Button>
+                    <Button variant="info" onClick={handleReport}>Generar inventario</Button>
                 </div>
                 {
                     <>
@@ -246,6 +303,8 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
                             </Modal.Footer>
                         </Modal>
                     </>
+
+                    
                 }</>
         );
     } else {
@@ -261,6 +320,6 @@ const BooksTable = ({ item, objectType, handleObjectType, handleActionType, acti
 
 
 
-    return content;
+    return [content, table];
 }
 export default BooksTable;

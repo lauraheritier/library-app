@@ -38,6 +38,7 @@ exports.findAll = (req, res) => {
   var condition = {isActive: true};
   
   Employee.find(condition)
+  .collation({ locale: 'en', strength: 2 }).sort({ last_name: 1 })
     .then(data => {
       res.send(data);
     })

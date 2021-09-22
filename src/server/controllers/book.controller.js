@@ -48,6 +48,8 @@ exports.findAll = (req, res) => {
 
   Book
     .find(condition)
+    .collation({ locale: 'en', strength: 2 })
+    .sort({ support: 1 })
     .populate("category", 'description', Category)
     .populate("publisher", 'description', Publisher)
     .populate("support", "description", Support)

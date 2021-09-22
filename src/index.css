@@ -167,3 +167,12 @@ form button {
     align-items: center;
     justify-content: space-around;
 }
+
+.not-returned {
+  background-color: #ff6ceb6e !important;
+}
+
+#data-table-table {
+  display: none;
+}
+ 

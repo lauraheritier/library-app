@@ -4,6 +4,7 @@ import { formatDate } from "../../helpers/formatDate.helper";
 import service from '../../services/webService';
 import BorrowingsCrudForm from './BorrowingsCrudForm';
 import { FaFilter, FaChevronLeft } from 'react-icons/fa';
+import XLSX from 'xlsx';
 
 const BorrowingsTable = ({ item, objectType, handleObjectType, handleActionType, actionType }) => {
     /**objectTypes:
@@ -87,7 +88,7 @@ const BorrowingsTable = ({ item, objectType, handleObjectType, handleActionType,
 
         });
         console.log("los resultados filtrados", results);
-        if (event.target.value != '') {
+        if (event.target.value != '' && results.length !== 0) {
             setData(results);
         } else {
             setData(unfilteredData);
@@ -108,6 +109,24 @@ const BorrowingsTable = ({ item, objectType, handleObjectType, handleActionType,
         handleObjectType(action, object, 'Préstamos', 'borrowings');
         refreshView();
     }
+    function handleReport(e) {
+        //  const sheet = XLSX.utils.table_to_book(document.getElementById('data-table'), {raw: false});
+        const sheet = XLSX.utils.table_to_sheet(document.getElementById('data-table'));
+        console.log("la hoja de cálculo", sheet);
+        //Object.keys(sheet).every(i => { console.log("LA I", i); return delete(i.startsWith('F'))});
+        //   delete(sheet.startsWith('F'));
+        let object = sheet, key;
+        for (key in object) {
+            if (key.startsWith("G")) {
+                delete (sheet[key]);
+            }
+        }
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet 1');
+        console.log("el workbook", workbook, " la sheet", sheet);
+        XLSX.writeFile(workbook, 'inventario.xlsx');
+
+    }
     const refreshView = useCallback(() => {
         getData();
     }, []);
@@ -116,6 +135,7 @@ const BorrowingsTable = ({ item, objectType, handleObjectType, handleActionType,
             <>
                 <div className="text-right">
                     <Button variant="info" onClick={handleCreate}>Nuevo préstamo</Button>
+                    <Button onClick={handleReport}>Inventario</Button>
                 </div>
                 {
                     data.length !== 0 ?
@@ -124,13 +144,13 @@ const BorrowingsTable = ({ item, objectType, handleObjectType, handleActionType,
                                 <Form key="test">
                                     <Row className="g-2">
                                         <Col md className="flex-filter-container">
-                                        <FaFilter />
+                                            <FaFilter />
                                             <Form.Control size="sm" type="text" name="filter" placeholder="Filtrar por libro o socio" onChange={filterOnChange}></Form.Control>
                                         </Col>
                                     </Row>
                                 </Form>
                             </div>
-                            <Table striped bordered hover>
+                            <Table id="data-table" striped bordered hover>
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -138,6 +158,7 @@ const BorrowingsTable = ({ item, objectType, handleObjectType, handleActionType,
                                         <th>Socio</th>
                                         <th>Desde</th>
                                         <th>Hasta</th>
+                                        <th>Estado</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -147,13 +168,14 @@ const BorrowingsTable = ({ item, objectType, handleObjectType, handleActionType,
                                             let books = [dat.book];
                                             let members = [dat.member];
                                             return (<tr key={dat.id}>
-                                                <td>{index +1}</td>
+                                                <td>{index + 1}</td>
                                                 {books.map(book => <td>{book.title}</td>)}
                                                 {members.map(member => <td>{member.first_name} {member.last_name} <br />{member.membership_id}</td>)}
                                                 <td>{formatDate(dat.fromDate, false, true)}</td>
                                                 <td>{formatDate(dat.toDate, false, true)}</td>
-                                                <td><Button id={index} variant="success" onClick={() => { handleRenewal(dat.id, formatDate(dat.fromDate, false, true), formatDate(dat.toDate, false, true)) }}>Renovar</Button>
-                                                    <Button id={dat.dni} variant="danger" onClick={() => { handleShow(dat.book, dat.id) }}>Devolver</Button></td>
+                                                <td>{dat.cancelled ? 'Devuelto' : 'Activo'}</td>
+                                                <td><Button id={index} variant="success" disabled={dat.cancelled} onClick={() => { handleRenewal(dat.id, formatDate(dat.fromDate, false, true), formatDate(dat.toDate, false, true)) }}>Renovar</Button>
+                                                    <Button id={dat.dni} variant="danger" disabled={dat.cancelled} onClick={() => { handleShow(dat.book, dat.id) }}>Devolver</Button></td>
                                             </tr>)
                                         })
                                     }
@@ -183,7 +205,7 @@ const BorrowingsTable = ({ item, objectType, handleObjectType, handleActionType,
                 <BorrowingsCrudForm data={data} item={index} fixedFromDate={fixedFromDate} fixedToDate={fixedToDate}
                     itemType={objectType} isCreate={isCreate} actionType={action} handleObjectType={handleObjectType} />
                 <div className="text-left">
-                    <a href="#" onClick={() => { goBack(1, objectType) }}> <FaChevronLeft/> Volver</a>
+                    <a href="#" onClick={() => { goBack(1, objectType) }}> <FaChevronLeft /> Volver</a>
                 </div>
             </>
     }

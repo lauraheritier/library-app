@@ -3,6 +3,7 @@ import { Table, Button, Modal, Form, Col, Row } from 'react-bootstrap';
 import MembersCrudForm from './MembersCrudForm';
 import service from '../../services/webService';
 import { FaFilter, FaChevronLeft } from 'react-icons/fa';
+import XLSX from 'xlsx';
 
 const MembersTable = ({ item, objectType, handleObjectType, handleActionType, actionType }) => {
     /**objectTypes:
@@ -67,7 +68,7 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
                 ((dat['email']).toLowerCase()).includes(filteredObject.toLowerCase());
         });
         console.log("los resultados filtrados", results);
-        if (e.target.value != '') {
+        if (e.target.value != '' && results.length !== 0) {
             setData(results);
         } else {
             setData(unfilteredData);
@@ -101,6 +102,23 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
         handleObjectType(action, object, 'Socios', 'members');
         refreshView();
     }
+    function handleReport(e) {
+        //  const sheet = XLSX.utils.table_to_book(document.getElementById('data-table'), {raw: false});
+        const sheet = XLSX.utils.table_to_sheet(document.getElementById('data-table'));
+        console.log("la hoja de cálculo", sheet);
+        //Object.keys(sheet).every(i => { console.log("LA I", i); return delete(i.startsWith('F'))});
+        //   delete(sheet.startsWith('F'));
+        let object = sheet, key;
+        for (key in object) {
+            if (key.startsWith("I")) {
+                delete (sheet[key]);
+            }
+        }
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet 1');
+        console.log("el workbook", workbook, " la sheet", sheet);
+        XLSX.writeFile(workbook, 'inventario.xlsx');
+    }
     const refreshView = useCallback(() => {
         getData();
     }, []);
@@ -110,6 +128,7 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
             <>
                 <div className="text-right">
                     <Button variant="info" onClick={() => { handleCreate(objectType) }}>Nuevo socio</Button>
+              <Button onClick={handleReport}>Generar inventario</Button>
                 </div>
                 {
                     data.length !== 0 ?
@@ -124,7 +143,7 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
                                     </Row>
                                 </Form>
                             </div>
-                            <Table striped bordered hover>
+                            <Table striped bordered hover id='data-table'>
                                 <thead>
                                     <tr>
                                         <th>#</th>

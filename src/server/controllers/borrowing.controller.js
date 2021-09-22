@@ -42,7 +42,9 @@ exports.findAll = (req, res) => {
   var condition = {cancelled: false};
 
   Borrowing
-    .find(condition)
+    .find()
+    .collation({ locale: 'en', strength: 2 })
+    .sort({ cancelled: 1 })   
     .populate("member", "first_name last_name membership_id", Member)
     .populate("book", "title", Book)
     .then(data => {
