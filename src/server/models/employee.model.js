@@ -4,7 +4,7 @@ module.exports = mongoose => {
       first_name: { type: String, required: true },
       last_name: { type: String, required: true },
       telephone: Number,
-      email: { type: String, required: true },
+      email: { type: String, required: true, match: /.+\@.+\..+/, },
       dni: { type: Number, unique: true, required: true },
       address: String,
       isActive: Boolean

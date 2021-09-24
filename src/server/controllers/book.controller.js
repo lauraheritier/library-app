@@ -13,33 +13,42 @@ exports.create = (req, res) => {
     return;
   }
 
-  // Create a Book
-  const book = new Book({
-    title: req.body.title,
-    author: req.body.author,
-    category: req.body.category,
-    publisher: req.body.publisher,
-    isbn: req.body.isbn,
-    sample: req.body.sample,
-    availableSamples: req.body.availableSamples ? req.body.availableSamples : req.body.sample,
-    libraryOnly: req.body.libraryOnly ? req.body.libraryOnly : false,
-    support: req.body.support,
-    isActive: true
-  });
+  Book.findOne({isbn: req.body.isbn}).select("isbn").lean().then(result => {
+    if(result) {
+      console.log("pasó x acá", req.body.isbn, "existe ");
+     res.status(400).send({message: "no puede haber duplicados"});     
+     return;
+    } else {
+// Create a Book
+const book = new Book({
+  title: req.body.title,
+  author: req.body.author,
+  category: req.body.category,
+  publisher: req.body.publisher,
+  isbn: req.body.isbn,
+  sample: req.body.sample,
+  availableSamples: req.body.availableSamples ? req.body.availableSamples : req.body.sample,
+  libraryOnly: req.body.libraryOnly ? req.body.libraryOnly : false,
+  support: req.body.support,
+  isActive: true
+});
 
-  // Save Book in the database
-  book
-    .save(book)
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the book."
-      });
-      console.log("el book ", book);
-    });
+// Save Book in the database
+book
+  .save(book)
+  .then(data => {
+    console.log("manda true");
+    res.status(200).send({ message: "se guardó" });
+  })
+  .catch(err => {
+    res.status(500).send({ message: "no se guardó" });
+    console.log("el book ", book);
+  });
+    }
+  });
+  
+
+  
 };
 
 // Retrieve all Books from the database.
