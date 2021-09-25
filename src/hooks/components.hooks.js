@@ -101,6 +101,7 @@ export function useClearFields(item) {
         document.getElementsByName("publisher")[0].value = '-1';
         document.getElementsByName("category")[0].value = '-1';
         document.getElementsByName("support")[0].value = '-1';
+        document.getElementsByName("libraryOnly")[0].checked = false;
     }
 }
 

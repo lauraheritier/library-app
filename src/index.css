@@ -1,196 +1,234 @@
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-    "Droid Sans", "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
+
 .text-right {
-  text-align: right;
+    text-align: right;
 }
+
 .text-left {
-  text-align: left;
+    text-align: left;
 }
 
 .container .btn-info {
-  color: #ffffff;
+    color: #ffffff;
 }
+
 table,
 form {
-  margin-top: 16px;
+    margin-top: 16px;
 }
+
 .nav-pills {
-  margin: 40px 0;
+    margin: 40px 0;
 }
 
 .btn-success {
-  margin-right: 4px;
+    margin-right: 4px;
 }
-.App > .container {
-  margin-top: 16px;
+
+.App>.container {
+    margin-top: 16px;
 }
+
 form button {
-  width: 50%;
-  margin-bottom: 32px;
+    width: 50%;
+    margin-bottom: 32px;
 }
+
 .text-right a {
-  margin-right: 4px;
-  display: inline-block;
+    margin-right: 4px;
+    display: inline-block;
 }
+
 .text-right button {
-  margin-left: 8px;
+    margin-left: 8px;
 }
+
 .borrowed-check {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
+
 .prestamo-link {
-  margin-top: 8px;
-  text-align: right;
-  display: inline-block;
-  width: 100%;
+    margin-top: 8px;
+    text-align: right;
+    display: inline-block;
+    width: 100%;
 }
+
 .card * {
-  text-align: left;
+    text-align: left;
 }
+
 .card h5 {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
 .cards-container {
-  justify-content: space-between;
-  display: flex;
-  margin-top: 24px;
-  flex-wrap: wrap;
+    justify-content: space-between;
+    display: flex;
+    margin-top: 24px;
+    flex-wrap: wrap;
 }
+
 .card {
-  width: 49%;
-  margin: 8px 0;
+    width: 49%;
+    margin: 8px 0;
 }
+
 .card-text {
-  display: grid;
-  display: -ms-grid;
-  width: 100%;
-  grid-template-columns: 1fr 1fr;
-  -ms-grid-columns: 1fr 1fr;
+    display: grid;
+    display: -ms-grid;
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+    -ms-grid-columns: 1fr 1fr;
 }
+
 .card-text .col-title {
-  grid-column: 1;
-  grid-row: 1;
-  -ms-grid-column: 1;
-  -ms-grid-row: 1;
-  font-weight: bold;
+    grid-column: 1;
+    grid-row: 1;
+    -ms-grid-column: 1;
+    -ms-grid-row: 1;
+    font-weight: bold;
 }
+
 .card-text .col-desc {
-  grid-column: 2;
-  grid-row: 1;
-  -ms-grid-column: 2;
-  -ms-grid-row: 1;
+    grid-column: 2;
+    grid-row: 1;
+    -ms-grid-column: 2;
+    -ms-grid-row: 1;
 }
+
 .only-library {
-  text-align: right;
-  color: red;
-  font-size: 12px;
+    text-align: right;
+    color: red;
+    font-size: 12px;
 }
+
 .action-td {
-  width: 20%;
+    width: 20%;
 }
+
 .filters-container {
-  flex-wrap: wrap;
-  margin: 16px 0;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  background-color: #efefef;
+    flex-wrap: wrap;
+    margin: 16px 0;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background-color: #efefef;
 }
+
 .filters-container input:not(.btn) {
-  background: transparent;
-  border-radius: 0;
-  border-right: 0;
-  border-left: 0;
-  border-top: 0;
-  border-bottom: 1px solid rgb(206, 212, 218);
+    background: transparent;
+    border-radius: 0;
+    border-right: 0;
+    border-left: 0;
+    border-top: 0;
+    border-bottom: 1px solid rgb(206, 212, 218);
 }
+
 .filters-container form {
-  margin: 0;
+    margin: 0;
 }
+
 .filters-container form .btn {
-  margin-left: 4px;
-  max-width: 48%;
+    margin-left: 4px;
+    max-width: 48%;
 }
+
 .outdated-info {
-  display: flex;
-  justify-content: space-between;
-  background: #efefef;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  margin: 16px 0;
+    display: flex;
+    justify-content: space-between;
+    background: #efefef;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin: 16px 0;
 }
+
 .flex-filter-container {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
+
 .list-group-container {
-  max-width: 400px;
-  margin: 24px auto;
+    max-width: 400px;
+    margin: 24px auto;
 }
+
 .file-btn-container {
-  display: flex;
-  margin-top: 48px;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  background-color: #efefef;
-  padding: 8px;
-  max-width: 400px !important;
-  margin-right: 0 !important;
+    display: flex;
+    margin-top: 48px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    background-color: #efefef;
+    padding: 8px;
+    max-width: 400px !important;
+    margin-right: 0 !important;
 }
+
 .file-btn-container h6 {
-  width: 100%;
-  text-align: left;
+    width: 100%;
+    text-align: left;
 }
+
 .file-btn-container input {
-  width: 50%;
-  margin-right: 16px;
-  border-right: 0;
-  border-left: 0;
-  border-top: 0;
-  background-color: transparent !important;
+    width: 50%;
+    margin-right: 16px;
+    border-right: 0;
+    border-left: 0;
+    border-top: 0;
+    background-color: transparent !important;
 }
+
 .file-btn-container button {
-  width: 20%;
-  display: flex;
+    width: 20%;
+    display: flex;
     align-items: center;
     justify-content: space-around;
 }
 
 .not-returned {
-  background-color: #ff6ceb6e !important;
+    background-color: #ff6ceb6e !important;
 }
 
 #data-table-table {
-  display: none;
+    display: none;
 }
 
-.error input, .error select {
-  border-color: #b71c1c;
+.error input,
+.error select {
+    border-color: #b71c1c;
 }
 
 .error .error-message {
-  background: #ffcdd2;
-  color: #b71c1c;
-  margin-top: 4px;
-  border-radius: .25rem;
+    background: #ffcdd2;
+    color: #b71c1c;
+    margin-top: 4px;
+    border-radius: .25rem;
 }
+
 .btns-container button {
-  max-width: 180px;
-  margin-left: 16px;
+    max-width: 180px;
+    margin-left: 16px;
 }
+
 .btns-container {
-  display: flex;
-  justify-content: flex-end;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.alert {
+    position: absolute !important;
+    top: 8px;
+    right: 8px;
 }

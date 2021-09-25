@@ -6,6 +6,7 @@ import service from '../../services/webService';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import hooks from '../../hooks/components.hooks';
+import bookValidator from '../../validators/book.validator';
 
 
 const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
@@ -65,73 +66,83 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
         }
         hooks.useClearFields('books');
         setShow(true);
+       setTimeout(() => {
+            setShow(false);
+        }, 5000);
     }
+   
     useEffect(() => {
         setCategories(cats);
         setPublishers(pubs);
         setSupports(sups);
-
         if (!isCreate && !loading) {
-            setDat(result);
-        }
+            setDat(result);           
+    } 
     }, [!isCreate ? loading : isLoading, isLoading1, isLoading2]);
 
-    function goBack(action, object) {
-        setAction(action);
-        handleObjectType(action, object, 'Recursos', 'books');
-    }
-    // Schema for yup
-    const validationSchema = Yup.object().shape({
-        title: Yup.string()
-            .min(2, "*Names must have at least 2 characters")
-            .max(100, "*Names can't be longer than 100 characters")
-            .required("*Name is required"),
-        author: Yup.string()
-            .max(100, "*Email must be less than 100 characters")
-            .required("*Email is required"),
-        category: Yup.string()
-            .required("*Category required"),
-        support: Yup.string()
-            .required("*Support required"),
-        publisher: Yup.string()
-            .required("*Publisher required"),
-        sample: Yup.number()
-            .required('*Ejemplares es obligatorio')
-            .positive("*entry shold be > than 0")
-            .integer("*input integer value")
-    });
+  
+  /*  const validationSchema = Yup.object().shape({
+            title: Yup.string()
+                .min(2, "*Names must have at least 2 characters")
+                .max(100, "*Names can't be longer than 100 characters")
+                .default(!isCreate ? result.title : '')
+                .required("*Name is required"),
+            author: Yup.string()
+                .max(100, "*Email must be less than 100 characters")
+                .default(!isCreate ? result.author : '')
+                .required("*Email is required"),
+            category: Yup.string()
+                .default(!isCreate ? selectedItem1Description : '')
+                .required("*Category required"),
+            support: Yup.string()
+                .default(!isCreate ? selectedItem3Description : '')
+                .required("*Support required"),
+            publisher: Yup.string()
+                .default(!isCreate ? selectedItem2Description : '')
+                .required("*Publisher required"),
+            sample: Yup.number()
+                .required('*Ejemplares es obligatorio')
+                .positive("*entry shold be > than 0")
+                .default(!isCreate ? result.sample : 1)
+                .integer("*input integer value")
+        });*/
+    
+
+
 
     if ((!isCreate && loading) || isLoading && isLoading1 && isLoading2) {
         content = <p>ESPERE UN MOMENTO POR FAVOR.</p>
     } else {
+       let validate = bookValidator.useBookValidator(isCreate, result, selectedItem1Description, selectedItem2Description, selectedItem3Description)
         content = (
             <>
                 <Formik
                     initialValues={{
-                        title: dat.title,
-                        category: dat.category,
-                        publisher: dat.publisher,
-                        author: dat.author,
-                        isbn: dat.isbn,
-                        libraryOnly: dat.libraryOnly,
-                        support: dat.support,
-                        sample: dat.title
+                        title: !isCreate ? result.title : '',
+                        category: !isCreate ? selectedItem1Description : '',
+                        publisher: !isCreate ? selectedItem2Description : '',
+                        author: !isCreate ? result.author : '',
+                        isbn: !isCreate ? result.isbn : '',
+                        libraryOnly: !isCreate ? result.libraryOnly : false,
+                        support: !isCreate ? selectedItem3Description : '',
+                        sample: !isCreate ? result.sample : ''
                     }}
-                    validationSchema={validationSchema}
+                    validationSchema={validate}
                     onChange={(event) => {
-                        setDat({
-                            ...dat,
+                        result({
+                            ...result,
                             [event.target.name]: event.target.value
                         });
-                    }}
-                    onSubmit={(dat, { setSubmitting }) => {
+                    }                    
+                }                    
+                    onSubmit={(result, { setSubmitting }) => {
 
                         // When button submits form and form is in the process of submitting, submit button is disabled
                         setSubmitting(true);
 
                         // Simulate submitting to database, shows us values submitted, resets form
                         setTimeout(() => {
-                            sendData(dat);
+                           sendData(result);
                             setSubmitting(false);
                         }, 500);
                     }}
@@ -152,7 +163,7 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                             label="Título"
                                             className={touched.title && errors.title ? "error" : null}>
                                             <Form.Control
-                                                type="text" name="title" placeholder="Ingresá un título" defaultValue={!isCreate ? dat.title : values.title} onChange={handleChange} onBlur={handleBlur} />
+                                                type="text" name="title" placeholder="Ingresá un título" defaultValue={!isCreate ? result.title : ''} onChange={handleChange} onBlur={handleBlur} />
                                             {touched.title && errors.title ? (
                                                 <div className="error-message">{errors.title}</div>
                                             ) : null}
@@ -165,7 +176,7 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                             controlId="floatingISBN"
                                             label="ISBN"
                                             className="mb-3">
-                                            <Form.Control type="text" disabled={!isCreate && dat.isbn !== ''} name="isbn" placeholder="Ingresá el ISBN" defaultValue={!isCreate ? dat.isbn : values.isbn} onChange={handleChange} onBlur={handleBlur} />
+                                            <Form.Control type="text" disabled={!isCreate && result.isbn !== ''} name="isbn" placeholder="Ingresá el ISBN" defaultValue={!isCreate ? result.isbn : ''} onChange={handleChange} onBlur={handleBlur} />
                                         </FloatingLabel>
                                     </Form.Group>
                                 </Col>
@@ -178,7 +189,7 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                             label="Ejemplares totales"
                                             className={touched.sample && errors.sample ? "error" : null}>
                                             <Form.Control
-                                                type="number" name="sample" placeholder="Ingresá la cantidad de ejemplares totales" defaultValue={!isCreate ? dat.sample : values.sample} onChange={handleChange} onBlur={handleBlur} />
+                                                type="number" name="sample" placeholder="Ingresá la cantidad de ejemplares totales" defaultValue={!isCreate ? result.sample : 1} onChange={handleChange} onBlur={handleBlur} />
                                             {touched.sample && errors.sample ? (
                                                 <div className="error-message">{errors.sample}</div>
                                             ) : null}
@@ -207,6 +218,7 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                                 :
                                                 <Form.Select aria-label='publishers' name="publisher"
                                                     defaultValue={selectedItem2Id} onChange={handleChange} onBlur={handleBlur}>
+                                                        
                                                     <option value={selectedItem2Id}>{selectedItem2Description}</option>
                                                     {
                                                         publishers.map((pub, index) => {
@@ -214,6 +226,7 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                                                 value={pub.id}>{pub.description}</option>
                                                         })
                                                     }
+                                                    <option value='-1'>Seleccioná una editorial</option>
                                                 </Form.Select>
                                             }
                                             {touched.publisher && errors.publisher ? (
@@ -252,6 +265,7 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                                                 value={cat.id}>{cat.description}</option>
                                                         })
                                                     }
+                                                     <option value='-1'>Seleccioná una categoría</option>
                                                 </Form.Select>
                                             }
                                             {touched.category && errors.category ? (
@@ -290,6 +304,7 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                                                 value={sup.id}>{sup.description}</option>
                                                         })
                                                     }
+                                                    <option value='-1'>Seleccioná un soporte</option>
                                                 </Form.Select>
                                             }
                                             {touched.support && errors.support ? (
@@ -305,7 +320,7 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                             label="Autor"
                                             className={touched.author && errors.author ? "error" : null}>
                                             <Form.Control
-                                                type="text" name="author" defaultValue={!isCreate ? dat.author : values.author} onChange={handleChange} onBlur={handleBlur} />
+                                                type="text" name="author" defaultValue={!isCreate ? result.author : ''} onChange={handleChange} onBlur={handleBlur} />
                                             {touched.author && errors.author ? (
                                                 <div className="error-message">{errors.author}</div>
                                             ) : null}
@@ -318,8 +333,8 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                 <Col md></Col>
                                 <Col md className="borrowed-check">
                                     <Form.Group className="mb-3" controlId="formBasicLibrarOnly">
-                                        <Form.Check label="Solo consulta en biblioteca" name="libraryOnly" type="checkbox" checked={dat.libraryOnly}
-                                            defaultValue={dat.libraryOnly} onChange={(e) => { setDat({ ...dat, libraryOnly: e.currentTarget.checked }) }} />
+                                        <Form.Check label="Solo consulta en biblioteca" name="libraryOnly" type="checkbox" defaultChecked={!isCreate ? result.libraryOnly : false}
+                                            defaultValue={!isCreate ? result.libraryOnly : false} onChange={handleChange} />
                                     </Form.Group>
                                 </Col>
                             </Row>
@@ -327,7 +342,7 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                 <Button variant="success" type="submit">
                                     Submit
                                 </Button>
-                                <Button variant="danger" type="button" onClick={() => { goBack(1, 1) }}>
+                                <Button variant="danger" type="button" onClick={() => { setAction(1); handleObjectType(1, 1, 'Recursos', 'books'); }}>
                                     Cancel
                                 </Button>
                             </div>
