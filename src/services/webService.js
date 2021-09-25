@@ -6,6 +6,7 @@ const getAll = (dataType) => {
 };
 
 const get = (dataType, id) => {
+  console.log("pasa por el get solo");
   return http.get(`/${dataType}/${id}`);
 };
 
