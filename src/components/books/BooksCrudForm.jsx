@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useForm } from "react";
-import Form from 'react-bootstrap/Form';
+import React, { useState, useEffect } from "react";
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import { Row, Col, Button, Alert } from 'react-bootstrap';
-import service from '../../services/webService';
+import { Row, Col, Button, Alert, Form, Spinner } from 'react-bootstrap';
 import { Formik } from 'formik';
-import * as Yup from 'yup';
 import hooks from '../../hooks/components.hooks';
 import bookValidator from '../../validators/book.validator';
 
 
-const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
+const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
     /**itemTypes:
      * 1: Books
      * 2: Members
@@ -37,16 +34,13 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
     const [show, setShow] = useState(false);
     const [alertVariant, setAlertVariant] = useState('');
     const [alertText, setAlertText] = useState('');
-    const [result, loading] = (!isCreate ? hooks.useGetDataById('books', item) : '');
+    const [result, setResult, isLoadingResources] = (!isCreate ? hooks.useGetDataById('books', item) : '');
     const [selectedItem1Description, selectedItem2Description, selectedItem3Description,
-        selectedItem1Id, selectedItem2Id, selectedItem3Id] = (hooks.useSortSelectedOptionsToUpdate(dat.category, dat.publisher, dat.support));
-    const [isLoading, cats] = (hooks.useGetHelperObjects('categories'));
-    const [isLoading2, pubs] = (hooks.useGetHelperObjects('publishers'));
-    const [isLoading1, sups] = (hooks.useGetHelperObjects('supports'));
-    const [publishers, setPublishers] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [supports, setSupports] = useState([]);
-
+        selectedItem1Id, selectedItem2Id, selectedItem3Id] = (!isCreate ? hooks.useSortSelectedOptionsToUpdate(dat.category, dat.publisher, dat.support) : '');
+    const [isLoadingCategories, cats] = (hooks.useGetHelperObjects('categories', false));
+    const [isLoadingPublishers, pubs] = (hooks.useGetHelperObjects('publishers', false));
+    const [isLoadingSupports, sups] = (hooks.useGetHelperObjects('supports', false));
+    
     const sendData = async (props) => {
         let result = await hooks.useCreateOrUpdate('books', isCreate, item, props);
         if (result) {
@@ -59,82 +53,70 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
         } else {
             setAlertVariant('danger');
             if (!isCreate) {
-                setAlertText("Ya existe un recurso con ese ISBN.");
-            } else {
                 setAlertText("Ocurrió un error al actualizar el recurso.");
+            } else {
+                setAlertText("Ya existe un recurso con el ISBN " + props.isbn + ".");
             }
         }
         hooks.useClearFields('books');
         setShow(true);
-       setTimeout(() => {
+        setTimeout(() => {
             setShow(false);
         }, 5000);
     }
-   
+
     useEffect(() => {
-        setCategories(cats);
-        setPublishers(pubs);
-        setSupports(sups);
-        if (!isCreate && !loading) {
-            setDat(result);           
-    } 
-    }, [!isCreate ? loading : isLoading, isLoading1, isLoading2]);
-
-  
-  /*  const validationSchema = Yup.object().shape({
-            title: Yup.string()
-                .min(2, "*Names must have at least 2 characters")
-                .max(100, "*Names can't be longer than 100 characters")
-                .default(!isCreate ? result.title : '')
-                .required("*Name is required"),
-            author: Yup.string()
-                .max(100, "*Email must be less than 100 characters")
-                .default(!isCreate ? result.author : '')
-                .required("*Email is required"),
-            category: Yup.string()
-                .default(!isCreate ? selectedItem1Description : '')
-                .required("*Category required"),
-            support: Yup.string()
-                .default(!isCreate ? selectedItem3Description : '')
-                .required("*Support required"),
-            publisher: Yup.string()
-                .default(!isCreate ? selectedItem2Description : '')
-                .required("*Publisher required"),
-            sample: Yup.number()
-                .required('*Ejemplares es obligatorio')
-                .positive("*entry shold be > than 0")
-                .default(!isCreate ? result.sample : 1)
-                .integer("*input integer value")
-        });*/
-    
+       if (!isCreate && !isLoadingResources) {
+            setDat(result);
+        }
+    }, [!isCreate ? isLoadingResources : isLoadingCategories, isLoadingPublishers, isLoadingSupports]);
 
 
-
-    if ((!isCreate && loading) || isLoading && isLoading1 && isLoading2) {
-        content = <p>ESPERE UN MOMENTO POR FAVOR.</p>
+    if ((!isCreate && isLoadingResources) || isLoadingCategories && isLoadingPublishers && isLoadingSupports) {
+        content = content = (
+            <div className="loading-content">
+        <Spinner animation="grow" />
+        <span>Un momento...</span>
+        </div>
+        )
     } else {
-       let validate = bookValidator.useBookValidator(isCreate, result, selectedItem1Description, selectedItem2Description, selectedItem3Description)
+        let filteredCats;
+        let filteredPubs;
+        let filteredSups;
+        if(!isCreate) {
+        filteredCats = cats.filter(function (f) {
+            return !(f.id).includes(selectedItem1Id);
+        });
+        filteredPubs = pubs.filter(function (f) {
+            return !(f.id).includes(selectedItem2Id);
+        });
+        filteredSups = sups.filter(function (f) {
+            return !(f.id).includes(selectedItem3Id);
+        });
+    }
+
+        const validate = bookValidator.bookValidator();
         content = (
             <>
                 <Formik
                     initialValues={{
                         title: !isCreate ? result.title : '',
-                        category: !isCreate ? selectedItem1Description : '',
-                        publisher: !isCreate ? selectedItem2Description : '',
+                        category: !isCreate ? result.category : '',
+                        publisher: !isCreate ? result.publisher : '',
                         author: !isCreate ? result.author : '',
                         isbn: !isCreate ? result.isbn : '',
                         libraryOnly: !isCreate ? result.libraryOnly : false,
-                        support: !isCreate ? selectedItem3Description : '',
-                        sample: !isCreate ? result.sample : ''
+                        support: !isCreate ? result.support : '',
+                        sample: !isCreate ? result.sample : 1
                     }}
                     validationSchema={validate}
                     onChange={(event) => {
-                        result({
+                        setResult({
                             ...result,
                             [event.target.name]: event.target.value
                         });
-                    }                    
-                }                    
+                    }
+                    }
                     onSubmit={(result, { setSubmitting }) => {
 
                         // When button submits form and form is in the process of submitting, submit button is disabled
@@ -142,18 +124,17 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
 
                         // Simulate submitting to database, shows us values submitted, resets form
                         setTimeout(() => {
-                           sendData(result);
+                            sendData(result);
                             setSubmitting(false);
                         }, 500);
                     }}
                 >
-                    {({ values,
-                        errors,
+                    {({ errors,
                         touched,
                         handleChange,
                         handleBlur,
-                        handleSubmit,
-                        isSubmitting }) => (
+                        handleSubmit
+                    }) => (
                         <Form onSubmit={handleSubmit}>
                             <Row className="g-2">
                                 <Col md>
@@ -207,9 +188,9 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                             {isCreate ?
                                                 <Form.Select aria-label='publishers' name="publisher"
                                                     onChange={handleChange} onBlur={handleBlur}>
-                                                    <option value='-1'>Seleccioná una editorial</option>
+                                                    <option value=''>Seleccioná una editorial</option>
                                                     {
-                                                        publishers.map((pub, index) => {
+                                                        pubs.map((pub, index) => {
                                                             return <option key={index}
                                                                 value={pub.id}>{pub.description}</option>
                                                         })
@@ -217,16 +198,16 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                                 </Form.Select>
                                                 :
                                                 <Form.Select aria-label='publishers' name="publisher"
-                                                    defaultValue={selectedItem2Id} onChange={handleChange} onBlur={handleBlur}>
-                                                        
+                                                    defaultValue={selectedItem2Id} onChange={handleChange/*(e) => {handleValues(e)}*/} onBlur={handleBlur}>
+
                                                     <option value={selectedItem2Id}>{selectedItem2Description}</option>
                                                     {
-                                                        publishers.map((pub, index) => {
+                                                        filteredPubs.map((pub, index) => {
                                                             return <option key={index}
                                                                 value={pub.id}>{pub.description}</option>
                                                         })
                                                     }
-                                                    <option value='-1'>Seleccioná una editorial</option>
+                                                    <option value=''>Seleccioná una editorial</option>
                                                 </Form.Select>
                                             }
                                             {touched.publisher && errors.publisher ? (
@@ -245,10 +226,10 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                             {isCreate ?
                                                 <Form.Select aria-label='categories' name="category"
                                                     onChange={handleChange} onBlur={handleBlur} >
-                                                    <option value='-1'>Seleccioná una categoría</option>
+                                                    <option value=''>Seleccioná una categoría</option>
 
                                                     {
-                                                        categories.map((cat, index) => {
+                                                        cats.map((cat, index) => {
                                                             return <option key={index}
                                                                 value={cat.id}>{cat.description}</option>
                                                         })
@@ -260,12 +241,13 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                                     defaultValue={selectedItem1Id} onChange={handleChange} onBlur={handleBlur} >
                                                     <option value={selectedItem1Id}>{selectedItem1Description}</option>
                                                     {
-                                                        categories.map((cat, index) => {
+
+                                                        filteredCats.map((cat, index) => {
                                                             return <option key={index}
                                                                 value={cat.id}>{cat.description}</option>
                                                         })
                                                     }
-                                                     <option value='-1'>Seleccioná una categoría</option>
+                                                    <option value=''>Seleccioná una categoría</option>
                                                 </Form.Select>
                                             }
                                             {touched.category && errors.category ? (
@@ -284,9 +266,9 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                                 <>
                                                     <Form.Select aria-label='supports' name="support"
                                                         onChange={handleChange} onBlur={handleBlur} >
-                                                        <option value='-1'>Seleccioná un soporte</option>
+                                                        <option value=''>Seleccioná un soporte</option>
                                                         {
-                                                            supports.map((sup, index) => {
+                                                            sups.map((sup, index) => {
                                                                 return <option key={index}
                                                                     value={sup.id}>{sup.description}</option>
                                                             })
@@ -299,12 +281,12 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                                     defaultValue={selectedItem3Id} onChange={handleChange} onBlur={handleBlur} >
                                                     <option value={selectedItem3Id}>{selectedItem3Description}</option>
                                                     {
-                                                        supports.map((sup, index) => {
+                                                        filteredSups.map((sup, index) => {
                                                             return <option key={index}
                                                                 value={sup.id}>{sup.description}</option>
                                                         })
                                                     }
-                                                    <option value='-1'>Seleccioná un soporte</option>
+                                                    <option value=''>Seleccioná un soporte</option>
                                                 </Form.Select>
                                             }
                                             {touched.support && errors.support ? (
@@ -354,11 +336,10 @@ const BooksCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                     <p>
                         {alertText}
                     </p>
-                </Alert>
+                </Alert>               
             </>
         );
     }
-
     return content;
 }
 export default BooksCrudForm;

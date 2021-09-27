@@ -201,7 +201,7 @@ form button {
     background-color: #ff6ceb6e !important;
 }
 
-#data-table-table {
+#data-table {
     display: none;
 }
 
@@ -231,4 +231,12 @@ form button {
     position: absolute !important;
     top: 8px;
     right: 8px;
+}
+
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    margin-top: 32px;
+    align-items: center;
+    justify-content: center;
 }

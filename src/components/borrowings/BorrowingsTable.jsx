@@ -150,7 +150,7 @@ const BorrowingsTable = ({ item, objectType, handleObjectType, handleActionType,
                                     </Row>
                                 </Form>
                             </div>
-                            <Table id="data-table" striped bordered hover>
+                            <Table id="data-table-table" striped bordered hover>
                                 <thead>
                                     <tr>
                                         <th>#</th>

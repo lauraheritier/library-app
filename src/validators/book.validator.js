@@ -1,55 +1,31 @@
 import * as Yup from 'yup';
 
-export function useBookValidator(isCreate, result, selectedItem1Description, selectedItem2Description, selectedItem3Description) {
+export function bookValidator() {
     let validationSchema = null;
-    if (!isCreate) {
-        validationSchema = Yup.object().shape({
-            title: Yup.string()
-                .min(2, "*Names must have at least 2 characters")
-                .max(100, "*Names can't be longer than 100 characters")
-                .default(result.title)
-                .required("*Name is required"),
-            author: Yup.string()
-                .max(100, "*Email must be less than 100 characters")
-                .default(result.author)
-                .required("*Email is required"),
-            category: Yup.string()
-                .default(selectedItem1Description)
-                .required("*Category required"),
-            support: Yup.string()
-                .default(selectedItem3Description)
-                .required("*Support required"),
-            publisher: Yup.string()
-                .default(selectedItem2Description)
-                .required("*Publisher required"),
-            sample: Yup.number()
-                .required('*Ejemplares es obligatorio')
-                .positive("*entry shold be > than 0")
-                .default(result.sample)
-                .integer("*input integer value")
-        });
-    }
+    validationSchema = Yup.object().shape({
+        title: Yup.string()
+            .min(2, "*El título debe incluir al menos 2 caracteres.")
+            .max(100, "*El título no debe superar los 100 caracteres.")
+            .required("*El título es obligatorio."),
+        author: Yup.string()
+            .max(100, "*El autor no debe superar los 100 caracteres.")
+            .required("*El autor es obligatorio."),
+        category: Yup.string()
+            .required("*La categoría es obligatoria."),
+        support: Yup.string()
+            .required("*El soporte es obligatorio."),
+        publisher: Yup.string()
+            .required("*La editorial es obligatoria."),
 
-    if (isCreate) {
-        validationSchema = Yup.object().shape({
-            title: Yup.string()
-                .min(2, "*Names must have at least 2 characters")
-                .max(100, "*Names can't be longer than 100 characters")
-                .required("*Name is required"),
-            author: Yup.string()
-                .max(100, "*Email must be less than 100 characters")
-                .required("*Email is required"),
-            category: Yup.string()
-                .required("*Category required"),
-            support: Yup.string()
-                .required("*Support required"),
-            publisher: Yup.string()
-                .required("*Publisher required"),
-            sample: Yup.number()
-                .required('*Ejemplares es obligatorio')
-                .positive("*entry shold be > than 0")
-                .integer("*input integer value")
-        });
-    }
+        sample: Yup.number()
+            .required('*Ejemplares es obligatorio.')
+            .positive("*La cantidad de ejemplares debe ser igual o mayor que 1.")
+            .integer("*El campo no admite decimales.")
+    });
+
+    return validationSchema;
 }
-export default useBookValidator;
+const exportedValidator = {
+    bookValidator
+}
+export default exportedValidator;
