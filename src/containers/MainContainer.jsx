@@ -58,6 +58,10 @@ const MainContainer = () => {
         console.log("Acción seteadaaaa", actionType);
     }
 
+    function refreshView() {
+        
+    }
+
     useEffect(() => {
     }, [])
 
@@ -65,24 +69,23 @@ const MainContainer = () => {
         switch (e) {
             case "0": setMainTitle("Biblioteca"); setkeyWithFocus(0); setObjectType(0); setActionType(0);
                 break;
-            case "1": setObjectType(1); setMainTitle("Recursos"); setDataType("books"); setkeyWithFocus(1); setActionType(1); console.log("y ahora pasa x acá");
-                console.log("caso 1-el object tipe: ", objectType, " el actionType ", actionType);
+            case "1": setObjectType(1); setMainTitle("Recursos"); setDataType("books"); setkeyWithFocus(1); setActionType(1); refreshView();
                 break;
-            case "2": setObjectType(2); setMainTitle("Socios"); setDataType("members"); setkeyWithFocus(2); setActionType(1);
+            case "2": setObjectType(2); setMainTitle("Socios"); setDataType("members"); setkeyWithFocus(2); setActionType(1); refreshView();
                 console.log("caso 2-el object tipe: ", objectType, " el actionType ", actionType);
                 break;
-            case "3": setObjectType(3); setMainTitle("Empleados"); setDataType("employees"); setkeyWithFocus(3); setActionType(1);
+            case "3": setObjectType(3); setMainTitle("Empleados"); setDataType("employees"); setkeyWithFocus(3); setActionType(1); refreshView();
                 console.log("caso 3-el object tipe: ", objectType, " el actionType ", actionType);
                 break;
-            case "4": setObjectType(7); setMainTitle("Préstamos"); setDataType("borrowings"); setkeyWithFocus(4); setActionType(1);
+            case "4": setObjectType(7); setMainTitle("Préstamos"); setDataType("borrowings"); setkeyWithFocus(4); setActionType(1); refreshView();
                 break;
-            case "5": setObjectType(8); setMainTitle("Informes"); setDataType("reports"); setkeyWithFocus(5); setActionType(1);
+            case "5": setObjectType(8); setMainTitle("Informes"); setDataType("reports"); setkeyWithFocus(5); setActionType(1); refreshView();
                 break;
             default:
                 console.log("pasaaaaaaa");
                 break;
-
         }
+        setActionType(1);
     };
 
     if (objectType == 0 || actionType == 0) {

@@ -119,10 +119,10 @@ export function useGetHelperObjects(item, libraryOnly) {
     //  console.log("el response data", result);
     console.log("el loading", isLoading);
 
-    return [isLoading, results, unfilteredData, setResults];
+    return [isLoading, results, unfilteredData, setResults, setUnfilteredData];
 }
 
-export function useClearFields(item) {
+export function useClearFields(item, isUpdate) {
     if (item === 'books') {
         document.getElementsByName("title")[0].value = '';
         document.getElementsByName("isbn")[0].value = '';
@@ -134,33 +134,39 @@ export function useClearFields(item) {
         document.getElementsByName("libraryOnly")[0].checked = false;
     }
     if (item === 'borrowings') {
-        document.getElementsByName('member')[0].value = '';
-        document.getElementsByName('book')[0].value = '';
+        if (!isUpdate) {
+            document.getElementsByName('member')[0].value = '';
+            document.getElementsByName('book')[0].value = '';
+        }
         document.getElementsByName('toDate')[0].value = helper.formatDate(null, true, false);
+    }
+    if (item === 'categories') {
+        document.getElementById('category-description').value = '';
+    }
+    if (item === 'supports') {
+        document.getElementById('support-description').value = '';
+    }
+    if (item === 'publishers') {
+        document.getElementById('publisher-description').value = '';
+        document.getElementsByName('url')[0].value = '';
     }
 }
 
 export function useCreateOrUpdate(dataType, isCreate, item, props) {
     console.log("Como está el isCreate", isCreate);
-    if (dataType === 'borrowings') {
-        service.updateAvailableResources('books', props.book, true, false).then(response => {
-                if (response.data) {
-                    console.log("la rta", response.data);
-                    return sendPostRequest(dataType, props);
-                }
-            })
-            .catch(e => {
-                console.log("ERROR!!! ", e);
-            });
-    } else {
-        if (!isCreate) {
-            return service.update(dataType, item, props)
-
-        } else {
-            return sendPostRequest(dataType, props);
+    if (!isCreate) {
+        console.log("pasó x el is create común??")
+        if (dataType === 'borrowings') {
+            console.log("pasa por datatype borrowings", item, "y las props", props);
+            service.giveBack(dataType, item, true);
+            service.create(dataType, props);
+            return true;
         }
-    }
+        return service.update(dataType, item, props)
 
+    } else {
+        return sendPostRequest(dataType, props);
+    }
 }
 
 const sendPostRequest = async(dataType, props) => {
@@ -177,12 +183,19 @@ const sendPostRequest = async(dataType, props) => {
     return result;
 }
 
-
-
-export function handleReport(tableId, range) {
+export function handleReport(tableId, removeColumn, range) {
     console.log("pasa por handlereport");
     const sheet = XLSX.utils.table_to_sheet(tableId);
     console.log("la hoja de cálculo", sheet);
+    if (removeColumn) {
+        let object = sheet,
+            key;
+        for (key in object) {
+            if (key.startsWith(range)) {
+                delete(sheet[key]);
+            }
+        }
+    }
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, sheet, 'Hoja 1');
     XLSX.writeFile(workbook, 'inventario.xlsx');
@@ -190,7 +203,7 @@ export function handleReport(tableId, range) {
 
 export function useFilterOnChange(filterObject, dataType, data) {
     let results;
-    if (dataType = 'books') {
+    if (dataType === 'books') {
         results = data.filter(function(f) {
             let isbnString = f.isbn + '';
             let samplesString = f.sample + '';
@@ -216,7 +229,40 @@ export function useFilterOnChange(filterObject, dataType, data) {
 
         });
     }
+    if (dataType === 'borrowings') {
+        results = data.filter(function(f) {
+            let members = [f.member];
+            let books = [f.book];
+            let name;
+            let memberId;
+            let bookTitle;
+            (members).map(m => {
+                name = m.first_name + ' ' + m.last_name;
+                memberId = m.membership_id + '';
+            });
+            (books).map(b => bookTitle = b.title);
+
+            return ((memberId.toLowerCase()).includes(filterObject.toLowerCase())) ||
+                (name.toLowerCase()).includes(filterObject.toLowerCase()) ||
+                (bookTitle.toLowerCase()).includes(filterObject.toLowerCase())
+
+        });
+    }
+    if (dataType === 'categories' || dataType === 'supports' || dataType === 'publishers') {
+        results = data.filter(function(dat) {
+            return ((dat.description).toLowerCase()).includes(filterObject.toLowerCase());
+        });
+    }
     return results;
+}
+
+export function useHandleReturn(borrowId, returnBook) {
+    let result;
+    console.log("el borrow id con el return book", borrowId, returnBook);
+    service.updateAvailableResources('books', returnBook, true, true);
+    console.log("pasó por ahí, ahora pasa x giveback");
+    result = service.giveBack('borrowings', borrowId, true);
+    return result;
 }
 
 export function setReactIcons(description) {
@@ -253,7 +299,7 @@ export function setReactIcons(description) {
     return result;
 }
 
-const exportedObject = {
+const exportedHooks = {
     useGetDataById,
     useSortSelectedOptionsToUpdate,
     useGetHelperObjects,
@@ -261,8 +307,9 @@ const exportedObject = {
     useCreateOrUpdate,
     setReactIcons,
     handleReport,
-    useFilterOnChange
+    useFilterOnChange,
+    useHandleReturn
 }
 
 
-export default exportedObject;
+export default exportedHooks;

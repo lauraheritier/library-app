@@ -228,7 +228,7 @@ form button {
 }
 
 .alert {
-    position: absolute !important;
+    position: fixed !important;
     top: 8px;
     right: 8px;
 }

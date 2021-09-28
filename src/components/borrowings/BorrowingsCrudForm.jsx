@@ -31,94 +31,58 @@ const BorrowingsCrudForm = ({ item, itemType, isCreate, fixedFromDate, fixedToDa
     const [action, setAction] = useState('');
     const [result, setResult, isLoadingBorrowings] = (!isCreate ? hooks.useGetDataById('borrowings', item) : '');
     const [isLoadingResources, srcs] = (hooks.useGetHelperObjects('books', true));
-    const [isLoadingMembers, membs] = (hooks.useGetHelperObjects('members', false));
-    const [dat, setDat] = useState({
-        book: '',
-        member: '',
-        fromDate: helper.formatDate(null, true, false),
-        toDate: helper.formatDate(null, true, false),
-        cancelled: false
-    });
+    const [isLoadingMembers, membs] = (hooks.useGetHelperObjects('members', false));    
 
     const sendData = async (props) => {
-    
         console.log("pasa  xacá y las dates: ", props);
-        let result;
-        result = await hooks.useCreateOrUpdate('borrowings', isCreate, item, props);
-        if (result) {
-            setAlertVariant('success');
-            if (isCreate) {
-                setAlertText("El préstamo fue añadido correctamente.");
-            } else {
+        let endResult;
+        if (isCreate) {
+            service.updateAvailableResources('books', props.book, true, false).then(response => {
+                if (response.data) {
+                    endResult = hooks.useCreateOrUpdate('borrowings', isCreate, item, props);
+                }
+                try {
+                    if (endResult) {
+                        setAlertVariant('success');
+                        setAlertText("El préstamo fue añadido correctamente.");
+                    } else {
+                        setAlertVariant('danger');
+                        setAlertText("No se pudo actualizar el préstamo. Verifique la cantidad de ejemplares disponibles.");
+                    }
+                }
+                catch (err) {
+                    console.log("ERRORRR");
+                }
+            });
+            hooks.useClearFields('borrowings', false);
+        } else {
+            endResult = hooks.useCreateOrUpdate('borrowings', isCreate, result.id, props);
+            console.log("para pro el update", endResult);
+
+            if (endResult) {
+                console.log("pasó x acá el end result q está en true");
+
+                setAlertVariant('success');
                 setAlertText("El préstamo fue actualizado correctamente.");
             }
-        } else {
-            setAlertVariant('danger');
-            if (!isCreate) {
+            else {
+                setAlertVariant('danger');
                 setAlertText("Ocurrió un error al actualizar el préstamo.");
-            } else {
-                setAlertText("No se pudo actualizar el préstamo. Verifique la cantidad de ejemplares disponibles.");
             }
-            /*  let resourceId;
-              console.log("pasa x acá con sus props ", props);
-              resourceId = props.book;
-              service.updateAvailableResources('books', resourceId, true, false).then(response => {
-                  if (response.data) {
-                      console.log("la rta", response.data);
-                      service.create('borrowings', props);
-                  }
-              })
-                  .catch(e => {
-                      console.log("ERROR!!! ", e);
-                  });*/
-            hooks.useClearFields('borrowings');
-            setShow(true);
+            hooks.useClearFields('borrowings', true);
+        }
+        
+        setShow(true);
             setTimeout(() => {
                 setShow(false);
             }, 5000);
-        }
     }
-    const handleSubmit = (event) => {
-        event.preventDefault()
-        console.log('enviando datos...');
-        if (dat.toDate < dat.fromDate) {
-            alert("elegí una fecha correctaaaaa");
-        }
-        let fixedFromDate = dat.fromDate + 1;
-        let fixedToDate = dat.toDate + 1;
-        setDat({
-            ...dat,
-            fromDate: fixedFromDate,
-            toDate: fixedToDate
-        });
-        sendData(dat);
-    }
-    const handleUpdate = (event) => {
-        event.preventDefault();
-        if (dat.toDate < dat.fromDate) {
-            alert("elegí una fecha correctaaaaa");
-        }
-        let fixedFromDate = dat.fromDate + 1;
-        let fixedToDate = dat.toDate + 1;
-        setDat({
-            ...dat,
-            fromDate: fixedFromDate,
-            toDate: fixedToDate
-        });
-        sendUpdate(dat);
-    }
-    function sendUpdate(param) {
-        service.giveBack('borrowings', param.id, true);
-        service.create('borrowings', param);
-    }
+
     useEffect(() => {
-        if (!isCreate && !isLoadingBorrowings) {
-            setDat(result);
-        }
+       
     }, [!isCreate ? isLoadingBorrowings : isLoadingResources, isLoadingMembers]);
 
-    selectedBook = [dat.book];
-    selectedMember = [dat.member];
+
     if ((!isCreate && isLoadingBorrowings) || isLoadingResources && isLoadingMembers) {
         content = content = (
             <div className="loading-content">
@@ -128,6 +92,8 @@ const BorrowingsCrudForm = ({ item, itemType, isCreate, fixedFromDate, fixedToDa
         )
     } else {
         if (!isCreate) {
+            selectedBook = [result.book];
+            selectedMember = [result.member];
             const validate = borrowingsValidator.borrowingsValidator(false);
             content = (
                 <>
@@ -139,10 +105,10 @@ const BorrowingsCrudForm = ({ item, itemType, isCreate, fixedFromDate, fixedToDa
                     </div>
                     <Formik
                         initialValues={{
-                            book: !isCreate ? result.book : '',
-                            member: !isCreate ? result.member : '',
-                            fromDate: !isCreate ? result.fromDate : helper.formatDate(null, true, true),
-                            toDate: !isCreate ? result.toDate : ''
+                            book: result.book,
+                            member: result.member,
+                            fromDate: result.fromDate,
+                            toDate: result.toDate
                         }}
                         validationSchema={validate}
                         onChange={(event) => {
@@ -152,15 +118,10 @@ const BorrowingsCrudForm = ({ item, itemType, isCreate, fixedFromDate, fixedToDa
                             });
                         }}
                         onSubmit={(result, { setSubmitting }) => {
-                           /* setResult({
-                                ...result,
-                                fromDate: result.fromDate + 1,
-                                toDate: result.toDate + 1
-                            });*/
 
                             // When button submits form and form is in the process of submitting, submit button is disabled
                             setSubmitting(true);
-console.log("pasa x el onsubmit", result);
+                            console.log("pasa x el onsubmit", result);
                             // Simulate submitting to database, shows us values submitted, resets form
                             setTimeout(() => {
                                 sendData(result);
@@ -182,7 +143,7 @@ console.log("pasa x el onsubmit", result);
                                                 controlId="floatingFromDate"
                                                 label="Desde"
                                                 className="mb-3">
-                                                <Form.Control type="date" disabled name="fromDate" value={helper.formatDate(result.fromDate, true, false)} />
+                                                <Form.Control type="date" disabled name="fromDate" defaultValue={helper.formatDate(null, true, false)} />
                                             </FloatingLabel>
                                         </Form.Group>
                                     </Col>
@@ -192,7 +153,7 @@ console.log("pasa x el onsubmit", result);
                                                 controlId="floatingToDate"
                                                 label="Hasta"
                                                 className={touched.toDate && errors.toDate ? "error" : null}>
-                                                <Form.Control type="date" name="toDate" defaultValue={helper.formatDate(result.toDate, true, true)} onChange={handleChange} />
+                                                <Form.Control type="date" name="toDate" defaultValue={helper.formatDate(null, true, false)} onChange={handleChange} />
                                                 {touched.toDate && errors.toDate ? (
                                                     <div className="error-message">{errors.toDate}</div>
                                                 ) : null}
@@ -211,6 +172,11 @@ console.log("pasa x el onsubmit", result);
                             </Form>
                         )}
                     </Formik>
+                    <Alert variant={alertVariant} show={show} onClose={() => setShow(false)} dismissible>
+                        <p>
+                            {alertText}
+                        </p>
+                    </Alert>
                 </>
             );
         } else {
@@ -219,10 +185,10 @@ console.log("pasa x el onsubmit", result);
                 <>
                     <Formik
                         initialValues={{
-                            book: !isCreate ? result.book : '',
-                            member: !isCreate ? result.member : '',
-                            fromDate: !isCreate ? result.fromDate : helper.formatDate(null, true, false),
-                            toDate: !isCreate ? result.toDate : helper.formatDate(null, true, false)
+                            book: '',
+                            member: '',
+                            fromDate: helper.formatDate(null, true, false),
+                            toDate: helper.formatDate(null, true, false)
                         }}
                         validationSchema={validate}
                         onChange={(event) => {
@@ -233,11 +199,6 @@ console.log("pasa x el onsubmit", result);
                         }
                         }
                         onSubmit={(result, { setSubmitting }) => {
-                           /* setResult({
-                                ...result,
-                                fromDate: result.fromDate + 1,
-                                toDate: result.toDate + 1
-                            });*/
                             // When button submits form and form is in the process of submitting, submit button is disabled
                             setSubmitting(true);
 
@@ -265,7 +226,7 @@ console.log("pasa x el onsubmit", result);
                                                     className={touched.book && errors.book ? "error" : null}>
                                                     <Form.Select aria-label='books' name="book"
                                                         onChange={handleChange}>
-                                                        <option value= ''>Seleccioná un recurso</option>
+                                                        <option value=''>Seleccioná un recurso</option>
                                                         {
                                                             srcs.map((b, index) => {
                                                                 return <option key={index}
@@ -285,7 +246,7 @@ console.log("pasa x el onsubmit", result);
                                                     controlId="floatingMembers"
                                                     label="Socio"
                                                     className={touched.member && errors.member ? "error" : null}>
-                                                    <Form.Select aria-label='members' name="member" required
+                                                    <Form.Select aria-label='members' name="member"
                                                         onChange={handleChange} >
                                                         <option value=''>Seleccioná un socio</option>
 

@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Button, Modal, Card, Form, Col, Row, Table, Spinner } from 'react-bootstrap';
+import React, { useState, useEffect } from "react";
+import { Button, Modal, Card, Form, Col, Row, Table, Spinner, Alert } from 'react-bootstrap';
 import service from '../../services/webService';
 import BooksCrudForm from './BooksCrudForm';
 import { FaFilter, FaChevronLeft } from 'react-icons/fa';
-import XLSX from 'xlsx';
 import hooks from '../../hooks/components.hooks';
 
 
@@ -33,11 +32,14 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
     const [show, setShow] = useState(false);
     const [objectToRemove, setObjectToRemove] = useState([]);
     const [filterObject, setFilterObject] = useState('');
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertText, setAlertText] = useState('');
+    const [alertVariant, setAlertVariant] = useState('');
     const [isLoading, resources, unfilteredData, setResources] = (hooks.useGetHelperObjects('books', false));
     const tableId = document.getElementById('data-table');
 
-        useEffect(() => {
-       
+    useEffect(() => {
+
     }, [isLoading])
 
     function handleCreate(e) {
@@ -51,10 +53,22 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
         setIndex(i);
         handleObjectType(2, 1, 'Editar recurso', 'books');
     }
-    function handleDelete(e) {
-        setIsCreate(false);
-       service.updateAvailableResources('books', objectToRemove, false, false);
+    const handleDelete = async () => {
+        let result;
         setShow(false);
+        setIsCreate(false);
+        result = await service.updateAvailableResources('books', objectToRemove, false, false);
+        if (result) {
+            setAlertVariant('success');
+            setAlertText("El recurso fue eliminado correctamente.");
+        } else {
+            setAlertVariant('danger');
+            setAlertText("No se pudo eliminar el recurso.");
+        }
+        setShowAlert(true);
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 5000);
         refreshView();
     }
 
@@ -71,57 +85,57 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
 
     function refreshView() {
         service.getAll('books')
-        .then(response => {
-            setResources(response.data);
-        })
+            .then(response => {
+                setResources(response.data);
+            })
     }
 
     let table = (
-            <Table id="data-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Título</th>
-                        <th>Autor</th>
-                        <th>Categoría</th>
-                        <th>Editorial</th>
-                        <th>Soporte</th>
-                        <th>ISBN</th>
-                        <th>Solo consulta en biblioteca</th>
+        <Table id="data-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Título</th>
+                    <th>Autor</th>
+                    <th>Categoría</th>
+                    <th>Editorial</th>
+                    <th>Soporte</th>
+                    <th>ISBN</th>
+                    <th>Solo consulta en biblioteca</th>
 
-                    </tr>
-                </thead>
-                <tbody>
-                    {
-                        resources.map((d, idx) => {
-                            let bookId = d.id.slice(0, 6);
-                            let cats = [d.category];
-                            let sups = [d.support];
-                            let pubs = [d.publisher]
-                            return (
-                                <tr key={d.id}>
-                                    <td>{bookId}</td>
-                                    <td>{d.title}</td>
-                                    <td>{d.author}</td>
-                                    {cats.map(cat => <td>{cat.description}</td>)}
-                                    {pubs.map(pub => <td>{pub.description}</td>)}
-                                    {sups.map(sup => <td>{sup.description}</td>)}
-                                    <td>{d.isbn ? d.isbn : 'N/A'}</td>
-                                    <td>{d.libraryOnly ? 'Sí' : 'No'}</td>
-                                </tr>
-                            )
-                        })
-                    }
-                </tbody>
-            </Table>
-        )
+                </tr>
+            </thead>
+            <tbody>
+                {
+                    resources.map((d, idx) => {
+                        let bookId = d.id.slice(0, 6);
+                        let cats = [d.category];
+                        let sups = [d.support];
+                        let pubs = [d.publisher]
+                        return (
+                            <tr key={d.id}>
+                                <td>{bookId}</td>
+                                <td>{d.title}</td>
+                                <td>{d.author}</td>
+                                {cats.map(cat => <td>{cat.description}</td>)}
+                                {pubs.map(pub => <td>{pub.description}</td>)}
+                                {sups.map(sup => <td>{sup.description}</td>)}
+                                <td>{d.isbn ? d.isbn : 'N/A'}</td>
+                                <td>{d.libraryOnly ? 'Sí' : 'No'}</td>
+                            </tr>
+                        )
+                    })
+                }
+            </tbody>
+        </Table>
+    )
 
     if (isLoading) {
         content = (
             <div className="loading-content">
-        <Spinner animation="grow" />
-        <span>Un momento...</span>
-        </div>
+                <Spinner animation="grow" />
+                <span>Un momento...</span>
+            </div>
         )
     }
 
@@ -133,7 +147,7 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
                     <a href="#" onClick={() => { handleObjectType(1, 5, 'Editoriales', 'publishers'); }}>Editoriales</a>
                     <a href="#" onClick={() => { handleObjectType(1, 6, 'Soportes', 'supports'); }}>Soportes</a>
                     <Button variant="info" onClick={handleCreate}>Nuevo recurso</Button>
-                    <Button variant="info"onClick={() => {hooks.handleReport(tableId)}}>Generar inventario</Button>
+                    <Button variant="info" onClick={() => { hooks.handleReport(tableId, false) }}>Generar inventario</Button>
                 </div>
                 {
                     <>
@@ -213,6 +227,11 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
                                 </Button>
                             </Modal.Footer>
                         </Modal>
+                        <Alert variant={alertVariant} show={showAlert} onClose={() => setShowAlert(false)} dismissible>
+                            <p>
+                                {alertText}
+                            </p>
+                        </Alert>
                     </>
 
 

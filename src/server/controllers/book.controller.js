@@ -107,10 +107,20 @@ exports.updateAvailableResources = (req, res) => {
     let isActive = req.params.availableResources;
     //Set status inactive (delete)
     if (isActive === 'false') {
+        let result;
         console.log("pasó x el if correcto");
         Book.findById(id, function(err, docs) {
             docs.isActive = false;
-            docs.save();
+            docs.save()
+                .then(data => {
+                    result = true;
+                    res.send(result);
+                })
+                .catch(err => {
+                    res.status(500).send({
+                        message: err.message || "Some error occurred while retrieving books."
+                    });
+                });
         });
         return;
     }
