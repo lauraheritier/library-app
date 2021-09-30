@@ -143,7 +143,7 @@ const ReportsTable = ({ item, objectType, handleObjectType, handleActionType, ac
         getMostRequestedResources();
         let resourceId = (mostRequestedResource._id).slice(0, 6);
         body = (
-            <Table id="data-table" striped bordered hover>
+            <Table id="data-table-table" striped bordered hover>
                 <thead>
                     <tr>
                         <th colSpan='8'> <h5>Recurso más consultado</h5></th>

@@ -150,6 +150,15 @@ export function useClearFields(item, isUpdate) {
         document.getElementById('publisher-description').value = '';
         document.getElementsByName('url')[0].value = '';
     }
+    if (item === 'employees' || item === 'members') {
+        document.getElementsByName('first_name')[0].value = '';
+        document.getElementsByName('last_name')[0].value = '';
+        document.getElementsByName('telephone')[0].value = '';
+        document.getElementsByName('email')[0].value = '';
+        document.getElementsByName('dni')[0].value = '';
+        document.getElementsByName('address')[0].value = '';
+    }
+
 }
 
 export function useCreateOrUpdate(dataType, isCreate, item, props) {
@@ -165,6 +174,7 @@ export function useCreateOrUpdate(dataType, isCreate, item, props) {
         return service.update(dataType, item, props)
 
     } else {
+        console.log("va a entrar al sendpost request", props);
         return sendPostRequest(dataType, props);
     }
 }
@@ -185,6 +195,7 @@ const sendPostRequest = async(dataType, props) => {
 
 export function handleReport(tableId, removeColumn, range) {
     console.log("pasa por handlereport");
+    console.log("el table id", tableId);
     const sheet = XLSX.utils.table_to_sheet(tableId);
     console.log("la hoja de cálculo", sheet);
     if (removeColumn) {
@@ -251,6 +262,25 @@ export function useFilterOnChange(filterObject, dataType, data) {
     if (dataType === 'categories' || dataType === 'supports' || dataType === 'publishers') {
         results = data.filter(function(dat) {
             return ((dat.description).toLowerCase()).includes(filterObject.toLowerCase());
+        });
+    }
+    if (dataType === 'employees') {
+        results = data.filter(function(dat) {
+            let dniString = dat.dni + '';
+            return ((dat['last_name']).toLowerCase()).includes(filterObject.toLowerCase()) ||
+                (dat['first_name'].toLowerCase()).includes(filterObject.toLowerCase()) ||
+                (dniString.toLowerCase()).includes(filterObject.toLowerCase()) ||
+                ((dat['email']).toLowerCase()).includes(filterObject.toLowerCase());
+        });
+    }
+    if (dataType === 'members') {
+        results = data.filter(function(dat) {
+            let dniString = dat.dni + '';
+            return ((dat['last_name']).toLowerCase()).includes(filterObject.toLowerCase()) ||
+                (dat['first_name'].toLowerCase()).includes(filterObject.toLowerCase()) ||
+                (dniString.toLowerCase()).includes(filterObject.toLowerCase()) ||
+                (dat['membership_id'].toLowerCase()).includes(filterObject.toLowerCase()) ||
+                ((dat['email']).toLowerCase()).includes(filterObject.toLowerCase());
         });
     }
     return results;

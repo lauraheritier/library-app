@@ -117,7 +117,7 @@ const BorrowingsTable = ({ item, objectType, handleObjectType, handleActionType,
                 <>
                     <div className="text-right">
                         <Button variant="info" onClick={handleCreate}>Nuevo préstamo</Button>
-                        <Button onClick={() => { hooks.handleReport(tableId, true, 'G') }}>Generar inventario</Button>
+                        <Button disabled= {data.length === 0} onClick={() => { hooks.handleReport(tableId, true, 'G') }}>Generar inventario</Button>
                     </div>
                     {
                         data.length !== 0 ?

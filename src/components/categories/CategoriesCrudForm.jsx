@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useForm } from "react";
-import { Form, Alert, Spinner } from 'react-bootstrap';
+import React, { useState, useEffect } from "react";
+import { Form, Alert, Spinner, Row, Col, Button } from 'react-bootstrap';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import { Row, Col, Button } from 'react-bootstrap'; import { Formik } from 'formik';
+import { Formik } from 'formik';
 import hooks from '../../hooks/components.hooks';
 import categoriesValidator from '../../validators/categories.validator';
 
@@ -39,7 +39,7 @@ const CategoriesCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                 setAlertText("La categoría fue actualizada correctamente.");                
             } else {
                 setAlertVariant('danger');
-                setAlertText("Ocurrió un error al actualizar el recurso.");                
+                setAlertText("Ocurrió un error al actualizar la categoría.");                
             }            
         } else {
             result = await hooks.useCreateOrUpdate('categories', isCreate, null, props);

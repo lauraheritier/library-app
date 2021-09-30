@@ -40,9 +40,14 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
     const [isLoadingCategories, cats] = (hooks.useGetHelperObjects('categories', false));
     const [isLoadingPublishers, pubs] = (hooks.useGetHelperObjects('publishers', false));
     const [isLoadingSupports, sups] = (hooks.useGetHelperObjects('supports', false));
-    
+
     const sendData = async (props) => {
-        let result = await hooks.useCreateOrUpdate('books', isCreate, item, props);
+        let result;
+        if (!isCreate) {
+            result = await hooks.useCreateOrUpdate('books', isCreate, item, props);
+        } else {
+            result = await hooks.useCreateOrUpdate('books', isCreate, null, props);
+        }
         if (result) {
             setAlertVariant('success');
             if (isCreate) {
@@ -66,7 +71,7 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
     }
 
     useEffect(() => {
-       if (!isCreate && !isLoadingResources) {
+        if (!isCreate && !isLoadingResources) {
             setDat(result);
         }
     }, [!isCreate ? isLoadingResources : isLoadingCategories, isLoadingPublishers, isLoadingSupports]);
@@ -75,25 +80,25 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
     if ((!isCreate && isLoadingResources) || isLoadingCategories && isLoadingPublishers && isLoadingSupports) {
         content = content = (
             <div className="loading-content">
-        <Spinner animation="grow" />
-        <span>Un momento...</span>
-        </div>
+                <Spinner animation="grow" />
+                <span>Un momento...</span>
+            </div>
         )
     } else {
         let filteredCats;
         let filteredPubs;
         let filteredSups;
-        if(!isCreate) {
-        filteredCats = cats.filter(function (f) {
-            return !(f.id).includes(selectedItem1Id);
-        });
-        filteredPubs = pubs.filter(function (f) {
-            return !(f.id).includes(selectedItem2Id);
-        });
-        filteredSups = sups.filter(function (f) {
-            return !(f.id).includes(selectedItem3Id);
-        });
-    }
+        if (!isCreate) {
+            filteredCats = cats.filter(function (f) {
+                return !(f.id).includes(selectedItem1Id);
+            });
+            filteredPubs = pubs.filter(function (f) {
+                return !(f.id).includes(selectedItem2Id);
+            });
+            filteredSups = sups.filter(function (f) {
+                return !(f.id).includes(selectedItem3Id);
+            });
+        }
 
         const validate = bookValidator.bookValidator();
         content = (
@@ -336,7 +341,7 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
                     <p>
                         {alertText}
                     </p>
-                </Alert>               
+                </Alert>
             </>
         );
     }

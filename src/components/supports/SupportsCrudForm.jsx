@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useForm } from "react";
-import Form from 'react-bootstrap/Form';
+import { Form, Alert, Spinner, Row, Col, Button } from 'react-bootstrap';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import { Row, Col, Button } from 'react-bootstrap';
-import service from '../../services/webService';
+import { Formik } from 'formik';
+import hooks from '../../hooks/components.hooks';
+import supportsValidator from '../../validators/supports.validator';
 
-const SupportsCrudForm = ({ item, itemType, isCreate }) => {
+const SupportsCrudForm = ({ item, handleObjectType, isCreate }) => {
     /**itemTypes:
      * 1: Books
      * 2: Members
@@ -17,73 +18,124 @@ const SupportsCrudForm = ({ item, itemType, isCreate }) => {
      * true: create
      * false: edit
      */
-    //const[checked, setChecked]=useState(false);
-    const [dat, setDat] = useState({
-        description: ''
-    });
+    const [alertVariant, setAlertVariant] = useState('');
+    const [alertText, setAlertText] = useState('');
+    const [result, setResult, isLoading] = (!isCreate ? hooks.useGetDataById('supports', item) : '');
+    const [show, setShow] = useState(false);
+    const [action, setAction] = useState('');
+    const [data, setData] = useState([]);
 
-    function getDataById(item) {
-        console.log("el data type antes de ir al service", itemType);
-        service.get('supports', item)
-            .then(response => {
-                setDat(response.data);
-                console.log("los datos: ", response.data);
-            })
-            .catch(e => {
-                console.log("ERROR!!! ", e);
-            });
-    }
     useEffect(() => {
-        if (!isCreate) {
-            getDataById(item);
+        if (!isCreate && !isLoading) {
+            setData(result);
         }
-    }, [])
-    function sendData(props) {
+    }, [isLoading])
+
+    const sendData = async (props) => {
+        let result;
         if (!isCreate) {
-            console.log("is create?", isCreate);
-            service.update('supports', item, props);
+            result = await hooks.useCreateOrUpdate('supports', isCreate, item, props);
+            if (result) {
+                setAlertVariant('success');
+                setAlertText("El soporte fue actualizado correctamente.");
+            } else {
+                setAlertVariant('danger');
+                setAlertText("Ocurrió un error al actualizar el soporte.");
+            }
         } else {
-            console.log("pasa x acá con sus props ", props);
-            service.create('supports', props);
+            result = await hooks.useCreateOrUpdate('supports', isCreate, null, props);
+            if (result) {
+                setAlertVariant('success');
+                setAlertText("El soporte fue creado correctamente.");
+            } else {
+                setAlertVariant('danger');
+                setAlertText("Ocurrió un error al crear el soporte.");
+            }
         }
-
+        hooks.useClearFields('supports', false);
+        setShow(true);
+        setTimeout(() => {
+            setShow(false);
+        }, 5000);
     }
-    const handleInputChange = (event) => {
-        setDat({
-            ...dat,
-            [event.target.name]: event.target.value
-        })
 
-
-    }
-    const handleSubmit = (event) => {
-        event.preventDefault()
-        console.log('enviando datos...' + dat.description);
-        sendData(dat);
-    }
     let content;
+    if (!isCreate && isLoading) {
+        content = content = (
+            <div className="loading-content">
+                <Spinner animation="grow" />
+                <span>Un momento...</span>
+            </div>
+        )
+    } else {
+        const validate = supportsValidator.supportsValidator();
+        content = (
+            <>
+                <Formik
+                    initialValues={{
+                        description: !isCreate ? data.description : ''
+                    }}
+                    validationSchema={validate}
+                    onChange={(event) => {
+                        setData({
+                            ...data,
+                            [event.target.name]: event.target.value
+                        });
+                    }
+                    }
+                    onSubmit={(data, { setSubmitting }) => {
 
-    content = (
-        <>
-            <Form onSubmit={handleSubmit}>
-                <Row className="g-12">
-                    <Col md>
-                        <Form.Group className="mb-3" controlId="formBasicDescription">
-                            <FloatingLabel
-                                controlId="floatingDescription"
-                                label="Descripción"
-                                className="mb-3">
-                                <Form.Control type="text" name="description" placeholder="Ingresá el nombre de la categoría" defaultValue={!isCreate ? dat.description : ''} onChange={handleInputChange} />
-                            </FloatingLabel>
-                        </Form.Group>
-                    </Col>
-                </Row>
-                <Button variant="primary" type="submit">
-                    Submit
-                </Button>
-            </Form>
-        </>
-    );
+                        // When button submits form and form is in the process of submitting, submit button is disabled
+                        setSubmitting(true);
+
+                        // Simulate submitting to database, shows us values submitted, resets form
+                        setTimeout(() => {
+                            sendData(data);
+                            setSubmitting(false);
+                        }, 500);
+                    }}
+                >
+                    {({ errors,
+                        touched,
+                        handleChange,
+                        handleBlur,
+                        handleSubmit
+                    }) => (
+                        <Form onSubmit={handleSubmit}>
+                            <Row className="g-12">
+                                <Col md>
+                                    <Form.Group className="mb-3" controlId="formBasicDescription">
+                                        <FloatingLabel
+                                            controlId="support-description"
+                                            label="Descripción"
+                                            className={touched.description && errors.description ? "error" : null}>
+                                            <Form.Control type="text" name="description" placeholder="Ingresá el nombre del soporte" defaultValue={!isCreate ? data.description : ''} onChange={handleChange} />
+                                            {touched.description && errors.description ? (
+                                                <div className="error-message">{errors.description}</div>
+                                            ) : null}
+                                        </FloatingLabel>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <div className="btns-container">
+                                <Button variant="success" type="submit">
+                                    Submit
+                                </Button>
+                                <Button variant="danger" type="button" onClick={() => { setAction(1); handleObjectType(1, 6, 'Soportes', 'supports'); }}>
+                                    Cancel
+                                </Button>
+                            </div>
+                        </Form>
+                    )}
+                </Formik>
+                <Alert variant={alertVariant} show={show} onClose={() => setShow(false)} dismissible>
+                    <p>
+                        {alertText}
+                    </p>
+                </Alert>
+            </>
+        );
+    }
 
 
     return content;

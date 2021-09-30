@@ -90,8 +90,16 @@ const CategoriesTable = ({ item, objectType, handleObjectType, actionType }) => 
                 setData(response.data);
             })
     }
+    if (isLoading) {
+        content = (
+            <div className="loading-content">
+                <Spinner animation="grow" />
+                <span>Un momento...</span>
+            </div>
+        )
+    }
 
-    if (actionType == 1) {
+    if (actionType == 1 && !isLoading) {
         content = (
             <>
                 <div className="text-right">

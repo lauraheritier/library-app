@@ -147,7 +147,7 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
                     <a href="#" onClick={() => { handleObjectType(1, 5, 'Editoriales', 'publishers'); }}>Editoriales</a>
                     <a href="#" onClick={() => { handleObjectType(1, 6, 'Soportes', 'supports'); }}>Soportes</a>
                     <Button variant="info" onClick={handleCreate}>Nuevo recurso</Button>
-                    <Button variant="info" onClick={() => { hooks.handleReport(tableId, false) }}>Generar inventario</Button>
+                    <Button disabled= {resources.length === 0} variant="info" onClick={() => { hooks.handleReport(tableId, false) }}>Generar inventario</Button>
                 </div>
                 {
                     <>

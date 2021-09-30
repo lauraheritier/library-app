@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Table, Button, Modal, Form, Col, Row } from 'react-bootstrap';
-import MembersCrudForm from './MembersCrudForm';
+import React, { useState, useEffect } from "react";
+import { Table, Button, Modal, Form, Row, Col, Alert, Spinner } from 'react-bootstrap';
 import service from '../../services/webService';
+import MembersCrudForm from './MembersCrudForm';
 import { FaFilter, FaChevronLeft } from 'react-icons/fa';
-import XLSX from 'xlsx';
+import hooks from '../../hooks/components.hooks';
 
-const MembersTable = ({ item, objectType, handleObjectType, handleActionType, actionType }) => {
+const MembersTable = ({ item, objectType, handleObjectType, actionType }) => {
     /**objectTypes:
      * 1: Books
      * 2: Members
@@ -25,49 +25,45 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
      */
     let content;
 
-    const [isCreate, setIsCreate] = useState(false);
+    const [isCreate, setIsCreate] = useState();
     const [action, setAction] = useState(1);
     const [index, setIndex] = useState(0);
-    const [data, setData] = useState([]);
     const handleClose = () => setShow(false);
     const [show, setShow] = useState(false);
-    const [remove, setRemove] = useState('');
-    const [filteredObject, setFilteredObject] = useState('');
     const [objectToRemove, setObjectToRemove] = useState([]);
-    const [unfilteredData, setUnfilteredData] = useState([]);
+    const [filterObject, setFilterObject] = useState('');
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertText, setAlertText] = useState('');
+    const [alertVariant, setAlertVariant] = useState('');
+    const [isLoading, data, unfilteredData, setData] = hooks.useGetHelperObjects('members', false);
+    const tableId = document.getElementById('data-table-table');
 
-    const getData = () => {
-        service.getAll('members')
-            .then(response => {
-                setData(response.data);
-                setUnfilteredData(response.data);
-                console.log("los datos: ", response.data);
-            })
-            .catch(e => {
-                console.log("ERROR!!! ", e);
-            });
-    };
 
     useEffect(() => {
-        getData();
-    }, [])
+    }, [isLoading])
+
     function handleCreate(param) {
         setIsCreate(true);
         setAction(3);
         handleObjectType(3, 2, 'Nuevo socio', 'members');
     }
+
+    function handleEdit(i) {
+        setIsCreate(false);
+        setAction(2);
+        setIndex(i);
+        handleObjectType(2, 2, 'Editar socio', 'members');
+    }
+
+    function handleShow(param) {
+        setShow(true);
+        setObjectToRemove(param);
+
+    }
     function filterOnChange(e) {
-        setFilteredObject(e.target.value);
-        console.log("el e target value", e.target.value);
-        let results = data.filter(function (dat) {
-            let dniString = dat.dni + '';
-            return ((dat['last_name']).toLowerCase()).includes(filteredObject.toLowerCase()) ||
-                (dat['first_name'].toLowerCase()).includes(filteredObject.toLowerCase()) ||
-                (dniString.toLowerCase()).includes(filteredObject.toLowerCase()) ||
-                (dat['membership_id'].toLowerCase()).includes(filteredObject.toLowerCase()) ||
-                ((dat['email']).toLowerCase()).includes(filteredObject.toLowerCase());
-        });
-        console.log("los resultados filtrados", results);
+        let results;
+        setFilterObject(e.target.value);
+        results = hooks.useFilterOnChange(filterObject, 'members', data);
         if (e.target.value != '' && results.length !== 0) {
             setData(results);
         } else {
@@ -75,75 +71,69 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
         }
     }
 
-    function handleEdit(i) {
-        setIsCreate(false);
-        setAction(2);
-        console.log("¿dónde está el index? ", i.target, " el objectType: ", objectType);
-        setIndex(i);
-        console.log("el id ", i);
-        handleObjectType(2, 2, 'Editar socio', 'members');
-    }
-    function handleShow(param) {
-        setShow(true);
-        console.log("el id a borrar", param);
-        setObjectToRemove(param);
-
-    }
-    function handleDelete(e) {
-        setIsCreate(false);
-        setRemove(true);
-        console.log("Delete?", remove, " el id", objectToRemove);
-        service.updateIsActive('members', objectToRemove);
+    const handleDelete = async () => {
+        let result;
         setShow(false);
-        refreshView();
-    }
-    function goBack(action, object) {
-        setAction(action);
-        handleObjectType(action, object, 'Socios', 'members');
-        refreshView();
-    }
-    function handleReport(e) {
-        //  const sheet = XLSX.utils.table_to_book(document.getElementById('data-table'), {raw: false});
-        const sheet = XLSX.utils.table_to_sheet(document.getElementById('data-table'));
-        console.log("la hoja de cálculo", sheet);
-        //Object.keys(sheet).every(i => { console.log("LA I", i); return delete(i.startsWith('F'))});
-        //   delete(sheet.startsWith('F'));
-        let object = sheet, key;
-        for (key in object) {
-            if (key.startsWith("I")) {
-                delete (sheet[key]);
-            }
+        setIsCreate(false);
+        result = await service.updateIsActive('members', objectToRemove);
+        if (result) {
+            setAlertVariant('success');
+            setAlertText("El socio fue eliminado correctamente.");
+        } else {
+            setAlertVariant('danger');
+            setAlertText("No se pudo eliminar al socio.");
         }
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet 1');
-        console.log("el workbook", workbook, " la sheet", sheet);
-        XLSX.writeFile(workbook, 'inventario.xlsx');
+        setShowAlert(true);
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 5000);
+        refreshView();
     }
-    const refreshView = useCallback(() => {
-        getData();
-    }, []);
+    function refreshView() {
+        service.getAll('members')
+            .then(response => {
+                setData(response.data);
+            })
+    }
 
-    if (actionType == 1) {
+    function refreshView() {
+        service.getAll('members')
+            .then(response => {
+                setData(response.data);
+            })
+    }
+
+    if (isLoading) {
+        content = (
+            <div className="loading-content">
+                <Spinner animation="grow" />
+                <span>Un momento...</span>
+            </div>
+        )
+    }
+    if (actionType == 1 && !isLoading) {
         content = (
             <>
                 <div className="text-right">
                     <Button variant="info" onClick={() => { handleCreate(objectType) }}>Nuevo socio</Button>
-              <Button onClick={handleReport}>Generar inventario</Button>
                 </div>
                 {
                     data.length !== 0 ?
                         <>
+                            <div className="text-right">
+                                <Button disabled={data.length === 0} onClick={() => { hooks.handleReport(tableId, true, 'I') }}>Generar inventario</Button>
+                            </div>
                             <div className="filters-container container-fluid">
                                 <Form key="test">
                                     <Row className="g-2">
                                         <Col md className="flex-filter-container">
                                             <FaFilter />
-                                            <Form.Control size="sm" type="text" name="filter" placeholder="Filtrar por descripción" onChange={filterOnChange} />
+                                            <Form.Control size="sm" type="text" name="filter" placeholder="Filtrar por nombre, apellido, email o dni" onChange={filterOnChange} />
                                         </Col>
                                     </Row>
                                 </Form>
                             </div>
-                            <Table striped bordered hover id='data-table'>
+                            <Table striped bordered hover id='data-table-table'>
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -153,15 +143,16 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
                                         <th>Teléfono</th>
                                         <th>Dirección</th>
                                         <th>DNI</th>
-                                        <th>No. de socio</th>
+                                        <th>Número de socio</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {
                                         data.map((dat, index) => {
-                                            return (<><tr key={index}>
-                                                <td>{index +1}</td>
+
+                                            return (<tr key={index}>
+                                                <td>{index + 1}</td>
                                                 <td>{dat.first_name}</td>
                                                 <td>{dat.last_name}</td>
                                                 <td>{dat.email}</td>
@@ -171,19 +162,16 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
                                                 <td>{dat.membership_id}</td>
                                                 <td className="action-td"><Button id={index} variant="success" onClick={() => { handleEdit(dat.id) }}>Editar</Button>
                                                     <Button id={dat.id} variant="danger" onClick={() => { handleShow(dat.id) }}>Eliminar</Button></td>
-
-                                            </tr>
-
-                                            </>)
+                                            </tr>)
                                         })
                                     }
                                 </tbody>
                             </Table>
                             <Modal show={show} onHide={handleClose} onExited={refreshView}>
                                 <Modal.Header closeButton>
-                                    <Modal.Title>Eliminar socio</Modal.Title>
+                                    <Modal.Title>Eliminar empleado</Modal.Title>
                                 </Modal.Header>
-                                <Modal.Body>¿Realmente desea eliminar el socio?</Modal.Body>
+                                <Modal.Body>¿Realmente desea eliminar el empleado?</Modal.Body>
                                 <Modal.Footer>
                                     <Button variant="secondary" onClick={handleClose}>
                                         No
@@ -193,6 +181,11 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
                                     </Button>
                                 </Modal.Footer>
                             </Modal>
+                            <Alert variant={alertVariant} show={showAlert} onClose={() => setShowAlert(false)} dismissible>
+                                <p>
+                                    {alertText}
+                                </p>
+                            </Alert>
                         </>
                         : ''}
             </>
@@ -201,15 +194,12 @@ const MembersTable = ({ item, objectType, handleObjectType, handleActionType, ac
     } else {
         content =
             <>
-                <MembersCrudForm data={data} item={index} itemType={objectType} isCreate={isCreate} actionType={action} />
+                <MembersCrudForm data={data} item={index} itemType={objectType} isCreate={isCreate} actionType={action} handleObjectType={handleObjectType} />
                 <div className="text-left">
-                    <a href="#" onClick={() => { goBack(1, objectType) }}><FaChevronLeft/> Volver</a>
+                    <a href="#" onClick={() => { setAction(1); handleObjectType(1, objectType, 'Socios', 'members'); refreshView(); }}><FaChevronLeft /> Volver</a>
                 </div>
             </>
     }
-
-
-
 
     return content;
 }
