@@ -45,7 +45,7 @@ exports.findAll = (req, res) => {
         .collation({ locale: 'en', strength: 2 })
         .sort({ cancelled: 1, member: 1, book: 1 })
         .populate("member", "first_name last_name membership_id", Member)
-        .populate("book", "title", Book)
+        .populate("book", "title author libraryOnly", Book)
         .then(data => {
             res.send(data);
         })

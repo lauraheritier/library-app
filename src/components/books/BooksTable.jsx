@@ -151,6 +151,7 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
                 </div>
                 {
                     <>
+                     
                         <div className="filters-container container-fluid">
                             <Form key="test">
                                 <Row className="g-2">
@@ -233,8 +234,6 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
                             </p>
                         </Alert>
                     </>
-
-
                 }</>
         );
     } else {

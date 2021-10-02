@@ -203,7 +203,7 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
                                                 </Form.Select>
                                                 :
                                                 <Form.Select aria-label='publishers' name="publisher"
-                                                    defaultValue={selectedItem2Id} onChange={handleChange/*(e) => {handleValues(e)}*/} onBlur={handleBlur}>
+                                                    defaultValue={selectedItem2Id} onChange={handleChange} onBlur={handleBlur}>
 
                                                     <option value={selectedItem2Id}>{selectedItem2Description}</option>
                                                     {
