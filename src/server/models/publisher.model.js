@@ -4,7 +4,8 @@ module.exports = mongoose => {
       description: { type: String, unique: true, required: true },
       url: String,
       isActive: Boolean
-    }
+    },
+    { timestamps: true }
   );
 
   schema.method("toJSON", function() {

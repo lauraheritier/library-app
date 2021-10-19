@@ -142,16 +142,20 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
     if (actionType == 1 && !isLoading) {
         content = (
             <>
-                <div className="text-right">
-                    <a href="#" onClick={() => { handleObjectType(1, 4, 'Categorías', 'categories'); }}>Categorías</a>
-                    <a href="#" onClick={() => { handleObjectType(1, 5, 'Editoriales', 'publishers'); }}>Editoriales</a>
-                    <a href="#" onClick={() => { handleObjectType(1, 6, 'Soportes', 'supports'); }}>Soportes</a>
-                    <Button variant="info" onClick={handleCreate}>Nuevo recurso</Button>
-                    <Button disabled= {resources.length === 0} variant="info" onClick={() => { hooks.handleReport(tableId, false) }}>Generar inventario</Button>
+                <div className="resources-link-container">
+                    <div className="link-container">
+                        <a href="#" onClick={() => { handleObjectType(1, 4, 'Categorías', 'categories'); }}>Categorías</a>
+                        <a href="#" onClick={() => { handleObjectType(1, 5, 'Editoriales', 'publishers'); }}>Editoriales</a>
+                        <a href="#" onClick={() => { handleObjectType(1, 6, 'Soportes', 'supports'); }}>Soportes</a>
+                    </div>
+                    <div className="btn-containers">
+                        <Button variant="info" onClick={handleCreate}>Nuevo recurso</Button>
+                        <Button disabled={resources.length === 0} variant="info" onClick={() => { hooks.handleReport(tableId, false) }}>Generar inventario</Button>
+                    </div>
                 </div>
                 {
                     <>
-                     
+
                         <div className="filters-container container-fluid">
                             <Form key="test">
                                 <Row className="g-2">

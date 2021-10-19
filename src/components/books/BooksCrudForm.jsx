@@ -182,6 +182,20 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
                                         </FloatingLabel>
                                     </Form.Group>
                                 </Col>
+                                <Col md>
+                                    <Form.Group className="mb-3" controlId="formBasicAuthors">
+                                        <FloatingLabel
+                                            controlId="floatingAuthors"
+                                            label="Autor"
+                                            className={touched.author && errors.author ? "error" : null}>
+                                            <Form.Control
+                                                type="text" name="author" defaultValue={!isCreate ? result.author : ''} onChange={handleChange} onBlur={handleBlur} />
+                                            {touched.author && errors.author ? (
+                                                <div className="error-message">{errors.author}</div>
+                                            ) : null}
+                                        </FloatingLabel>
+                                    </Form.Group>
+                                </Col>
                             </Row>
                             <Row className="g-3">
                                 <Col md>
@@ -299,21 +313,7 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
                                             ) : null}
                                         </FloatingLabel>
                                     </Form.Group>
-                                </Col>
-                                <Col md>
-                                    <Form.Group className="mb-3" controlId="formBasicAuthors">
-                                        <FloatingLabel
-                                            controlId="floatingAuthors"
-                                            label="Autor"
-                                            className={touched.author && errors.author ? "error" : null}>
-                                            <Form.Control
-                                                type="text" name="author" defaultValue={!isCreate ? result.author : ''} onChange={handleChange} onBlur={handleBlur} />
-                                            {touched.author && errors.author ? (
-                                                <div className="error-message">{errors.author}</div>
-                                            ) : null}
-                                        </FloatingLabel>
-                                    </Form.Group>
-                                </Col>
+                                </Col>                               
                             </Row>
                             <Row className="g-1">
                                 <Col md></Col>

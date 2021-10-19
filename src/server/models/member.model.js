@@ -10,7 +10,8 @@ module.exports = mongoose => {
       address: String,
       membership_id: { type: String, unique: true },
       isActive: Boolean
-    }
+    },
+    { timestamps: true }
   );
 
   schema.method("toJSON", function () {

@@ -36,3 +36,105 @@
     transform: rotate(360deg);
   }
 }
+.header {
+  min-height: 50px;
+    background: #323232;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+}
+.header p {
+  margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header .user {
+  padding-right: 8px;
+}
+
+.header .logout {
+  padding-left: 24px;
+}
+
+.App .intro {
+  height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    letter-spacing: 9px;
+}
+body {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 100% 20%;
+  background-image: url(https://cdn.statically.io/img/englishlive.ef.com/es-mx/blog/wp-content/uploads/sites/8/2018/02/shutterstock_522019972.jpg);
+
+}
+body:after {
+  content: "";
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    display: block;
+    background: #ffffffbd;
+    z-index: -1;
+}
+.nav-pills {
+  background: rgba(240, 240, 240,0.5);
+}
+.loguito {
+  font-weight: bold;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+}
+.loguito span {
+  padding-left: 16px;
+}
+
+.nav-pills-container {
+  margin-bottom: 54px;
+  position: fixed;
+  left: 0;
+  height: 100vh;
+  background: #323232;
+  display: flex;
+  flex-direction: column;
+  width: 16%;
+  
+}
+.nav-pills-container .nav {
+ background: #323232;
+  text-align: left;
+  height: 100%;
+}
+.nav-pills-container .nav .nav-item {
+  border-bottom: 1px solid #ffffff;
+}
+.nav-pills-container .nav .nav-item a:not(:hover):not(:focus){
+  color: #ffffff;
+}
+.nav-link:focus, .nav-link:hover {
+  color: #323232;
+  background-color: #ffffff;
+}
+.container-body {
+  max-width: 60em;
+  margin: 32px 0 0 23%;
+}
+.resources-link-container {
+  display: flex;
+  justify-content: space-between;
+}
+.resources-link-container div a:not(:last-of-type), .resources-link-container div button:first-child {
+  margin-right: 8px;
+}
+
+.App .container-body > h2 {
+  margin-bottom: 32px;
+}

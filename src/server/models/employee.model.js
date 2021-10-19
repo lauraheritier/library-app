@@ -7,7 +7,8 @@ module.exports = mongoose => {
         dni: { type: Number, unique: true, required: true },
         address: String,
         isActive: Boolean
-    });
+    },
+    { timestamps: true });
 
     schema.method("toJSON", function() {
         const { __v, _id, ...object } = this.toObject();

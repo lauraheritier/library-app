@@ -88,68 +88,91 @@ const MainContainer = () => {
         setActionType(1);
     };
 
-    if (objectType == 0 || actionType == 0) {
+   /* if (objectType == 0 || actionType == 0) {
         body = (
             <p>¡Bienvenidos!</p>
         )
-    }
+    }*/
     if (objectType === 1) {
         body = (
+            <div className="container-body">
+            <h2>{mainTitle}</h2>
             <BooksTable item={'books'} actionType={actionType} objectType={objectType}
                 mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+       </div>
         )
     }
     if (objectType === 2) {
         body = (
+            <div className="container-body">
+            <h2>{mainTitle}</h2>
             <MembersTable item={'categories'} actionType={actionType} objectType={objectType}
                 mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
-        )
+       </div>
+       )
     }
     if (objectType === 3) {
         body = (
+            <div className="container-body">
+            <h2>{mainTitle}</h2>
             <EmployeesTable item={'categories'} actionType={actionType} objectType={objectType}
                 mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+       </div>
         )
     }
     if (objectType === 4) {
         body = (
+            <div className="container-body">
+            <h2>{mainTitle}</h2>
             <CategoriesTable item={'categories'} actionType={actionType} objectType={objectType}
                 mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
-        )
+        
+        </div>)
     }
     if (objectType === 5) {
         body = (
+            <div className="container-body">
+            <h2>{mainTitle}</h2>
             <PublishersTable item={'publishers'} actionType={actionType} objectType={objectType}
                 mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+        </div>
         )
     }
     if (objectType === 6) {
         body = (
+            <div className="container-body">
+            <h2>{mainTitle}</h2>
             <SupportsTable item={'supports'} actionType={actionType} objectType={objectType}
                 mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+       </div>
         )
     }
 
     if (objectType === 7) {
         body = (
+            <div className="container-body">
+            <h2>{mainTitle}</h2>
             <BorrowingsTable item={'borrowings'} actionType={actionType} objectType={objectType}
                 mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+       </div>
         )
     }
 
     if (objectType === 8) {
         body = (
+            <div className="container-body">
+            <h2>{mainTitle}</h2>
             <ReportsTable item={'borrowings'} actionType={actionType} objectType={objectType}
                 mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+        </div>
         )
     }
 
 
     content = (
         <>
-            <Container>
-                <h1>{mainTitle}</h1>
-                <Nav variant="pills" activeKey={keyWithFocus} onSelect={handleSelect}>
+            <div className="nav-pills-container">
+                <Nav className="flex-column nav" activeKey={keyWithFocus} onSelect={handleSelect}>
                     <Nav.Item>
                         <Nav.Link eventKey="0">
                             Inicio
@@ -181,7 +204,7 @@ const MainContainer = () => {
                         </Nav.Link>
                     </Nav.Item>
                 </Nav>
-            </Container>
+            </div>
 
 
 
