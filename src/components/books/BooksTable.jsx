@@ -150,7 +150,7 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
                     </div>
                     <div className="btn-containers">
                         <Button variant="info" onClick={handleCreate}>Nuevo recurso</Button>
-                        <Button disabled={resources.length === 0} variant="info" onClick={() => { hooks.handleReport(tableId, false) }}>Generar inventario</Button>
+                        <Button disabled={resources.length === 0} variant="primary" onClick={() => { hooks.handleReport(tableId, false) }}>Generar inventario</Button>
                     </div>
                 </div>
                 {

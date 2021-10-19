@@ -173,12 +173,7 @@ const MainContainer = () => {
         <>
             <div className="nav-pills-container">
                 <Nav className="flex-column nav" activeKey={keyWithFocus} onSelect={handleSelect}>
-                    <Nav.Item>
-                        <Nav.Link eventKey="0">
-                            Inicio
-                        </Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
+                  <Nav.Item>
                         <Nav.Link eventKey="1">
                             Recursos
                         </Nav.Link>
