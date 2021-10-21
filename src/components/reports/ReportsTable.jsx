@@ -122,6 +122,7 @@ const ReportsTable = ({ item, objectType, handleObjectType, handleActionType, ac
     if (key == '1') {
         let res = groupByDate();
         body = (
+            res !== null && res.length !== 0 ?
             <>
                 <Table id="data-by-date" striped bordered hover>
                     <thead>
@@ -164,13 +165,15 @@ const ReportsTable = ({ item, objectType, handleObjectType, handleActionType, ac
                     <Button variant="success" className="btn" onClick={() => { hooks.handleReport(document.getElementById('data-by-date'), false) }}><FaFileExcel /> Generar informe</Button>
                 </div>
             </>
+            :
+            <p>No hay datos para mostrar.</p>
         );
     }
     if (key == '2') {
 let result = groupByMember();
 console.log("result", result);
 body = (
-    result.length !== 0 ? 
+    result !== null && result.length !== 0 ? 
     <>
      <Table id="member-table" striped bordered hover>
                         <thead>
@@ -212,13 +215,13 @@ body = (
                     </div>
     </>
     :
-    <p>No hay datos disponibles.</p>
+    <p>No hay datos para mostrar.</p>
 );
     }
     if (key == '3') {
         let result = countLibraryOnly();
         body = (
-            result.length !== 0 ?
+            result !== null && result.length !== 0 ?
                 <>
                     <Table id="library-table" striped bordered hover>
                         <thead>
@@ -252,7 +255,7 @@ body = (
                         <Button variant="success" className="btn" onClick={() => { hooks.handleReport(document.getElementById('library-table'), false) }}><FaFileExcel /> Generar informe</Button>
                     </div>
                 </>
-                : <p>No existen recursos de solo consulta en biblioteca.</p>
+                : <p>No hay datos para mostrar.</p>
         );
     }
 

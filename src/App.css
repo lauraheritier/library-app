@@ -38,12 +38,13 @@
 }
 .header {
   min-height: 50px;
-    background: #323232;
+  background: rgba(50, 50, 50, 0.82);
     color: #ffffff;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 16px;
+    border-bottom: 1px solid #ffffff;
 }
 .header p {
   margin: 0;
@@ -70,19 +71,9 @@
 body {
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: 100% 20%;
+  background-position: 100% -653px;
   background-image: url(https://cdn.statically.io/img/englishlive.ef.com/es-mx/blog/wp-content/uploads/sites/8/2018/02/shutterstock_522019972.jpg);
 
-}
-body:after {
-  content: "";
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    top: 0;
-    display: block;
-    background: #ffffffbd;
-    z-index: -1;
 }
 .nav-pills {
   background: rgba(240, 240, 240,0.5);
@@ -92,6 +83,9 @@ body:after {
     font-size: 20px;
     display: flex;
     align-items: center;
+    width: 204px;
+    border-right: 1px solid #ffffff;
+    height: 50px;
 }
 .loguito span {
   padding-left: 16px;
@@ -102,30 +96,30 @@ body:after {
   position: fixed;
   left: 0;
   height: 100vh;
-  background: #323232;
+  background: rgba(50, 50, 50, 0.82);
   display: flex;
   flex-direction: column;
-  width: 16%;
+  width: 220px;
+    border-right: 1px solid #ffffff;
   
 }
 .nav-pills-container .nav {
- background: #323232;
-  text-align: left;
+ text-align: left;
   height: 100%;
 }
 .nav-pills-container .nav .nav-item {
   border-bottom: 1px solid #ffffff;
 }
-.nav-pills-container .nav .nav-item a:not(:hover):not(:focus){
+.nav-pills-container .nav .nav-item a:not(:hover):not(:focus):not(.active){
   color: #ffffff;
 }
-.nav-link:focus, .nav-link:hover {
+.nav-link:focus, .nav-link:hover, .nav-link.active {
   color: #323232;
   background-color: #ffffff;
 }
 .container-body {
   max-width: 60em;
-  margin: 32px 0 0 23%;
+  margin: 21px 0 0 23%;
 }
 .resources-link-container {
   display: flex;
@@ -136,5 +130,23 @@ body:after {
 }
 
 .App .container-body > h2 {
-  margin-bottom: 32px;
+  margin-bottom: 88px;
+  background: rgba(240, 240, 240, 0.65);
+  padding: 32px 0;
+  letter-spacing: 9px;
+  border-radius: 4px;
+}
+.list-group-item {
+  cursor: pointer;
+}
+.list-group-item:hover, .list-group-item:focus, .list-group-item[data-rr-ui-active=true] {
+  background: #f0f0f0;
+}
+
+.loading-content {
+  background-color: rgba(240, 240, 240, 0.65);
+  max-width: 320px;
+  margin: 40px auto;
+  padding: 16px;
+  border-radius: 4px;
 }
