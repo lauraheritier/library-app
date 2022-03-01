@@ -63,7 +63,7 @@ let content;
 if (!isCreate && isLoading) {
     content = content = (
         <div className="loading-content">
-            <Spinner animation="grow" />
+            <Spinner animation="grow" variant="warning"/>
             <span>Un momento...</span>
         </div>
     )
@@ -74,7 +74,8 @@ else {
         <>
             <Formik
                 initialValues={{
-                    description: !isCreate ? data.description : ''
+                    description: !isCreate ? data.description : '',
+                    categoryCode: !isCreate ? data.categoryCode : ''
                 }}
                 validationSchema={validate}
                 onChange={(event) => {
@@ -104,6 +105,19 @@ else {
                 }) => (
                     <Form onSubmit={handleSubmit}>
                         <Row className="g-12">
+                        <Col md>
+                                <Form.Group className="mb-3" controlId="formBasicDescription">
+                                    <FloatingLabel
+                                    controlId="category-code"
+                                        label="Código"
+                                        className={touched.categoryCode && errors.categoryCode ? "error" : null}>
+                                        <Form.Control type="text" name="categoryCode" placeholder="Ingresá el código de la categoría" defaultValue={!isCreate ? data.categoryCode : ''} onChange={handleChange} />
+                                        {touched.categoryCode && errors.categoryCode ? (
+                                                <div className="error-message">{errors.categoryCode}</div>
+                                            ) : null}
+                                    </FloatingLabel>
+                                </Form.Group>
+                            </Col>
                             <Col md>
                                 <Form.Group className="mb-3" controlId="formBasicDescription">
                                     <FloatingLabel

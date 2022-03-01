@@ -4,10 +4,12 @@ import BooksTable from "../components/books/BooksTable";
 import CategoriesTable from "../components/categories/CategoriesTable";
 import PublishersTable from "../components/publishers/PublishersTable";
 import MembersTable from "../components/members/MembersTable";
-import EmployeesTable from "../components/employees/EmployeesTable";
 import BorrowingsTable from "../components/borrowings/BorrowingsTable";
 import SupportsTable from "../components/supports/SupportsTable";
 import ReportsTable from "../components/reports/ReportsTable";
+import MainMenu from "../components/header/mainMenu.component";
+import FooterMenu from "../components/footer/footer.component";
+import BookDetail from "../components/books/BookDetail";
 
 const MainContainer = () => {
     /**dataTypes:
@@ -24,6 +26,7 @@ const MainContainer = () => {
      * 2: edit
      * 3: create
      * 4: back
+     * 5: view single
      */
     let content;
     let body;
@@ -59,27 +62,30 @@ const MainContainer = () => {
     }
 
     function refreshView() {
-        
+
     }
 
     useEffect(() => {
     }, [])
 
-    const handleSelect = (e) => {
+    async function handleSelect(e) {
         switch (e) {
             case "0": setMainTitle("Biblioteca"); setkeyWithFocus(0); setObjectType(0); setActionType(0);
                 break;
             case "1": setObjectType(1); setMainTitle("Recursos"); setDataType("books"); setkeyWithFocus(1); setActionType(1); refreshView();
                 break;
-            case "2": setObjectType(2); setMainTitle("Socios"); setDataType("members"); setkeyWithFocus(2); setActionType(1); refreshView();
+            case "2": setObjectType(2); setMainTitle("Mis contactos"); setDataType("members"); setkeyWithFocus(2); setActionType(1); refreshView();
                 console.log("caso 2-el object tipe: ", objectType, " el actionType ", actionType);
-                break;
-            case "3": setObjectType(3); setMainTitle("Empleados"); setDataType("employees"); setkeyWithFocus(3); setActionType(1); refreshView();
-                console.log("caso 3-el object tipe: ", objectType, " el actionType ", actionType);
                 break;
             case "4": setObjectType(7); setMainTitle("Préstamos"); setDataType("borrowings"); setkeyWithFocus(4); setActionType(1); refreshView();
                 break;
             case "5": setObjectType(8); setMainTitle("Informes"); setDataType("reports"); setkeyWithFocus(5); setActionType(1); refreshView();
+                break;
+            case "6": setObjectType(4); setMainTitle("Categorías"); setDataType("categories"); setkeyWithFocus(6); setActionType(1); refreshView();
+                break;
+            case "7": setObjectType(5); setMainTitle("Editoriales"); setDataType("publishers"); setkeyWithFocus(7); setActionType(1); refreshView();
+                break;
+            case "8": setObjectType(6); setMainTitle("Soportes"); setDataType("supports"); setkeyWithFocus(8); setActionType(1); refreshView();
                 break;
             default:
                 console.log("pasaaaaaaa");
@@ -88,126 +94,79 @@ const MainContainer = () => {
         setActionType(1);
     };
 
-   /* if (objectType == 0 || actionType == 0) {
-        body = (
-            <p>¡Bienvenidos!</p>
-        )
-    }*/
     if (objectType === 1) {
         body = (
             <div className="container-body">
-            <h2>{mainTitle}</h2>
-            <BooksTable item={'books'} actionType={actionType} objectType={objectType}
-                mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
-       </div>
+                <BooksTable item={'books'} actionType={actionType} objectType={objectType}
+                    mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+            </div>
         )
     }
     if (objectType === 2) {
         body = (
             <div className="container-body">
-            <h2>{mainTitle}</h2>
-            <MembersTable item={'categories'} actionType={actionType} objectType={objectType}
-                mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
-       </div>
-       )
-    }
-    if (objectType === 3) {
-        body = (
-            <div className="container-body">
-            <h2>{mainTitle}</h2>
-            <EmployeesTable item={'categories'} actionType={actionType} objectType={objectType}
-                mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
-       </div>
+                <MembersTable item={'members'} actionType={actionType} objectType={objectType}
+                    mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+            </div>
         )
     }
     if (objectType === 4) {
         body = (
             <div className="container-body">
-            <h2>{mainTitle}</h2>
-            <CategoriesTable item={'categories'} actionType={actionType} objectType={objectType}
-                mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
-        
-        </div>)
+                <CategoriesTable item={'categories'} actionType={actionType} objectType={objectType}
+                    mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+
+            </div>)
     }
     if (objectType === 5) {
         body = (
             <div className="container-body">
-            <h2>{mainTitle}</h2>
-            <PublishersTable item={'publishers'} actionType={actionType} objectType={objectType}
-                mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
-        </div>
+                <PublishersTable item={'publishers'} actionType={actionType} objectType={objectType}
+                    mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+            </div>
         )
     }
     if (objectType === 6) {
         body = (
             <div className="container-body">
-            <h2>{mainTitle}</h2>
-            <SupportsTable item={'supports'} actionType={actionType} objectType={objectType}
-                mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
-       </div>
+                <SupportsTable item={'supports'} actionType={actionType} objectType={objectType}
+                    mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+            </div>
         )
     }
-
     if (objectType === 7) {
         body = (
             <div className="container-body">
-            <h2>{mainTitle}</h2>
-            <BorrowingsTable item={'borrowings'} actionType={actionType} objectType={objectType}
-                mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
-       </div>
+                <BorrowingsTable item={'borrowings'} actionType={actionType} objectType={objectType}
+                    mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+            </div>
         )
     }
-
     if (objectType === 8) {
         body = (
             <div className="container-body">
-            <h2>{mainTitle}</h2>
-            <ReportsTable item={'borrowings'} actionType={actionType} objectType={objectType}
-                mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
-        </div>
+                <ReportsTable item={'borrowings'} actionType={actionType} objectType={objectType}
+                    mainTitle={mainTitle} handleObjectType={handleObjectType} handleActionType={handleActionType} />
+            </div>
         )
     }
+    if(objectType === 0) {
+        body = (
+            <>
+            <FooterMenu activeKey={keyWithFocus} handleSelect={handleSelect} />
+                           
+            </>
+        )
+    }
+   
 
 
     content = (
         <>
-            <div className="nav-pills-container">
-                <Nav className="flex-column nav" activeKey={keyWithFocus} onSelect={handleSelect}>
-                  <Nav.Item>
-                        <Nav.Link eventKey="1">
-                            Recursos
-                        </Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
-                        <Nav.Link eventKey="2">
-                            Socios
-                        </Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
-                        <Nav.Link eventKey="3">
-                            Empleados
-                        </Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
-                        <Nav.Link eventKey="4">
-                            Préstamos
-                        </Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
-                        <Nav.Link eventKey="5">
-                            Informes
-                        </Nav.Link>
-                    </Nav.Item>
-                </Nav>
-            </div>
-
-
-
-
+            <MainMenu activeKey={keyWithFocus} handleSelect={handleSelect} />
             {
-                body
-            }
-
+                body                
+            }           
         </>
     );
     return content;

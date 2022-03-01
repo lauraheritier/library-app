@@ -63,7 +63,7 @@ const PublishersCrudFrom = ({ item, itemType, isCreate, handleObjectType }) => {
     if (!isCreate && isLoading) {
         content = content = (
             <div className="loading-content">
-                <Spinner animation="grow" />
+                <Spinner animation="grow" variant="warning"/>
                 <span>Un momento...</span>
             </div>
         )

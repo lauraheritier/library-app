@@ -9,7 +9,6 @@ db.url = dbConfig.url;
 db.books = require("./book.model.js")(mongoose);
 db.categories = require("./category.model.js")(mongoose);
 db.publishers = require("./publisher.model")(mongoose);
-db.employees = require("./employee.model.js")(mongoose);
 db.members = require("./member.model.js")(mongoose);
 db.supports = require("./support.model.js")(mongoose);
 db.borrowings = require("./borrowing.model.js")(mongoose);

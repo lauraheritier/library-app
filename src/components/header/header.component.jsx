@@ -7,8 +7,11 @@ import {FaBookOpen} from 'react-icons/fa';
 const Header = () => {
     const {isAuthenticated } = useAuth0();
     if(!isAuthenticated) {
-        return <div className="header"><div className="loguito"><FaBookOpen/> <span>Mi biblioteca</span></div><LoginButton /></div>
-      } else return <div className="header"><div className="loguito"><FaBookOpen/> <span>Mi biblioteca</span></div><Profile/></div>
+
+        return (<div className="header"><div className="loguito"><FaBookOpen/> <span>Kosmos</span></div><LoginButton /></div>)
+      } else return (
+       <div className="header"><div className="loguito"><FaBookOpen/> <span>Kosmos</span></div><Profile/></div>
+       )
 };
 
 export default Header;

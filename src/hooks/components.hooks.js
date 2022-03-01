@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import service from '../services/webService';
+import ReactDOM from 'react-dom';
+import { Page, Text, View, Document, StyleSheet, PDFViewer } from '@react-pdf/renderer';
 import {
     FaBook,
     FaConnectdevelop,
@@ -13,6 +15,7 @@ import {
 } from 'react-icons/fa';
 import XLSX from 'xlsx';
 import helper from '../helpers/formatDate.helper';
+import App from '../App';
 //Retrieve one item (to update)
 export function useGetDataById(dataType, item) {
     const [result, setResult] = useState([]);
@@ -76,16 +79,15 @@ export function useSortSelectedOptionsToUpdate(item1, item2, item3) {
     ];
 }
 
-//Retreve all items 
-export function useGetHelperObjects(item, libraryOnly) {
+//Retrieve all items 
+export function useGetHelperObjects(item) {
     const [results, setResults] = useState([]);
     const [unfilteredData, setUnfilteredData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
         const fetchData = () => {
             if (item !== null) {
-                if (libraryOnly) {
-                    service.getLibraryOnly(item)
+                service.getAll(item)
                         .then(response => {
                             setUnfilteredData(response.data);
                             setResults(response.data);
@@ -97,20 +99,7 @@ export function useGetHelperObjects(item, libraryOnly) {
                         .catch(e => {
                             console.log("ERROR!!! ", e);
                         });
-                } else {
-                    service.getAll(item)
-                        .then(response => {
-                            setUnfilteredData(response.data);
-                            setResults(response.data);
-                            if (results !== []) {
-                                console.log("los results items: ", results, "y los items ", item)
-                                setIsLoading(false)
-                            }
-                        })
-                        .catch(e => {
-                            console.log("ERROR!!! ", e);
-                        });
-                }
+                
             }
         }
         fetchData();
@@ -131,7 +120,7 @@ export function useClearFields(item, isUpdate) {
         document.getElementsByName("publisher")[0].value = '';
         document.getElementsByName("category")[0].value = '';
         document.getElementsByName("support")[0].value = '';
-        document.getElementsByName("libraryOnly")[0].checked = false;
+        document.getElementsByName("read")[0].checked = false;
     }
     if (item === 'borrowings') {
         if (!isUpdate) {
@@ -150,7 +139,7 @@ export function useClearFields(item, isUpdate) {
         document.getElementById('publisher-description').value = '';
         document.getElementsByName('url')[0].value = '';
     }
-    if (item === 'employees' || item === 'members') {
+    if (item === 'members') {
         document.getElementsByName('first_name')[0].value = '';
         document.getElementsByName('last_name')[0].value = '';
         document.getElementsByName('telephone')[0].value = '';
@@ -225,14 +214,20 @@ export function useFilterOnChange(filterObject, dataType, data) {
             let catDesc;
             let pubDesc;
             let supDesc;
+            let tagsArray = [];
+           f.tags.forEach(tag => tagsArray.push(tag.text));
+            let filtered = tagsArray.filter(function(str) {return str.includes(filterObject.toLowerCase())});
             (item1).map(cat => catDesc = cat.description);
             (item2).map(pub => pubDesc = pub.description);
             (item3).map(sup => supDesc = sup.description);
-
+            let uniqueTag = '';
+            tagsArray.map((d, idx) => { if ((d.toLowerCase()).includes(filterObject.toLowerCase())) { return uniqueTag = d.toLowerCase();}});
+                        
             return ((f.title).toLowerCase()).includes(filterObject.toLowerCase()) ||
                 (f.author.toLowerCase()).includes(filterObject.toLowerCase()) ||
                 (isbnString.toLowerCase()).includes(filterObject.toLowerCase()) ||
-                (samplesString.toLowerCase()).includes(filterObject.toLowerCase()) ||
+                (uniqueTag.toLowerCase()).includes(filterObject.toLowerCase()) ||
+               (samplesString.toLowerCase()).includes(filterObject.toLowerCase()) ||
                 (availableSamplesString.toLowerCase()).includes(filterObject.toLowerCase()) ||
                 (catDesc.toLowerCase()).includes(filterObject.toLowerCase()) ||
                 (supDesc.toLowerCase()).includes(filterObject.toLowerCase()) ||
@@ -263,16 +258,7 @@ export function useFilterOnChange(filterObject, dataType, data) {
         results = data.filter(function(dat) {
             return ((dat.description).toLowerCase()).includes(filterObject.toLowerCase());
         });
-    }
-    if (dataType === 'employees') {
-        results = data.filter(function(dat) {
-            let dniString = dat.dni + '';
-            return ((dat['last_name']).toLowerCase()).includes(filterObject.toLowerCase()) ||
-                (dat['first_name'].toLowerCase()).includes(filterObject.toLowerCase()) ||
-                (dniString.toLowerCase()).includes(filterObject.toLowerCase()) ||
-                ((dat['email']).toLowerCase()).includes(filterObject.toLowerCase());
-        });
-    }
+    }    
     if (dataType === 'members') {
         results = data.filter(function(dat) {
             let dniString = dat.dni + '';
@@ -328,6 +314,8 @@ export function setReactIcons(description) {
     }
     return result;
 }
+
+
 
 const exportedHooks = {
     useGetDataById,

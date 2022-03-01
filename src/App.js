@@ -11,7 +11,7 @@ function App() {
 let body;
   if (isLoading) {
     return <div className="loading-content">
-    <Spinner animation="grow" />
+    <Spinner animation="grow" variant="warning" />
     <span>Un momento...</span>
 </div>;
   }
@@ -19,7 +19,7 @@ let body;
     body = 
     <>
     <Header />
-     <h1 class="intro">Mi Biblioteca</h1>
+     <h1 className="intro">Kosmos</h1>
     </>
   } else {
     body = (

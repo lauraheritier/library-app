@@ -35,19 +35,19 @@ const MembersCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
             result = await hooks.useCreateOrUpdate('members', isCreate, item, props);
             if (result) {
                 setAlertVariant('success');
-                setAlertText("El socio fue actualizado correctamente.");
+                setAlertText("El contacto fue actualizado correctamente.");
             } else {
                 setAlertVariant('danger');
-                setAlertText("Ocurrió un error al actualizar el socio.");
+                setAlertText("Ocurrió un error al actualizar el contacto.");
             }
         } else {
             result = await hooks.useCreateOrUpdate('members', isCreate, null, props);
             if (result) {
                 setAlertVariant('success');
-                setAlertText("El socio fue creado correctamente.");
+                setAlertText("El contacto fue creado correctamente.");
             } else {
                 setAlertVariant('danger');
-                setAlertText("Ocurrió un error al crear el socio.");
+                setAlertText("Ocurrió un error al crear el contacto.");
             }
         }
         hooks.useClearFields('members', false);
@@ -62,7 +62,7 @@ const MembersCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
     if (isLoading) {
         content = content = (
             <div className="loading-content">
-                <Spinner animation="grow" />
+                <Spinner animation="grow" variant="warning"/>
                 <span>Un momento...</span>
             </div>
         )
@@ -196,7 +196,7 @@ const MembersCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                         <Form.Group className="mb-3" controlId="formBasicMembership">
                                             <FloatingLabel
                                                 controlId="floatingMembership"
-                                                label="Número de socio"
+                                                label="Código del contacto"
                                                 className="mb-3">
                                                 <Form.Control disabled name="membership_id" type="text" defaultValue={result.membership_id} />
                                             </FloatingLabel>
@@ -211,7 +211,7 @@ const MembersCrudForm = ({ item, itemType, isCreate, handleObjectType }) => {
                                 <Button variant="success" type="submit">
                                     Submit
                                 </Button>
-                                <Button variant="danger" type="button" onClick={() => { setAction(1); handleObjectType(1, 2, 'Socios', 'members'); }}>
+                                <Button variant="danger" type="button" onClick={() => { setAction(1); handleObjectType(1, 2, 'Mis contactos', 'members'); }}>
                                     Cancel
                                 </Button>
                             </div>

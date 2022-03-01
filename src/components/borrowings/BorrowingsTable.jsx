@@ -107,7 +107,7 @@ const BorrowingsTable = ({ item, objectType, handleObjectType, handleActionType,
     if(isLoading) {
         content = content = (
             <div className="loading-content">
-                <Spinner animation="grow" />
+                <Spinner animation="grow" variant="warning"/>
                 <span>Un momento...</span>
             </div>
         )
@@ -137,7 +137,7 @@ const BorrowingsTable = ({ item, objectType, handleObjectType, handleActionType,
                                         <tr>
                                             <th>#</th>
                                             <th>Recurso</th>
-                                            <th>Socio</th>
+                                            <th>Contacto</th>
                                             <th>Desde</th>
                                             <th>Hasta</th>
                                             <th>Estado</th>

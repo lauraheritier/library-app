@@ -30,8 +30,8 @@ const BorrowingsCrudForm = ({ item, itemType, isCreate, fixedFromDate, fixedToDa
     const [alertText, setAlertText] = useState('');
     const [action, setAction] = useState('');
     const [result, setResult, isLoadingBorrowings] = (!isCreate ? hooks.useGetDataById('borrowings', item) : '');
-    const [isLoadingResources, srcs] = (hooks.useGetHelperObjects('books', true));
-    const [isLoadingMembers, membs] = (hooks.useGetHelperObjects('members', false));    
+    const [isLoadingResources, srcs] = (hooks.useGetHelperObjects('books'));
+    const [isLoadingMembers, membs] = (hooks.useGetHelperObjects('members'));    
 
     const sendData = async (props) => {
         console.log("pasa  xacá y las dates: ", props);
@@ -86,7 +86,7 @@ const BorrowingsCrudForm = ({ item, itemType, isCreate, fixedFromDate, fixedToDa
     if ((!isCreate && isLoadingBorrowings) || isLoadingResources && isLoadingMembers) {
         content = content = (
             <div className="loading-content">
-                <Spinner animation="grow" />
+                <Spinner animation="grow" variant="warning"/>
                 <span>Un momento...</span>
             </div>
         )
@@ -99,7 +99,7 @@ const BorrowingsCrudForm = ({ item, itemType, isCreate, fixedFromDate, fixedToDa
                 <>
                     <div className="container outdated-info">
                         {selectedBook.map(book => <span>Libro: {book.title}</span>)}
-                        {selectedMember.map(member => <span>Socio: {member.membership_id}</span>)}
+                        {selectedMember.map(member => <span>Contacto: {member.membership_id}</span>)}
                         <span>Desde: {fixedFromDate}</span>
                         <span>Hasta: {fixedToDate}</span>
                     </div>
@@ -244,11 +244,11 @@ const BorrowingsCrudForm = ({ item, itemType, isCreate, fixedFromDate, fixedToDa
                                             <Form.Group className="mb-3" controlId="formBasicMembers">
                                                 <FloatingLabel
                                                     controlId="floatingMembers"
-                                                    label="Socio"
+                                                    label="Contacto"
                                                     className={touched.member && errors.member ? "error" : null}>
                                                     <Form.Select aria-label='members' name="member"
                                                         onChange={handleChange} >
-                                                        <option value=''>Seleccioná un socio</option>
+                                                        <option value=''>Seleccioná un contacto</option>
 
                                                         {
                                                             membs.map((m, index) => {

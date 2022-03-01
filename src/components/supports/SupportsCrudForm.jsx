@@ -9,7 +9,6 @@ const SupportsCrudForm = ({ item, handleObjectType, isCreate }) => {
     /**itemTypes:
      * 1: Books
      * 2: Members
-     * 3: Employees
      * 4: Categories
      * 5: Publishers
      * 6: Supports
@@ -63,7 +62,7 @@ const SupportsCrudForm = ({ item, handleObjectType, isCreate }) => {
     if (!isCreate && isLoading) {
         content = content = (
             <div className="loading-content">
-                <Spinner animation="grow" />
+                <Spinner animation="grow" variant="warning"/>
                 <span>Un momento...</span>
             </div>
         )

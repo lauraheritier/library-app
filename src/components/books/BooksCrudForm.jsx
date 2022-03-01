@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
+import { render } from 'react-dom';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import { Row, Col, Button, Alert, Form, Spinner } from 'react-bootstrap';
 import { Formik } from 'formik';
 import hooks from '../../hooks/components.hooks';
 import bookValidator from '../../validators/book.validator';
+import FooterMenu from "../footer/footer.component";
+import { WithContext as ReactTags } from 'react-tag-input';
+import uuid from 'react-uuid';
 
 
 const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
     /**itemTypes:
      * 1: Books
      * 2: Members
-     * 3: Employees
      * 4: Categories
      * 5: Publishers
      *
@@ -26,9 +29,17 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
         publisher: '',
         author: '',
         isbn: '',
-        libraryOnly: false,
+        read: false,
         support: '',
-        sample: 1
+        sample: 1,
+        pages: 1,
+        thumbnail: '',
+        rating: 0,
+        notes: '',
+        location: '',
+        tags: [{id: '', text: ''}],
+        bookCode: ''
+
     });
     const [action, setAction] = useState('');
     const [show, setShow] = useState(false);
@@ -40,7 +51,31 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
     const [isLoadingCategories, cats] = (hooks.useGetHelperObjects('categories', false));
     const [isLoadingPublishers, pubs] = (hooks.useGetHelperObjects('publishers', false));
     const [isLoadingSupports, sups] = (hooks.useGetHelperObjects('supports', false));
+    const [imgUrl, setImgUrl] = useState('');
+    const [reactTags, setReactTags] = useState([]);
+    /**tags */
+    const KeyCodes = {
+        comma: 188,
+        enter: 13
+    };
+    const delimiters = [KeyCodes.comma, KeyCodes.enter];
+    const handleDelete = i => {
+        setReactTags(reactTags.filter((tag, index) => index !== i));
+    };
 
+    const handleAddition = tag => {
+        setReactTags([...reactTags, tag]);
+    };
+
+  const onClearAll = () => {
+    setReactTags([]);
+  };
+
+  const onTagUpdate = (i, newTag) => {
+    const updatedTags = reactTags.slice();
+    updatedTags.splice(i, 1, newTag);
+    setReactTags(updatedTags);
+  };
     const sendData = async (props) => {
         let result;
         if (!isCreate) {
@@ -70,17 +105,38 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
         }, 5000);
     }
 
+    const getThumbnail = async (isbn) => {
+        let rsult = "";
+
+        let imageUrl = 'https://www.googleapis.com/books/v1/volumes?q=isbn:' + isbn;
+        const res = await fetch(imageUrl);
+        const imageBlob = await res.json();
+
+
+        //const imageObjectURL = URL.createObjectURL(imageBlob);
+        console.log("la rta y el image blob", res, imageBlob);
+        if (imageBlob.totalItems > 0) {
+            rsult = imageBlob.items[0].volumeInfo.imageLinks.thumbnail;
+            console.log("la rta!!!!!", rsult);
+        }
+
+        return rsult;
+
+    }
+
     useEffect(() => {
         if (!isCreate && !isLoadingResources) {
             setDat(result);
         }
+
+
     }, [!isCreate ? isLoadingResources : isLoadingCategories, isLoadingPublishers, isLoadingSupports]);
 
 
     if ((!isCreate && isLoadingResources) || isLoadingCategories && isLoadingPublishers && isLoadingSupports) {
         content = content = (
             <div className="loading-content">
-                <Spinner animation="grow" />
+                <Spinner animation="grow" variant="warning" />
                 <span>Un momento...</span>
             </div>
         )
@@ -110,9 +166,16 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
                         publisher: !isCreate ? result.publisher : '',
                         author: !isCreate ? result.author : '',
                         isbn: !isCreate ? result.isbn : '',
-                        libraryOnly: !isCreate ? result.libraryOnly : false,
+                        read: !isCreate ? result.read : false,
                         support: !isCreate ? result.support : '',
-                        sample: !isCreate ? result.sample : 1
+                        sample: !isCreate ? result.sample : 1,
+                        pages: !isCreate ? result.pages : 1,
+                        thumbnail: !isCreate ? result.thumbnail : '',
+                        rating: !isCreate ? result.rating : 0,
+                        notes: !isCreate ? result.notes : '',
+                        tags: !isCreate ? result.tags : '',
+                        location: !isCreate ? result.location : '',
+                        bookCode: !isCreate ? result.bookCode : ''
                     }}
                     validationSchema={validate}
                     onChange={(event) => {
@@ -123,11 +186,20 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
                     }
                     }
                     onSubmit={(result, { setSubmitting }) => {
-
+                        getThumbnail(result.isbn).then(thumbnail => {
+                            console.log("lo q trae thumbnail", thumbnail);
+                            result.thumbnail = thumbnail;
+                        });
+                        result.tags = reactTags;
+                        
+                        
                         // When button submits form and form is in the process of submitting, submit button is disabled
                         setSubmitting(true);
 
                         // Simulate submitting to database, shows us values submitted, resets form
+
+
+
                         setTimeout(() => {
                             sendData(result);
                             setSubmitting(false);
@@ -160,7 +232,7 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
                                     <Form.Group className="mb-3" controlId="formBasicISBN">
                                         <FloatingLabel
                                             controlId="floatingISBN"
-                                            label="ISBN"
+                                            label="ISBN (opcional)"
                                             className="mb-3">
                                             <Form.Control type="text" disabled={!isCreate && result.isbn !== ''} name="isbn" placeholder="Ingresá el ISBN" defaultValue={!isCreate ? result.isbn : ''} onChange={handleChange} onBlur={handleBlur} />
                                         </FloatingLabel>
@@ -313,18 +385,90 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
                                             ) : null}
                                         </FloatingLabel>
                                     </Form.Group>
-                                </Col>                               
+                                </Col>
                             </Row>
-                            <Row className="g-1">
-                                <Col md></Col>
-                                <Col md></Col>
-                                <Col md className="borrowed-check">
-                                    <Form.Group className="mb-3" controlId="formBasicLibrarOnly">
-                                        <Form.Check label="Solo consulta en biblioteca" name="libraryOnly" type="checkbox" defaultChecked={!isCreate ? result.libraryOnly : false}
-                                            defaultValue={!isCreate ? result.libraryOnly : false} onChange={handleChange} />
+                            <Row className="g-12">
+                                <Col md>
+                                    <Form.Group className="mb-3" controlId="formBasicAuthors">
+                                        <FloatingLabel
+                                            controlId="floatingAuthors"
+                                            label="Cantidad de páginas (opcional)"
+                                            className={touched.pages && errors.pages ? "error" : null}>
+                                            <Form.Control
+                                                type="text" name="pages" defaultValue={!isCreate ? result.pages : ''} onChange={handleChange} onBlur={handleBlur} />
+                                            {touched.pages && errors.pages ? (
+                                                <div className="error-message">{errors.pages}</div>
+                                            ) : null}
+                                        </FloatingLabel>
+                                    </Form.Group>
+                                </Col>
+                                <Col md>
+                                    <Form.Group className="mb-3" controlId="formBasicAuthors">
+                                        <FloatingLabel
+                                            controlId="floatingAuthors"
+                                            label="Estantería"
+                                            className={touched.location && errors.location ? "error" : null}>
+                                            <Form.Control
+                                                type="text" name="location" defaultValue={!isCreate ? result.location : ''} onChange={handleChange} onBlur={handleBlur} />
+                                            {touched.location && errors.location ? (
+                                                <div className="error-message">{errors.location}</div>
+                                            ) : null}
+                                        </FloatingLabel>
                                     </Form.Group>
                                 </Col>
                             </Row>
+
+                            <Row className="g-12">
+                                <Form.Group className="mb-3" controlId="formBasicAuthors">
+                                    <FloatingLabel
+                                        controlId="floatingAuthors"
+                                        label="Notas (opcional)"
+                                        className={touched.notes && errors.notes ? "error" : null}>
+                                        <Form.Control
+                                            as="textarea" name="notes" defaultValue={!isCreate ? result.notes : ''} onChange={handleChange} onBlur={handleBlur} />
+                                        {touched.notes && errors.notes ? (
+                                            <div className="error-message">{errors.notes}</div>
+                                        ) : null}
+                                    </FloatingLabel>
+                                </Form.Group>
+                            </Row>
+
+                            <Row className="g-12">
+                                <Col md>
+                                    <Form.Group className="mb-3" controlId="formBasicAuthors">
+                                        <FloatingLabel
+                                            controlId="floatingAuthors"
+                                            label="Rating"
+                                            className={touched.rating && errors.rating ? "error" : null}>
+                                            <Form.Control
+                                                type="text" name="rating" defaultValue={!isCreate ? result.rating : ''} onChange={handleChange} onBlur={handleBlur} />
+                                            {touched.pages && errors.pages ? (
+                                                <div className="error-message">{errors.rating}</div>
+                                            ) : null}
+                                        </FloatingLabel>
+                                    </Form.Group>
+                                </Col>
+                                <Col md className="borrowed-check">
+                                    <Form.Group className="mb-3" controlId="formBasicLibrarOnly">
+                                        <Form.Check label="Leído" name="read" type="checkbox" defaultChecked={!isCreate ? result.read : false}
+                                            defaultValue={!isCreate ? result.read : false} onChange={handleChange} />
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <ReactTags
+                                className="tags-system"
+                                    tags={reactTags}
+                                    delimiters={delimiters}
+                                    handleTagClick={handleDelete}
+                                    handleAddition={handleAddition}
+                                    inputFieldPosition="top"
+                                    placeholder="Palabras clave (opcional)"
+                                    allowAdditionFromPaste={true}
+                                    onClearAll={onClearAll}
+                                    onTagUpdate={onTagUpdate}
+                                />
+                               </Row>
                             <div className="btns-container">
                                 <Button variant="success" type="submit">
                                     Submit

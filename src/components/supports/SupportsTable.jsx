@@ -93,7 +93,7 @@ const SupportsTable = ({ item, objectType, handleObjectType, actionType }) => {
     if (isLoading) {
         content = (
             <div className="loading-content">
-                <Spinner animation="grow" />
+                <Spinner animation="grow" variant="warning"/>
                 <span>Un momento...</span>
             </div>
         )

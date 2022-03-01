@@ -79,17 +79,6 @@ form button {
     align-items: center;
 }
 
-.cards-container {
-    justify-content: space-between;
-    display: flex;
-    margin-top: 24px;
-    flex-wrap: wrap;
-}
-
-.card {
-    width: 49%;
-    margin: 8px 0;
-}
 
 .card-text {
     display: grid;
@@ -126,10 +115,7 @@ form button {
 
 .filters-container {
     flex-wrap: wrap;
-    margin: 16px 0;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    background-color: #efefef;
+    margin: 0 8px 16px;
 }
 
 .filters-container input:not(.btn) {
@@ -145,11 +131,6 @@ form button {
     margin: 0;
 }
 
-.filters-container form .btn {
-    margin-left: 4px;
-    max-width: 48%;
-}
-
 .outdated-info {
     display: flex;
     justify-content: space-between;
@@ -158,10 +139,15 @@ form button {
     padding-bottom: 8px;
     margin: 16px 0;
 }
-
+.filters-container {
+    display: flex;
+    justify-content: space-between;
+    
+}
 .flex-filter-container {
     display: flex;
     align-items: center;
+    width: 80%;
 }
 
 .list-group-container {
@@ -243,4 +229,141 @@ form button {
     margin-top: 32px;
     align-items: center;
     justify-content: center;
+}
+
+.nav-pills-container .nav {
+    justify-content: center;
+}
+.header-pills {
+    border-bottom: 1px solid #ececec;
+    margin-bottom: 16px;
+}
+.nav-item .active {
+    border-bottom:3px solid #ffc107;
+}
+.footer {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+}
+#navbarToggleExternalContent.show {
+    position: fixed;
+    background: #323232;
+    width: 200px;
+    right: -12px;
+    height: 100vh;
+    top: 50px;
+    z-index: 99;
+    transition: ease-in-out 2s;
+}
+#navbarToggleExternalContent a, #navbarToggleExternalContent button {
+    padding: 8px;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    border-bottom: 1px solid #ececec;
+    color: #ffffff;
+}
+#navbarToggleExternalContent.collapse {
+    right: -320px;
+}
+#navbarToggleExternalContent button {
+    text-align: left;
+}
+.ellipsis-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.ellipsis-container svg {
+    margin-right: 8px;
+}
+.book-container {
+    display: grid;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #ececec;
+    padding-bottom: 8px;
+    width: 100%;
+    grid-template-columns: 75px auto;
+}
+.book-container .thumbnail {
+    grid-column: 1;
+    grid-row: 1;
+    width: 75px;
+    border-radius: 5px;
+}
+.book-container .thumbnail img {
+    width: 100%;
+}
+.book-container .article-details {
+    grid-column: 2;
+    grid-row: 1;
+    text-align: left;
+    padding-left: 8px;
+}
+.article-code {
+    font-size: 12px;
+}
+.book-container .article-details p:not(.badge) {
+    position: relative;
+    margin: 0;
+}
+.book-container .article-details svg {
+    position: absolute;
+    right: 0;
+}
+.book-container .article-details .article-title {
+    font-weight: bold;
+}
+.book-container .article-details .article-author {
+    color: #898989;
+    margin-bottom: 8px;
+}
+.badge { margin-right: 4px; 
+    font-weight: 400 !important;
+}
+.rating-container {
+    display: flex;
+    justify-content: space-between;
+}
+span.tag-wrapper.ReactTags__tag {
+    border-radius: 4px;
+    display: inline-block;
+    position: relative;
+    border: 2px solid #ececec;
+    padding: 4px 16px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    background-color: #ececec;
+    color: #000000;
+}
+.ReactTags__tagInputField {
+    margin-bottom: 4px;
+    border-radius: 4px;
+}
+button.ReactTags__remove {
+    position: absolute;
+    appearance: none;
+    background: transparent;
+    border: transparent;
+    margin: 0;
+    width: 2px;
+    height: 2px;
+    right: 8px;
+}
+.react-tags-wrapper {
+    margin: 16px auto;
+}
+a, .btn-link {
+    text-decoration: none !important;
+}
+.close-panel {
+    justify-content: flex-end;
+    align-items: center;
+}
+.close-panel svg {
+    margin-left: 4px;
+}
+.header-pills .nav-link, .nav-link:focus, .nav-link:hover {
+    color: #323232 !important;
 }

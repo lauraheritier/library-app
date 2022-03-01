@@ -38,8 +38,8 @@ const remove = (dataType, id) => {
   return http.delete(`/${dataType}/${id}`);
 };
 
-const getLibraryOnly = (dataType) => {
-  return http.get(`/${dataType}/libraryOnly`);
+const getReadBooks = (dataType) => {
+  return http.get(`/${dataType}/readBooks`);
 }
   const removeAll = (dataType) => {
   return http.delete(`/${dataType}`);
@@ -62,7 +62,7 @@ const exportedObject = {
   update,
   remove,
   removeAll,
-  getLibraryOnly,
+  getReadBooks,
   updateAvailableResources,
   giveBack,
   updateIsActive,

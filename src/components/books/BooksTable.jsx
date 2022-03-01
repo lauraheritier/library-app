@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Image } from "react";
 import { Button, Modal, Card, Form, Col, Row, Table, Spinner, Alert } from 'react-bootstrap';
 import service from '../../services/webService';
 import BooksCrudForm from './BooksCrudForm';
-import { FaFilter, FaChevronLeft } from 'react-icons/fa';
+import { FaFilter, FaChevronLeft, FaEye, FaEyeSlash, FaEllipsisV, FaPen, FaBoxes, FaFileExport, FaBars, FaBookReader, FaTimes } from 'react-icons/fa';
 import hooks from '../../hooks/components.hooks';
-
+import BookDetail from "./BookDetail";
+import noImg from "./no-img.png";
+import { Page, Text, View, Document, StyleSheet, usePDF, PDFDownloadLink } from '@react-pdf/renderer';
 
 const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
     /**objectTypes:
@@ -23,6 +25,7 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
      * 2: edit
      * 3: create
      * 4: back
+     * 5: view single
      */
     let content;
     const [isCreate, setIsCreate] = useState(false);
@@ -37,6 +40,61 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
     const [alertVariant, setAlertVariant] = useState('');
     const [isLoading, resources, unfilteredData, setResources] = (hooks.useGetHelperObjects('books', false));
     const tableId = document.getElementById('data-table');
+    const [toggleMenu, setToggleMenu] = useState(false);
+    const [singleBook, setSingleBook] = useState({});
+    // Create styles
+    const styles = StyleSheet.create({
+        page: {
+            display: 'flex',
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            margin: 10,
+            justifyContent: 'flex-start',
+            
+            '@media max-width: 400': {
+                width: 300,
+            },
+            '@media orientation: landscape': {
+                width: 400,
+            },
+
+        },
+        section: {
+            margin: 0,
+            padding: 4,
+            fontSize: 8,
+            border: '1px dashed #323232',
+            textTransform: 'uppercase',
+            textAlign: 'center',
+            width: '16%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center;'
+        }
+    });
+
+    // Create Document Component
+
+
+    const MyDoc = (
+        <Document>
+            <Page size="A4" style={styles.page}>
+
+                {
+                    resources.map((r, idx) => {
+
+                        return (<View style={styles.section}><Text>{r.location + '' + r.category.categoryCode + '-' + r.bookCode}</Text></View>)
+
+
+                    })
+                }
+
+            </Page>
+        </Document>
+    )
+
+
+
 
     useEffect(() => {
 
@@ -52,6 +110,13 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
         setAction(2);
         setIndex(i);
         handleObjectType(2, 1, 'Editar recurso', 'books');
+    }
+    function handleView(i, object) {
+        setIsCreate(false);
+        setAction(5);
+        setIndex(i);
+        setSingleBook(object);
+        handleObjectType(5, 1, 'Ver recurso', 'books');
     }
     const handleDelete = async () => {
         let result;
@@ -77,6 +142,7 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
         setFilterObject(event.target.value);
         results = hooks.useFilterOnChange(filterObject, 'books', resources);
         if (event.target.value != '' && results.length !== 0) {
+            console.log("los resultados", results);
             setResources(results);
         } else {
             setResources(unfilteredData);
@@ -89,6 +155,10 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
                 setResources(response.data);
             })
     }
+    function viewBook(item) {
+        handleObjectType(3, 1, "libro");
+    }
+    const [instance, updateInstance] = usePDF({ document: MyDoc });
 
     let table = (
         <Table id="data-table">
@@ -101,27 +171,46 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
                     <th>Editorial</th>
                     <th>Soporte</th>
                     <th>ISBN</th>
-                    <th>Solo consulta en biblioteca</th>
+                    <th>Ubicación</th>
+                    <th >Cantidad de páginas</th>
+                    <th>Notas</th>
+                    <th>Palabras clave</th>
 
                 </tr>
             </thead>
             <tbody>
                 {
                     resources.map((d, idx) => {
-                        let bookId = d.id.slice(0, 6);
                         let cats = [d.category];
                         let sups = [d.support];
-                        let pubs = [d.publisher]
+                        let pubs = [d.publisher];
+                        let catCode = '';
+                        cats.map(cat => { return catCode = cat.categoryCode });
                         return (
                             <tr key={d.id}>
-                                <td>{bookId}</td>
+                                <td>{d.location}{catCode}-{d.bookCode}</td>
                                 <td>{d.title}</td>
                                 <td>{d.author}</td>
                                 {cats.map(cat => <td>{cat.description}</td>)}
                                 {pubs.map(pub => <td>{pub.description}</td>)}
                                 {sups.map(sup => <td>{sup.description}</td>)}
                                 <td>{d.isbn ? d.isbn : 'N/A'}</td>
-                                <td>{d.libraryOnly ? 'Sí' : 'No'}</td>
+                                <td>{d.location}</td>
+                                <td>{d.pages}</td>
+                                <td>{d.notes}</td>
+                                <td>{
+
+                                    d.tags.map(tag => {
+                                        let lastItem = d.tags[d.tags.length - 1];
+                                        if (tag === lastItem) {
+                                            return tag.text;
+                                        } else {
+                                            return tag.text + ', ';
+                                        }
+                                    })
+
+                                }</td>
+
                             </tr>
                         )
                     })
@@ -133,88 +222,76 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
     if (isLoading) {
         content = (
             <div className="loading-content">
-                <Spinner animation="grow" />
+                <Spinner animation="grow" variant="warning" />
                 <span>Un momento...</span>
             </div>
         )
     }
 
     if (actionType == 1 && !isLoading) {
+        console.log(actionType);
         content = (
             <>
-                <div className="resources-link-container">
-                    <div className="link-container">
-                        <a href="#" onClick={() => { handleObjectType(1, 4, 'Categorías', 'categories'); }}>Categorías</a>
-                        <a href="#" onClick={() => { handleObjectType(1, 5, 'Editoriales', 'publishers'); }}>Editoriales</a>
-                        <a href="#" onClick={() => { handleObjectType(1, 6, 'Soportes', 'supports'); }}>Soportes</a>
-                    </div>
-                    <div className="btn-containers">
-                        <Button variant="info" onClick={handleCreate}>Nuevo recurso</Button>
-                        <Button disabled={resources.length === 0} variant="primary" onClick={() => { hooks.handleReport(tableId, false) }}>Generar inventario</Button>
-                    </div>
-                </div>
+
                 {
                     <>
 
                         <div className="filters-container container-fluid">
-                            <Form key="test">
-                                <Row className="g-2">
-                                    <Col md className="flex-filter-container">
-                                        <FaFilter />
-                                        <Form.Control size="sm" type="text" name="filter" placeholder="Filtrar por autor, título, ISBN..." onChange={filterOnChange} />
-                                    </Col>
-                                </Row>
-                            </Form>
+                            <div className="flex-filter-container">
+                                <FaFilter />
+                                <Form.Control size="sm" type="text" name="filter" placeholder="Filtrar por autor, título, ISBN, palabra clave..." onChange={filterOnChange} />
+                            </div>
+                            <div>
+                                <nav className="navbar" >
+                                    <a onClick={() => setToggleMenu(!toggleMenu)} type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+                                        <FaEllipsisV />
+                                    </a>
+                                    <a className={toggleMenu ? 'show' : 'collapse'} id="navbarToggleExternalContent" >
+                                        <div className="ellipsis-container">
+                                            <a href="#" className="close-panel" onClick={() => setToggleMenu(!toggleMenu)}>Cerrar <FaTimes /></a>
+                                            <a href="#" onClick={() => { setToggleMenu(!toggleMenu); handleObjectType(1, 4, 'Categorías', 'categories'); }}><FaBars />Categorías</a>
+                                            <a href="#" onClick={() => { setToggleMenu(!toggleMenu); handleObjectType(1, 5, 'Editoriales', 'publishers'); }}><FaBookReader /> Editoriales</a>
+                                            <a href="#" onClick={() => { setToggleMenu(!toggleMenu); handleObjectType(1, 6, 'Soportes', 'supports'); }}><FaBoxes /> Soportes</a>
+                                            <Button variant="link" onClick={(e) => { setToggleMenu(!toggleMenu); handleCreate(e) }}><FaPen /> Nuevo recurso</Button>
+                                            <Button disabled={resources.length === 0} variant="link" onClick={() => { setToggleMenu(!toggleMenu); hooks.handleReport(tableId, false) }}><FaFileExport /> Generar inventario</Button>
+                                            <PDFDownloadLink document={MyDoc} fileName="somename.pdf">{({ blob, url, loading, error }) =>
+                                                loading ? 'Cargando códigos de recursos...' : 'Imprimir etiquetas'
+                                            }</PDFDownloadLink>
+                                        </div>
+                                    </a>
+                                </nav>
+                            </div>
                         </div>
-                        <div className="cards-container">
+                        <div className="cards-container container" onClick={() => setToggleMenu(false)}>
                             {
                                 resources.map((dat, index) => {
-                                    let book_id = dat.id.slice(0, 6);
                                     let cats = [dat.category];
                                     let pubs = [dat.publisher];
                                     let sups = [dat.support];
                                     let supportDescription;
+                                    console.log("los datos de un libro", dat);
+
                                     sups.map((sup, index) => {
                                         return supportDescription = sup.description;
                                     });
-
                                     return (
-
-                                        <Card key={dat.id}>
-                                            <Card.Header as="h5"><span key={dat.id + index}>{book_id} - {dat.title}</span>
-                                                <span>
-                                                    <Button variant="success" key={dat.id + index + 2} onClick={() => { handleEdit(dat.id) }}>Editar</Button>
-                                                    <Button variant="danger" key={dat.id + index + 3} onClick={() => { setShow(true); setObjectToRemove(dat.id) }}>Eliminar</Button>
-                                                </span>
-                                            </Card.Header>
-                                            <Card.Body>
-                                                <div className="card-text">
-                                                    <Card.Title key={dat.id + index + 4}><span className="react-icon-container"> {hooks.setReactIcons(supportDescription, '.react-icon-container')}</span> {supportDescription} </Card.Title>
-                                                    {dat.libraryOnly ? <span className="only-library" key={dat.id + index + 5}>Solo consulta en biblioteca</span> : ''}
+                                        <div className="book-container" onClick={() => { handleView(dat.id, dat) }}>
+                                            <div className="thumbnail">
+                                                <img src={dat.thumbnail ? dat.thumbnail : noImg} />
+                                                <div className="article-code">
+                                                    {dat.location}{dat.category.categoryCode}-{dat.bookCode}
                                                 </div>
-                                                <Card.Text>
-                                                    <span className="col-title">Autor:</span> <span className="col-desc" key={dat.id + index + 6}>{dat.author}</span>
-                                                </Card.Text>
-                                                <Card.Text>
-                                                    {cats.map(cat => <><span className="col-title" >Categoría:</span> <span className="col-desc" key={dat.id + index + 7}>{cat.description}</span></>)}
-                                                </Card.Text>
-                                                <Card.Text>
-                                                    {pubs.map(pub => <><span className="col-title" >Editorial:</span> <span className="col-desc" key={dat.id + index + 8}>{pub.description}</span></>)}
-                                                </Card.Text>
-                                                <Card.Text>
-                                                    <span><span className="col-title">Ejemplares totales:</span> <span className="col-desc" key={dat.id + index + 9}>{dat.sample}</span></span>
-                                                    <span> <span className="col-title">Ejemplares disponibles:</span> <span className="col-desc" key={dat.id + index + 10}>{dat.availableSamples}</span></span>
-                                                </Card.Text>
+                                            </div>
 
+                                            <div className="article-details">
+                                                <p className="article-title">{dat.title} {dat.read ? <FaEye /> : <FaEyeSlash />}</p>
+                                                <div className="rating-container"><p className="article-author"><i>{dat.author}</i></p><p>rating</p></div>
+                                                <p>{dat.isbn}</p>
+                                                {dat.tags.map(tag => <p className="badge bg-light text-dark">{tag.text}</p>)}
 
-                                                {supportDescription === 'Libro' ?
-                                                    <Card.Text>
-                                                        <span className="col-title">ISBN:</span><span className="col-desc" key={dat.id + book_id + index + 11}>{dat.isbn}</span>
-                                                    </Card.Text>
-                                                    : ''}
-
-                                            </Card.Body>
-                                        </Card>)
+                                            </div>
+                                        </div>
+                                    )
                                 })
                             }
                         </div>
@@ -240,7 +317,11 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
                     </>
                 }</>
         );
+    } else if (actionType == 5) {
+        console.log("Pasa x el action type correcto ", actionType, " el index es ", index, " el data es ", singleBook);
+        content = <BookDetail item={index} data={singleBook} />
     } else {
+        console.log(actionType);
         content =
             <>
                 <BooksCrudForm data={resources} item={index} itemType={objectType} isCreate={isCreate} actionType={action} handleObjectType={handleObjectType} />
@@ -249,6 +330,12 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
                 </div>
             </>
     }
+
+
+
+
+
+
     return [content, table];
 }
 export default BooksTable;

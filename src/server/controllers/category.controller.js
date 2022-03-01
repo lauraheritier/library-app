@@ -11,6 +11,7 @@ exports.create = (req, res) => {
     // Create a Category
     const category = new Category({
         description: req.body.description,
+        categoryCode: req.body.categoryCode,
         isActive: true
     });
 

@@ -45,14 +45,14 @@ const MembersTable = ({ item, objectType, handleObjectType, actionType }) => {
     function handleCreate(param) {
         setIsCreate(true);
         setAction(3);
-        handleObjectType(3, 2, 'Nuevo socio', 'members');
+        handleObjectType(3, 2, 'Nuevo contacto', 'members');
     }
 
     function handleEdit(i) {
         setIsCreate(false);
         setAction(2);
         setIndex(i);
-        handleObjectType(2, 2, 'Editar socio', 'members');
+        handleObjectType(2, 2, 'Editar contacto', 'members');
     }
 
     function handleShow(param) {
@@ -78,10 +78,10 @@ const MembersTable = ({ item, objectType, handleObjectType, actionType }) => {
         result = await service.updateIsActive('members', objectToRemove);
         if (result) {
             setAlertVariant('success');
-            setAlertText("El socio fue eliminado correctamente.");
+            setAlertText("El contacto fue eliminado correctamente.");
         } else {
             setAlertVariant('danger');
-            setAlertText("No se pudo eliminar al socio.");
+            setAlertText("No se pudo eliminar al contacto.");
         }
         setShowAlert(true);
         setTimeout(() => {
@@ -106,7 +106,7 @@ const MembersTable = ({ item, objectType, handleObjectType, actionType }) => {
     if (isLoading) {
         content = (
             <div className="loading-content">
-                <Spinner animation="grow" />
+                <Spinner animation="grow" variant="warning"/>
                 <span>Un momento...</span>
             </div>
         )
@@ -115,7 +115,7 @@ const MembersTable = ({ item, objectType, handleObjectType, actionType }) => {
         content = (
             <>
                 <div className="text-right">
-                    <Button variant="info" onClick={() => { handleCreate(objectType) }}>Nuevo socio</Button>
+                    <Button variant="info" onClick={() => { handleCreate(objectType) }}>Nuevo contacto</Button>
                 </div>
                 {
                     data.length !== 0 ?
@@ -143,7 +143,7 @@ const MembersTable = ({ item, objectType, handleObjectType, actionType }) => {
                                         <th>Teléfono</th>
                                         <th>Dirección</th>
                                         <th>DNI</th>
-                                        <th>Número de socio</th>
+                                        <th>Código</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -196,7 +196,7 @@ const MembersTable = ({ item, objectType, handleObjectType, actionType }) => {
             <>
                 <MembersCrudForm data={data} item={index} itemType={objectType} isCreate={isCreate} actionType={action} handleObjectType={handleObjectType} />
                 <div className="text-left">
-                    <a href="#" onClick={() => { setAction(1); handleObjectType(1, objectType, 'Socios', 'members'); refreshView(); }}><FaChevronLeft /> Volver</a>
+                    <a href="#" onClick={() => { setAction(1); handleObjectType(1, objectType, 'Mis contactos', 'members'); refreshView(); }}><FaChevronLeft /> Volver</a>
                 </div>
             </>
     }

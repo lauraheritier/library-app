@@ -38,7 +38,7 @@
 }
 .header {
   min-height: 50px;
-  background: rgba(50, 50, 50, 0.82);
+  background: #323232;
     color: #ffffff;
     display: flex;
     justify-content: space-between;
@@ -52,15 +52,6 @@
     justify-content: center;
     align-items: center;
 }
-
-.header .user {
-  padding-right: 8px;
-}
-
-.header .logout {
-  padding-left: 24px;
-}
-
 .App .intro {
   height: 50vh;
     display: flex;
@@ -68,13 +59,7 @@
     align-items: center;
     letter-spacing: 9px;
 }
-body {
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: 100% -653px;
-  background-image: url(https://cdn.statically.io/img/englishlive.ef.com/es-mx/blog/wp-content/uploads/sites/8/2018/02/shutterstock_522019972.jpg);
 
-}
 .nav-pills {
   background: rgba(240, 240, 240,0.5);
 }
@@ -83,43 +68,10 @@ body {
     font-size: 20px;
     display: flex;
     align-items: center;
-    width: 204px;
-    border-right: 1px solid #ffffff;
     height: 50px;
 }
 .loguito span {
   padding-left: 16px;
-}
-
-.nav-pills-container {
-  margin-bottom: 54px;
-  position: fixed;
-  left: 0;
-  height: 100vh;
-  background: rgba(50, 50, 50, 0.82);
-  display: flex;
-  flex-direction: column;
-  width: 220px;
-    border-right: 1px solid #ffffff;
-  
-}
-.nav-pills-container .nav {
- text-align: left;
-  height: 100%;
-}
-.nav-pills-container .nav .nav-item {
-  border-bottom: 1px solid #ffffff;
-}
-.nav-pills-container .nav .nav-item a:not(:hover):not(:focus):not(.active){
-  color: #ffffff;
-}
-.nav-link:focus, .nav-link:hover, .nav-link.active {
-  color: #323232;
-  background-color: #ffffff;
-}
-.container-body {
-  max-width: 60em;
-  margin: 21px 0 0 23%;
 }
 .resources-link-container {
   display: flex;
@@ -127,14 +79,6 @@ body {
 }
 .resources-link-container div a:not(:last-of-type), .resources-link-container div button:first-child {
   margin-right: 8px;
-}
-
-.App .container-body > h2 {
-  margin-bottom: 88px;
-  background: rgba(240, 240, 240, 0.65);
-  padding: 32px 0;
-  letter-spacing: 9px;
-  border-radius: 4px;
 }
 .list-group-item {
   cursor: pointer;

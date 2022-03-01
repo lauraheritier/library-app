@@ -27,20 +27,20 @@ const ReportsTable = ({ item, objectType, handleObjectType, handleActionType, ac
     const [perMember, setPerMember] = useState([]);
     const [isLoading, data, unfilteredData, setData] = hooks.useGetHelperObjects('borrowings', false);
 
-    function countLibraryOnly() {
+    function countReadBooks() {
         let groupArray = [];
-        let libraryOnly;
+        let read;
 
         data.map(d => {
             groupArray.push(d.book);
         })
         if (groupArray.length == 0) return null;
-        libraryOnly = groupArray.filter(function (f) {
-            return f.libraryOnly;
+        read = groupArray.filter(function (f) {
+            return f.read;
 
         })
-        console.log("el libraryOnly", libraryOnly);
-        return libraryOnly;
+        console.log("el book read", read);
+        return read;
     }
 
     function groupByMember() {
@@ -219,7 +219,7 @@ body = (
 );
     }
     if (key == '3') {
-        let result = countLibraryOnly();
+        let result = countReadBooks();
         body = (
             result !== null && result.length !== 0 ?
                 <>

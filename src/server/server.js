@@ -37,7 +37,6 @@ app.get("/", (req, res) => {
 
 require("./routes/book.routes")(app);
 require("./routes/category.routes")(app);
-require("./routes/employee.routes")(app);
 require("./routes/member.routes")(app);
 require("./routes/publisher.routes")(app);
 require("./routes/support.routes")(app);

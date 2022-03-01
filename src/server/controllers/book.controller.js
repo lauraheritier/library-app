@@ -1,4 +1,6 @@
 const db = require("../models");
+var Promise = require("bluebird");
+const randomNumber = require("random-number-csprng");
 const Book = db.books;
 const author = db.authors;
 const Publisher = db.publishers;
@@ -14,37 +16,59 @@ exports.create = (req, res) => {
     }
 
     Book.findOne({ isbn: req.body.isbn }).select("isbn").lean().then(result => {
-        if (result && req.body.isbn !== '') {
+       
+        if (result && req.body.isbn !== null && req.body.isbn !== '') {
             console.log("pasó x acá", req.body.isbn, "existe ");
             console.log("el isbn es un espacio trucho?", req.body.isbn);
             res.status(400).send({ message: "no puede haber duplicados" });
             return;
         } else {
+            let code = '';
+            
             // Create a Book
-            const book = new Book({
+            Promise.try(function() {
+                return randomNumber(1, 2000);
+            }).then(function(number) {
+                code = number;
+                console.log("Your random number:", number);
+                console.log("el code con number asignado", code);
+                const book = new Book({
                 title: req.body.title,
                 author: req.body.author,
                 category: req.body.category,
                 publisher: req.body.publisher,
-                isbn: req.body.isbn,
+                isbn: req.body.isbn ? req.body.isbn : '',
                 sample: req.body.sample,
                 availableSamples: req.body.availableSamples ? req.body.availableSamples : req.body.sample,
-                libraryOnly: req.body.libraryOnly ? req.body.libraryOnly : false,
+                read: req.body.read ? req.body.read : false,
+                pages: req.body.pages,
+                notes: req.body.notes,
+                rating: req.body.rating,
+                thumbnail: req.body.thumbnail,
                 support: req.body.support,
+                tags: req.body.tags,
+                location: req.body.location,
+                bookCode: code,
                 isActive: true
             });
+ // Save Book in the database
+ book
+ .save(book)
+ .then(data => {
+     console.log("manda true");
+     res.status(200).send({ message: "se guardó" });
+ })
+ .catch(err => {
+     console.log("el error", err);
+     res.status(500).send({ message: "no se guardó" });
+     console.log("el book ", book);
+ });
+            }).catch({code: "RandomGenerationError"}, function(err) {
+                console.log("Something went wrong!");
+            });
+           
 
-            // Save Book in the database
-            book
-                .save(book)
-                .then(data => {
-                    console.log("manda true");
-                    res.status(200).send({ message: "se guardó" });
-                })
-                .catch(err => {
-                    res.status(500).send({ message: "no se guardó" });
-                    console.log("el book ", book);
-                });
+           
         }
     });
 
@@ -61,6 +85,7 @@ exports.findAll = (req, res) => {
         .collation({ locale: 'en', strength: 2 })
         .sort({ support: 1, title: 1 })
         .populate("category", 'description', Category)
+        .populate("category", "categoryCode", Category)
         .populate("publisher", 'description', Publisher)
         .populate("support", "description", Support)
         .then(data => {
@@ -79,6 +104,7 @@ exports.findOne = (req, res) => {
 
     Book.findById(id)
         .populate("category", 'description', Category)
+        .populate("category", 'categoryCode', Category)
         .populate("publisher", 'description', Publisher)
         .populate("support", 'description', Support)
         .then(data => {
@@ -234,8 +260,8 @@ exports.deleteAll = (req, res) => {
 };
 
 // Find all Books that cannot be borrowed
-exports.findAllLibraryOnly = (req, res) => {
-    Book.find({ libraryOnly: false, isActive: true })
+exports.findAllReadBooks = (req, res) => {
+    Book.find({ read: false, isActive: true })
         .then(data => {
             res.send(data);
         })
