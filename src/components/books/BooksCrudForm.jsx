@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { render } from 'react-dom';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import { Row, Col, Button, Alert, Form, Spinner } from 'react-bootstrap';
 import { Formik } from 'formik';
@@ -8,6 +7,7 @@ import bookValidator from '../../validators/book.validator';
 import FooterMenu from "../footer/footer.component";
 import { WithContext as ReactTags } from 'react-tag-input';
 import uuid from 'react-uuid';
+import { Rating } from 'react-simple-star-rating'
 
 
 const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
@@ -53,6 +53,7 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
     const [isLoadingSupports, sups] = (hooks.useGetHelperObjects('supports', false));
     const [imgUrl, setImgUrl] = useState('');
     const [reactTags, setReactTags] = useState([]);
+    const [rating, setRating] = useState(0);
     /**tags */
     const KeyCodes = {
         comma: 188,
@@ -70,6 +71,11 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
   const onClearAll = () => {
     setReactTags([]);
   };
+
+  const handleRating = (rate) => {
+    setRating(rate)
+    // other logic
+  }
 
   const onTagUpdate = (i, newTag) => {
     const updatedTags = reactTags.slice();
@@ -171,7 +177,7 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
                         sample: !isCreate ? result.sample : 1,
                         pages: !isCreate ? result.pages : 1,
                         thumbnail: !isCreate ? result.thumbnail : '',
-                        rating: !isCreate ? result.rating : 0,
+                        rating: !isCreate ? result.rating : rating,
                         notes: !isCreate ? result.notes : '',
                         tags: !isCreate ? result.tags : '',
                         location: !isCreate ? result.location : '',
@@ -191,6 +197,7 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
                             result.thumbnail = thumbnail;
                         });
                         result.tags = reactTags;
+                        result.rating = rating;
                         
                         
                         // When button submits form and form is in the process of submitting, submit button is disabled
@@ -435,18 +442,7 @@ const BooksCrudForm = ({ item, isCreate, handleObjectType }) => {
 
                             <Row className="g-12">
                                 <Col md>
-                                    <Form.Group className="mb-3" controlId="formBasicAuthors">
-                                        <FloatingLabel
-                                            controlId="floatingAuthors"
-                                            label="Rating"
-                                            className={touched.rating && errors.rating ? "error" : null}>
-                                            <Form.Control
-                                                type="text" name="rating" defaultValue={!isCreate ? result.rating : ''} onChange={handleChange} onBlur={handleBlur} />
-                                            {touched.pages && errors.pages ? (
-                                                <div className="error-message">{errors.rating}</div>
-                                            ) : null}
-                                        </FloatingLabel>
-                                    </Form.Group>
+                                <Rating  transition onClick={handleRating} ratingValue={!isCreate ? result.rating: rating} />
                                 </Col>
                                 <Col md className="borrowed-check">
                                     <Form.Group className="mb-3" controlId="formBasicLibrarOnly">

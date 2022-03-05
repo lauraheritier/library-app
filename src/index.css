@@ -263,6 +263,7 @@ form button {
     display: flex;
     border-bottom: 1px solid #ececec;
     color: #ffffff;
+    align-items: center;
 }
 #navbarToggleExternalContent.collapse {
     right: -320px;
@@ -280,7 +281,6 @@ form button {
 }
 .book-container {
     display: grid;
-    margin-bottom: 24px;
     border-bottom: 1px solid #ececec;
     padding-bottom: 8px;
     width: 100%;
@@ -318,6 +318,12 @@ form button {
 .book-container .article-details .article-author {
     color: #898989;
     margin-bottom: 8px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+.article-isbn {
+    font-size: 12px;
 }
 .badge { margin-right: 4px; 
     font-weight: 400 !important;
@@ -366,4 +372,45 @@ a, .btn-link {
 }
 .header-pills .nav-link, .nav-link:focus, .nav-link:hover {
     color: #323232 !important;
+}
+.article-code-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.detail-pills .nav-item {
+    width: 150px;
+    transition: ease-in-out 2s;
+}
+.active-section {
+    display: block;
+    padding: 0 16px;
+    text-align: left;
+}
+.disabled-section {
+    display: none;
+}
+.filters-detail {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+.nav-item {
+    color:transparent !important;
+}
+.article-details-details.active-section p {
+    margin: 0;
+}
+.article-details-details.active-section div {
+    margin-bottom: 8px;    
+}
+.article-details-details.active-section div:not(:last-child) {
+    border-bottom: 1px solid #ececec;
+}
+.article-details-details.active-section small {
+    color: #898989;
+    font-style: italic;
+}
+.modal-footer button {
+    width: 75px;
 }

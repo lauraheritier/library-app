@@ -57,7 +57,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    letter-spacing: 9px;
+    flex-direction: column;
+    
+}
+.App .intro svg {
+  font-size: 40px;
+}
+.App .intro h1 {
+  letter-spacing: 4px;
+  margin: 0;
 }
 
 .nav-pills {
@@ -72,6 +80,7 @@
 }
 .loguito span {
   padding-left: 16px;
+  letter-spacing: 4px;
 }
 .resources-link-container {
   display: flex;

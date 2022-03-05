@@ -4,6 +4,7 @@ import service from '../../services/webService';
 import CategoriesCrudForm from './CategoriesCrudForm';
 import { FaFilter, FaChevronLeft } from 'react-icons/fa';
 import hooks from '../../hooks/components.hooks';
+import uuid from 'react-uuid';
 
 const CategoriesTable = ({ item, objectType, handleObjectType, actionType }) => {
     /**objectTypes:
@@ -144,16 +145,16 @@ const CategoriesTable = ({ item, objectType, handleObjectType, actionType }) => 
                             <div className="text-left">
                                 <a href="#" onClick={() => { setAction(1); handleObjectType(1, 1, 'Libros', 'books'); refreshView(); }}><FaChevronLeft /> Volver</a>
                             </div>
-                            <Modal key={index + 13} show={show} onHide={handleClose} onExited={refreshView}>
+                            <Modal key={uuid()} show={show} onHide={handleClose} onExited={refreshView}>
                                 <Modal.Header closeButton>
                                     <Modal.Title>Eliminar categoría</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>¿Realmente desea eliminar la categoría?</Modal.Body>
                                 <Modal.Footer>
-                                    <Button variant="secondary" onClick={handleClose} key={index + 14}>
+                                    <Button variant="secondary" onClick={handleClose} key={uuid()}>
                                         No
                                     </Button>
-                                    <Button variant="primary" onClick={handleDelete} key={index + 15}>
+                                    <Button variant="primary" onClick={handleDelete} key={uuid()}>
                                         Sí
                                     </Button>
                                 </Modal.Footer>

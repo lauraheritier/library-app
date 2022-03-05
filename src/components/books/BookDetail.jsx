@@ -1,10 +1,15 @@
-import React, { useState, useEffect, Image } from "react";
-import { Button, Modal, Card, Form, Col, Row, Table, Spinner, Alert } from 'react-bootstrap';
-import service from '../../services/webService';
-import BooksCrudForm from './BooksCrudForm';
-import { FaFilter, FaChevronLeft, FaEye, FaEyeSlash, FaEllipsisV, FaPen, FaBoxes, FaFileExport, FaBars, FaBookReader } from 'react-icons/fa';
+import React, { useEffect, useState } from "react";
+import { Alert, Button, Modal, Nav, Spinner } from 'react-bootstrap';
+import { FaChevronLeft, FaEllipsisV, FaEye, FaEyeSlash, FaPen, FaQuoteLeft, FaTimes } from 'react-icons/fa';
+import { Rating } from 'react-simple-star-rating';
+import uuid from 'react-uuid';
 import hooks from '../../hooks/components.hooks';
+import service from '../../services/webService';
+import externalApiService from '../../services/webServiceExternalAPI';
+import BooksCrudForm from './BooksCrudForm';
 import noImg from "./no-img.png";
+
+    
 
 const BookDetail = ({ item, objectType, handleObjectType, actionType, data }) => {
     /**objectTypes:
@@ -37,19 +42,13 @@ const BookDetail = ({ item, objectType, handleObjectType, actionType, data }) =>
     const [isLoading, resources, unfilteredData, setResources] = (hooks.useGetHelperObjects('books'));
     const tableId = document.getElementById('data-table');
     const [toggleMenu, setToggleMenu] = useState(false);
-
+    const [sectionWithFocus, setSectionWithFocus] = useState('notes');
+    
     useEffect(() => {
 
     }, [isLoading])
 
-    
-    function handleEdit(i) {
-        setIsCreate(false);
-        setAction(2);
-        setIndex(i);
-        handleObjectType(2, 1, 'Editar recurso', 'books');
-    }
-    const handleDelete = async () => {
+       const handleDelete = async () => {
         let result;
         setShow(false);
         setIsCreate(false);
@@ -67,16 +66,24 @@ const BookDetail = ({ item, objectType, handleObjectType, actionType, data }) =>
         }, 5000);
         refreshView();
     }
+    function handleShow(param) {
+        setShow(true);
+        setObjectToRemove(param);
+    }
+    function handleQuote() {
+    externalApiService.getQuote('books', data.bookCode, 'biology');
+        
+    }
 
     function refreshView() {
         service.getAll('books')
             .then(response => {
                 setResources(response.data);
             })
-        }
+    }
 
 
-    
+
 
     if (isLoading) {
         content = (
@@ -87,66 +94,92 @@ const BookDetail = ({ item, objectType, handleObjectType, actionType, data }) =>
         )
     }
 
-    
-  if (!isLoading) {
+
+    if (!isLoading) {
         content = (
             <>
                 {
                     <>
 
-                        <div className="filters-container container-fluid">
+                        <div className="filters-container container-fluid filters-detail">
                             <div>
                                 <nav className="navbar" >
                                     <a onClick={() => setToggleMenu(!toggleMenu)} type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
                                         <FaEllipsisV />
                                     </a>
-                                    <a onMouseOut={() => setToggleMenu(false)} className={toggleMenu ? 'show' : 'collapse'} id="navbarToggleExternalContent" >
+                                    <a className={toggleMenu ? 'show' : 'collapse'} id="navbarToggleExternalContent" >
                                         <div className="ellipsis-container">
-                                            <a href="#" onClick={() => { setToggleMenu(!toggleMenu); handleObjectType(1, 4, 'Categorías', 'categories'); }}><FaBars />Categorías</a>
-                                            <a href="#" onClick={() => { setToggleMenu(!toggleMenu); handleObjectType(1, 5, 'Editoriales', 'publishers'); }}><FaBookReader /> Editoriales</a>
-                                            <a href="#" onClick={() => { setToggleMenu(!toggleMenu); handleObjectType(1, 6, 'Soportes', 'supports'); }}><FaBoxes /> Soportes</a>
-                                           </div>
+                                            <a href="#" className="close-panel" onClick={() => setToggleMenu(!toggleMenu)}>Cerrar <FaTimes /></a>
+                                            <a href="#" onClick={() => { setToggleMenu(!toggleMenu); handleQuote() }}><FaQuoteLeft /> Generar cita bibliográfica</a>
+                                            <a href="#" onClick={() => { setToggleMenu(!toggleMenu); handleObjectType(2, 1, 'Libros', 'books'); }}><FaPen /> Editar recurso</a>
+                                            <a href="#" onClick={() => { setToggleMenu(!toggleMenu); handleShow(data.id) }}><FaTimes /> Eliminar recurso</a>
+                                        </div>
                                     </a>
                                 </nav>
                             </div>
                         </div>
                         <div className="cards-container container" onClick={() => setToggleMenu(false)}>
-                                                           
-                                        <div className="book-container">
-                                            <div className="thumbnail">
-                                                <img src={data.thumbnail ? data.thumbnail : noImg} />
-                                                <div className="article-code">
-                                                {data.location}{data.category.categoryCode}-{data.bookCode}
-                                            </div>
-                                            </div>
-                                            
-                                            <div className="article-details">
-                                                <p className="article-title">{data.title} {data.read ? <FaEye/> : <FaEyeSlash/>}</p>
-                                                 <p className="article-author"><i>{data.author}</i></p>
-                                                <p>{data.isbn}</p>
-                                                <p>{data.category.description}</p>
-                                                <p>{data.support.description}</p>
-                                                <p>{data.publisher.description}</p>
-                                                <p>rating</p>
-                                                <p>{data.notes}</p>
-                                                {data.tags.map(tag => <p className="badge bg-light text-dark">{tag.text}</p>)}
-                                                <p>{data.location}</p>
-                                            </div>
-                                        </div>
-                                    
-                                
-                            
+                            <div className="book-container">
+                                <div className="thumbnail">
+                                    <img src={data.thumbnail !== "" ? data.thumbnail : noImg} />
+                                    <div>
+                                        <Rating size={15} ratingValue={data.rating} initialValue={data.rating} allowHalfIcon readonly={true} />
+                                    </div>
+                                </div>
+                                <div className="article-details">
+                                    <div className="article-code-container"> <p className="article-title">{data.title} </p> <div className="article-code">
+                                        {data.location}{data.category.categoryCode}-{data.bookCode}
+                                    </div></div>
+                                    <div className="rating-container"><p className="article-author"><i>{data.author}</i> {data.read ? <FaEye /> : <FaEyeSlash />}</p>
+
+                                    </div>
+                                    <p className="article-isbn">{data.isbn}</p>
+                                    {data.tags.map(tag => <p className="badge bg-light text-dark">{tag.text}</p>)}
+
+                                </div>
+                            </div>
+                            <div className="header-pills nav-pills-container detail-pills">
+                                <Nav className="nav" activeKey={sectionWithFocus} onSelect={(e) => { setSectionWithFocus(e) }}>
+                                    <Nav.Item>
+                                        <Nav.Link eventKey="notes">
+                                            Notas
+                                        </Nav.Link>
+                                    </Nav.Item>
+                                    <Nav.Item>
+                                        <Nav.Link eventKey="details">
+                                            Detalles
+                                        </Nav.Link>
+                                    </Nav.Item>
+                                </Nav>
+                            </div>
+
+                            <div className="article-details-container">
+                                <div className={`article-details-notes ${sectionWithFocus === 'notes' ? 'active-section' : 'disabled-section'}`} >
+                                    <p>{data.notes}</p>
+                                </div>
+                                <div className={`article-details-details ${sectionWithFocus === 'details' ? 'active-section' : 'disabled-section'}`}>
+                                    <div><p><small>ISBN</small></p><p><span>{data.isbn ? data.isbn : 'N/A'}</span></p></div>
+                                    <div><p><small>Editorial</small></p><p><span>{data.publisher.description}</span></p></div>
+                                    <div><p><small>Soporte</small></p><p><span>{data.support.description}</span></p></div>
+                                    <div><p><small>Categoría</small></p><p><span>{data.category.description} ({data.category.categoryCode})</span></p></div>
+                                    <div><p><small>Repisa</small></p><p><span>{data.location}</span></p></div>
+                                    <div><p><small>Ejemplares totales</small></p><p><span>{data.sample}</span></p></div>
+                                    <div><p><small>Ejemplares disponibles</small></p><p><span>{data.availableSamples}</span></p></div>
+                                </div>
+                            </div>
+
+
                         </div>
-                        <Modal key={index + 13} show={show} onHide={handleClose} onExited={refreshView}>
+                        <Modal key={uuid()} show={show} onHide={handleClose} onExited={refreshView}>
                             <Modal.Header closeButton>
                                 <Modal.Title>Eliminar recurso</Modal.Title>
                             </Modal.Header>
                             <Modal.Body>¿Realmente desea eliminar el recurso?</Modal.Body>
                             <Modal.Footer>
-                                <Button variant="secondary" onClick={handleClose} key={index + 14}>
+                                <Button variant="secondary" onClick={handleClose} key={uuid()}>
                                     No
                                 </Button>
-                                <Button variant="primary" onClick={handleDelete} key={index + 15}>
+                                <Button variant="warning" onClick={handleDelete} key={uuid()}>
                                     Sí
                                 </Button>
                             </Modal.Footer>

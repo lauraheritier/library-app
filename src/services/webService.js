@@ -51,8 +51,6 @@ const borrowingsPerMember = (dataType, member, group) => {
 }
 
 
-/**REPORTS */
-
 
 
 const exportedObject = {

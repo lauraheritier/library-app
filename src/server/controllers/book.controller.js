@@ -7,6 +7,7 @@ const Publisher = db.publishers;
 const Category = db.categories;
 const Support = db.supports;
 
+
 // Create and Save a new Book
 exports.create = (req, res) => {
     // Validate request
@@ -24,14 +25,32 @@ exports.create = (req, res) => {
             return;
         } else {
             let code = '';
+
+            const getThumbnail = async (isbn) => {
+        let rsult = "";
+
+        let imageUrl = 'https://www.googleapis.com/books/v1/volumes?q=isbn:' + isbn;
+        const res = await fetch(imageUrl);
+        const imageBlob = await res.json();
+
+
+        //const imageObjectURL = URL.createObjectURL(imageBlob);
+        console.log("la rta y el image blob", res, imageBlob);
+        if (imageBlob.totalItems > 0) {
+            rsult = imageBlob.items[0].volumeInfo.imageLinks.thumbnail;
+            console.log("la rta!!!!!", rsult);
+        }
+
+        return rsult;
+
+    }
             
             // Create a Book
             Promise.try(function() {
-                return randomNumber(1, 2000);
+                return randomNumber(1, 20000);
             }).then(function(number) {
                 code = number;
-                console.log("Your random number:", number);
-                console.log("el code con number asignado", code);
+                console.log("llega el thumbnail???", req.body.thumbnail);
                 const book = new Book({
                 title: req.body.title,
                 author: req.body.author,
@@ -84,8 +103,7 @@ exports.findAll = (req, res) => {
         .find(condition)
         .collation({ locale: 'en', strength: 2 })
         .sort({ support: 1, title: 1 })
-        .populate("category", 'description', Category)
-        .populate("category", "categoryCode", Category)
+        .populate("category", 'description categoryCode', Category)
         .populate("publisher", 'description', Publisher)
         .populate("support", "description", Support)
         .then(data => {
@@ -103,11 +121,11 @@ exports.findOne = (req, res) => {
     const id = req.params.id;
 
     Book.findById(id)
-        .populate("category", 'description', Category)
-        .populate("category", 'categoryCode', Category)
+        .populate("category", 'description categoryCode', Category)
         .populate("publisher", 'description', Publisher)
         .populate("support", 'description', Support)
         .then(data => {
+            console.log("la dataaaa", data);
             if (!data)
                 res.status(404).send({ message: "Not found book with id " + id });
             else res.send(data);

@@ -14,7 +14,7 @@ module.exports = mongoose => {
       availableSamples: {type: Number},
       pages: {type: Number},
       notes: {type: String},
-      rating: {type: Schema.Types.Decimal128},
+      rating: {type: Number},
       thumbnail: {type: String},
       tags: [{id:{type: String}, text: {type: String}}],
       location: {type: String},

@@ -3,12 +3,19 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
+var whitelist = ["http://localhost:3000", 'https://serpapi.com/'];
 
 var corsOptions = {
-    origin: "http://localhost:3000"
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1 || !origin) {
+          callback(null, true)
+        } else {
+          callback(new Error('Not allowed by CORS'))
+        }
+      }
 };
 
-app.use(cors(corsOptions));
+app.use(cors(/*corsOptions*/));
 
 // parse requests of content-type - application/json
 app.use(express.json()); /* bodyParser.json() is deprecated */

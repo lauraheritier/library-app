@@ -6,6 +6,7 @@ import BorrowingsCrudForm from './BorrowingsCrudForm';
 import { FaFilter, FaChevronLeft } from 'react-icons/fa';
 import XLSX from 'xlsx';
 import hooks from '../../hooks/components.hooks';
+import uuid from 'react-uuid';
 
 const BorrowingsTable = ({ item, objectType, handleObjectType, handleActionType, actionType }) => {
     /**objectTypes:
@@ -163,16 +164,16 @@ const BorrowingsTable = ({ item, objectType, handleObjectType, handleActionType,
                                         }
                                     </tbody>
                                 </Table>
-                                <Modal key={index + 13} show={show} onHide={handleClose} onExited={refreshView}>
+                                <Modal key={uuid()} show={show} onHide={handleClose} onExited={refreshView}>
                                     <Modal.Header closeButton>
                                         <Modal.Title>Devolver recurso</Modal.Title>
                                     </Modal.Header>
                                     <Modal.Body>¿Realmente desea devolver el recurso?</Modal.Body>
                                     <Modal.Footer>
-                                        <Button variant="secondary" onClick={handleClose} key={index + 14}>
+                                        <Button variant="secondary" onClick={handleClose} key={uuid()}>
                                             No
                                         </Button>
-                                        <Button variant="primary" onClick={handleReturn} key={index + 15}>
+                                        <Button variant="primary" onClick={handleReturn} key={uuid()}>
                                             Sí
                                         </Button>
                                     </Modal.Footer>

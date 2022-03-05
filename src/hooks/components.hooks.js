@@ -203,8 +203,10 @@ export function handleReport(tableId, removeColumn, range) {
 
 export function useFilterOnChange(filterObject, dataType, data) {
     let results;
+    
     if (dataType === 'books') {
-        results = data.filter(function(f) {
+       results = data.filter(function(f) {
+            console.log("el f", f);
             let isbnString = f.isbn + '';
             let samplesString = f.sample + '';
             let availableSamplesString = f.availableSamples + '';
@@ -214,26 +216,18 @@ export function useFilterOnChange(filterObject, dataType, data) {
             let catDesc;
             let pubDesc;
             let supDesc;
-            let tagsArray = [];
-           f.tags.forEach(tag => tagsArray.push(tag.text));
-            let filtered = tagsArray.filter(function(str) {return str.includes(filterObject.toLowerCase())});
+            
+           
             (item1).map(cat => catDesc = cat.description);
             (item2).map(pub => pubDesc = pub.description);
             (item3).map(sup => supDesc = sup.description);
-            let uniqueTag = '';
-            tagsArray.map((d, idx) => { if ((d.toLowerCase()).includes(filterObject.toLowerCase())) { return uniqueTag = d.toLowerCase();}});
+           
                         
             return ((f.title).toLowerCase()).includes(filterObject.toLowerCase()) ||
                 (f.author.toLowerCase()).includes(filterObject.toLowerCase()) ||
-                (isbnString.toLowerCase()).includes(filterObject.toLowerCase()) ||
-                (uniqueTag.toLowerCase()).includes(filterObject.toLowerCase()) ||
-               (samplesString.toLowerCase()).includes(filterObject.toLowerCase()) ||
-                (availableSamplesString.toLowerCase()).includes(filterObject.toLowerCase()) ||
-                (catDesc.toLowerCase()).includes(filterObject.toLowerCase()) ||
-                (supDesc.toLowerCase()).includes(filterObject.toLowerCase()) ||
-                (pubDesc.toLowerCase()).includes(filterObject.toLowerCase())
-
-        });
+               (isbnString.toLowerCase()).includes(filterObject.toLowerCase()) ||
+               (f.tags.some(tag => (tag.text).toLowerCase().includes(filterObject.toLowerCase())))           
+        });      
     }
     if (dataType === 'borrowings') {
         results = data.filter(function(f) {

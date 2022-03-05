@@ -6,6 +6,7 @@ import { FaFilter, FaChevronLeft, FaEye, FaEyeSlash, FaEllipsisV, FaPen, FaBoxes
 import hooks from '../../hooks/components.hooks';
 import BookDetail from "./BookDetail";
 import noImg from "./no-img.png";
+import { Rating } from 'react-simple-star-rating';
 import { Page, Text, View, Document, StyleSheet, usePDF, PDFDownloadLink } from '@react-pdf/renderer';
 
 const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
@@ -42,7 +43,11 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
     const tableId = document.getElementById('data-table');
     const [toggleMenu, setToggleMenu] = useState(false);
     const [singleBook, setSingleBook] = useState({});
+    const [initialRating, setInitialRating] = useState(0);
     // Create styles
+    const handleRating = () => {
+
+    }
     const styles = StyleSheet.create({
         page: {
             display: 'flex',
@@ -50,7 +55,7 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
             flexWrap: 'wrap',
             margin: 10,
             justifyContent: 'flex-start',
-            
+
             '@media max-width: 400': {
                 width: 300,
             },
@@ -265,61 +270,42 @@ const BooksTable = ({ item, objectType, handleObjectType, actionType }) => {
                         <div className="cards-container container" onClick={() => setToggleMenu(false)}>
                             {
                                 resources.map((dat, index) => {
-                                    let cats = [dat.category];
-                                    let pubs = [dat.publisher];
-                                    let sups = [dat.support];
-                                    let supportDescription;
-                                    console.log("los datos de un libro", dat);
-
-                                    sups.map((sup, index) => {
-                                        return supportDescription = sup.description;
-                                    });
+                                    console.log("un libro", dat);
                                     return (
-                                        <div className="book-container" onClick={() => { handleView(dat.id, dat) }}>
-                                            <div className="thumbnail">
-                                                <img src={dat.thumbnail ? dat.thumbnail : noImg} />
-                                                <div className="article-code">
-                                                    {dat.location}{dat.category.categoryCode}-{dat.bookCode}
+                                        <>
+
+                                            <div className="book-container" onClick={() => { handleView(dat.id, dat) }}>
+                                                <div className="thumbnail">
+                                                    <img src={dat.thumbnail !== "" ? dat.thumbnail : noImg} />
+                                                    <div>
+                                                        <Rating size={15} ratingValue={dat.rating} initialValue={dat.rating} allowHalfIcon readonly={true} />
+                                                    </div>
+
+                                                </div>
+
+                                                <div className="article-details">
+                                                    <div className="article-code-container"> <p className="article-title">{dat.title} </p> <div className="article-code">
+                                                        {dat.location}{dat.category.categoryCode}-{dat.bookCode}
+                                                    </div></div>
+                                                    <div className="rating-container"><p className="article-author"><i>{dat.author}</i> {dat.read ? <FaEye /> : <FaEyeSlash />}</p>
+
+                                                    </div>
+                                                    <p className="article-isbn">{dat.isbn}</p>
+                                                    {dat.tags.map(tag => <p className="badge bg-light text-dark">{tag.text}</p>)}
+
                                                 </div>
                                             </div>
-
-                                            <div className="article-details">
-                                                <p className="article-title">{dat.title} {dat.read ? <FaEye /> : <FaEyeSlash />}</p>
-                                                <div className="rating-container"><p className="article-author"><i>{dat.author}</i></p><p>rating</p></div>
-                                                <p>{dat.isbn}</p>
-                                                {dat.tags.map(tag => <p className="badge bg-light text-dark">{tag.text}</p>)}
-
-                                            </div>
-                                        </div>
+                                        </>
                                     )
                                 })
                             }
-                        </div>
-                        <Modal key={index + 13} show={show} onHide={handleClose} onExited={refreshView}>
-                            <Modal.Header closeButton>
-                                <Modal.Title>Eliminar recurso</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>¿Realmente desea eliminar el recurso?</Modal.Body>
-                            <Modal.Footer>
-                                <Button variant="secondary" onClick={handleClose} key={index + 14}>
-                                    No
-                                </Button>
-                                <Button variant="primary" onClick={handleDelete} key={index + 15}>
-                                    Sí
-                                </Button>
-                            </Modal.Footer>
-                        </Modal>
-                        <Alert variant={alertVariant} show={showAlert} onClose={() => setShowAlert(false)} dismissible>
-                            <p>
-                                {alertText}
-                            </p>
-                        </Alert>
+                        </div>                       
                     </>
                 }</>
         );
     } else if (actionType == 5) {
         console.log("Pasa x el action type correcto ", actionType, " el index es ", index, " el data es ", singleBook);
-        content = <BookDetail item={index} data={singleBook} />
+        content = <BookDetail item={index} data={singleBook} handleObjectType={handleObjectType} />
     } else {
         console.log(actionType);
         content =
