@@ -1,4 +1,5 @@
 import http from "../http-common";
+import serpApi from "../http-api";
 
 const getAll = (dataType) => {
     console.log("un data type para el getAll", dataType);
@@ -9,6 +10,12 @@ const get = (dataType, id) => {
   console.log("pasa por el get solo");
   return http.get(`/${dataType}/${id}`);
 };
+
+const getQuote = (author, title, isbn) => {
+  
+  
+  return serpApi.get(`/serpApi/${author}/${title}/${isbn}`);
+}
 
 
 const create = (dataType, data) => {
@@ -64,7 +71,8 @@ const exportedObject = {
   updateAvailableResources,
   giveBack,
   updateIsActive,
-  borrowingsPerMember
+  borrowingsPerMember,
+  getQuote
 }
 
 

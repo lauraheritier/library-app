@@ -7,7 +7,6 @@ const Publisher = db.publishers;
 const Category = db.categories;
 const Support = db.supports;
 
-
 // Create and Save a new Book
 exports.create = (req, res) => {
     // Validate request

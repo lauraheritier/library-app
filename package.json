@@ -17,6 +17,7 @@
     "bluebird": "^3.7.2",
     "bootstrap": "^5.0.2",
     "cors": "^2.8.5",
+    "cors-anywhere": "^0.4.4",
     "express": "^4.17.1",
     "formik": "^2.2.9",
     "google-search-results-nodejs": "^2.1.0",

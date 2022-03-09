@@ -71,7 +71,10 @@ const BookDetail = ({ item, objectType, handleObjectType, actionType, data }) =>
         setObjectToRemove(param);
     }
     function handleQuote() {
-    externalApiService.getQuote('books', data.bookCode, 'biology');
+        const param = {
+            discipline: 'biology'
+        }
+    service.getQuote("Michael Ward", "Metric engineering of soft molecular host frameworks", "9780415552172");
         
     }
 
